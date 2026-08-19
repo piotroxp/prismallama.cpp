@@ -55,20 +55,32 @@ int test_block_cb(void * user_data, int block_idx) {
 }
 
 // Build a synthetic ggml_cgraph that looks like a tiny llama forward pass:
+//
 //   for each block i in [0, n_blocks):
-//       3 ops named "<base>-i"   e.g. "ffn_inp-i", "attn_out-i", "ffn_out-i"
-//   plus 1 final "logits-N" tensor (no suffix; should not be a boundary)
+//       named-input --neg--> named-ffn_inp-i
+//       named-ffn_inp-i --add--> named-attn_out-i
+//       named-attn_out-i --add--> named-ffn_out-i
+//   ...
+//   final --add--> logits
+//
+// Each "named" tensor is wrapped in `ggml_neg` so it ends up in
+// cgraph->nodes (with op != GGML_OP_NONE) rather than in cgraph->leafs.
+// The eval callback walks cgraph->nodes only, so a leaf wouldn't be seen.
 //
 // Returns the graph. Caller owns the ggml_context.
 ggml_cgraph * build_fake_graph(ggml_context * ctx, int n_blocks, int ops_per_block = 3) {
     ggml_cgraph * gf = ggml_new_graph(ctx);
 
-    ggml_tensor * prev = 0;
+    ggml_tensor * prev = nullptr;
     for (int b = 0; b < n_blocks; b++) {
         for (int op = 0; op < ops_per_block; op++) {
-            ggml_tensor * t = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 1);
+            // Leaf input — not in cgraph->nodes (will end up in leafs[]).
+            ggml_tensor * raw = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 1);
+
+            // Wrap in ggml_neg so it becomes a node (op != GGML_OP_NONE).
+            ggml_tensor * t = ggml_neg(ctx, raw);
+
             // Name format: "<base>-<il>" with a base that varies by op.
-            // ggml_set_name copies the string, so we must use a buffer.
             char name[64];
             const char * base = (op == 0) ? "ffn_inp" :
                                (op == 1) ? "attn_out" : "ffn_out";
@@ -76,18 +88,20 @@ ggml_cgraph * build_fake_graph(ggml_context * ctx, int n_blocks, int ops_per_blo
             ggml_set_name(t, name);
 
             if (prev != nullptr) {
-                // Tie them together so ggml sees a real graph (not a forest).
-                ggml_add(ctx, prev, t);
+                prev = ggml_add(ctx, prev, t);
+            } else {
+                prev = t;
             }
-            prev = t;
         }
     }
 
     // Final logits tensor without suffix — should NOT be a boundary.
-    ggml_tensor * logits = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 1);
+    ggml_tensor * logits_raw = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 1);
+    ggml_tensor * logits     = ggml_neg(ctx, logits_raw);
     ggml_set_name(logits, "logits");
     if (prev != nullptr) {
-        ggml_add(ctx, prev, logits);
+        prev = ggml_add(ctx, prev, logits);
+    } else {
         prev = logits;
     }
 
@@ -118,13 +132,18 @@ void test_dispatch_pure() {
     assert(ctx != nullptr);
 
     ggml_cgraph * gf = build_fake_graph(ctx, N_BLOCKS, OPS_PER_BLOCK);
-    assert(ggml_graph_n_nodes(gf) == N_BLOCKS * OPS_PER_BLOCK + 1);
+    // Sanity: at least the named nodes are present. ggml_add introduces
+    // intermediate unnamed nodes so the total can exceed N_BLOCKS*OPS + 1.
+    assert(ggml_graph_n_nodes(gf) >= N_BLOCKS * OPS_PER_BLOCK);
 
     cb_state st;
     std::shared_ptr<llama_block_callback_state> state;
 
-    const bool has_boundaries = llama_block_callback_install(
-            /*sched=*/nullptr, // scheduler not needed for this test
+    // Pass sched=nullptr: the helper still scans the graph and populates
+    // out_state, but skips the GGML install. We drive dispatch manually
+    // below so we don't need a real backend for this test.
+    llama_block_callback_install(
+            /*sched=*/nullptr,
             gf,
             &test_block_cb,
             &st,
@@ -132,8 +151,6 @@ void test_dispatch_pure() {
             /*node_cb_data=*/nullptr,
             state);
 
-    // install() returns false when sched == nullptr (early-out), so we
-    // need to scan manually and dispatch manually here.
     assert(state != nullptr);
     assert(!state->block_node_to_idx.empty());
 
@@ -163,7 +180,6 @@ void test_dispatch_pure() {
         assert(st.records[i].aborted == false);
     }
     assert(boundary_count == N_BLOCKS);
-    (void) has_boundaries;
 
     ggml_free(ctx);
     printf("  ok (%d blocks, %d fires)\n", N_BLOCKS, st.call_count.load());
