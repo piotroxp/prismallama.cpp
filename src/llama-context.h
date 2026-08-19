@@ -101,6 +101,11 @@ struct llama_context {
 
     void set_abort_callback(bool (*abort_callback)(void * data), void * abort_callback_data);
 
+    // JAISIU-2319-A: install / replace / clear per-block eval callback.
+    // Pass NULL fn to clear. See set_block_callback() definition in
+    // src/llama-context.cpp for the contract.
+    void set_block_callback(llama_block_cb block_callback, void * block_callback_data);
+
     void set_embeddings (bool value);
     void set_causal_attn(bool value);
     void set_warmup(bool value);
