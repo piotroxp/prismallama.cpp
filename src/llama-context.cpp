@@ -9,6 +9,7 @@
 #include "llama-mmap.h"
 #include "llama-model.h"
 #include "llama-ext.h"
+#include "llama-block-callback.h"
 
 #include <cinttypes>
 #include <cmath>
@@ -1028,6 +1029,26 @@ void llama_context::set_abort_callback(bool (*abort_callback)(void * data), void
     }
 }
 
+void llama_context::set_block_callback(llama_block_cb block_callback, void * block_callback_data) {
+    LLAMA_LOG_DEBUG("%s: call (cb=%p, data=%p)\n", __func__,
+            reinterpret_cast<void *>(block_callback), block_callback_data);
+
+    // Update cparams so graph_reuse_disable = false (next decode rebuilds)
+    // picks up the new values. The actual install on the scheduler happens
+    // at graph build time in llama_context::decode_*().
+    cparams.block_cb          = block_callback;
+    cparams.block_cb_user_data = block_callback_data;
+
+    if (block_callback == nullptr) {
+        // Clear the dispatch state so a stale map doesn't get reinstalled
+        // on the next graph rebuild.
+        block_cb_state.reset();
+        if (sched) {
+            llama_block_callback_clear(sched.get());
+        }
+    }
+}
+
 void llama_context::set_embeddings(bool value) {
     LLAMA_LOG_DEBUG("%s: value = %d\n", __func__, value);
 
@@ -1194,7 +1215,31 @@ llm_graph_result * llama_context::process_ubatch(const llama_ubatch & ubatch, ll
         res->reset();
 
         ggml_backend_sched_reset(sched.get());
-        ggml_backend_sched_set_eval_callback(sched.get(), cparams.cb_eval, cparams.cb_eval_user_data);
+
+        // JAISIU-2319-A: if a per-block callback is installed, layer the
+        // dispatch wrapper over the ggml eval callback. The wrapper maps
+        // every node to its transformer block (if any) and fires
+        // cparams.block_cb at the boundary node of each block. Other
+        // nodes still go through cparams.cb_eval for full per-node
+        // observability. Falls back to the raw cb_eval install when no
+        // block callback is registered, preserving upstream behavior.
+        //
+        // The first install (with no graph yet) just hooks the wrapper
+        // and waits; the second install after build_graph rescans and
+        // populates the boundary map.
+        if (cparams.block_cb != nullptr) {
+            llama_block_callback_install(
+                    sched.get(),
+                    /*gf=*/nullptr,
+                    cparams.block_cb,
+                    cparams.block_cb_user_data,
+                    cparams.cb_eval,
+                    cparams.cb_eval_user_data,
+                    block_cb_state);
+        } else {
+            ggml_backend_sched_set_eval_callback(sched.get(), cparams.cb_eval, cparams.cb_eval_user_data);
+            block_cb_state.reset();
+        }
 
         //const auto t_start_us = ggml_time_us();
 
@@ -1206,6 +1251,22 @@ llm_graph_result * llama_context::process_ubatch(const llama_ubatch & ubatch, ll
             LLAMA_LOG_ERROR("%s: failed to initialize graph\n", __func__);
             ret = GGML_STATUS_FAILED;
             return nullptr;
+        }
+
+        // Rescan boundaries against the freshly built graph and reinstall
+        // the dispatch wrapper (with stable state held on the context).
+        if (cparams.block_cb != nullptr) {
+            const bool has_boundaries = llama_block_callback_install(
+                    sched.get(),
+                    gf,
+                    cparams.block_cb,
+                    cparams.block_cb_user_data,
+                    cparams.cb_eval,
+                    cparams.cb_eval_user_data,
+                    block_cb_state);
+            LLAMA_LOG_DEBUG("%s: block callback installed with %s\n",
+                    __func__,
+                    has_boundaries ? "boundaries" : "no boundaries (will not fire)");
         }
 
         if (!ggml_backend_sched_alloc_graph(sched.get(), gf)) {
