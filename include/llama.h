@@ -974,6 +974,28 @@ extern "C" {
     // Set abort callback
     LLAMA_API void llama_set_abort_callback(struct llama_context * ctx, ggml_abort_callback abort_callback, void * abort_callback_data);
 
+    // Per-block eval callback (JAISIU-2319-A, prismalama fork)
+    //
+    // Invoked once per transformer block during graph compute in llama_decode().
+    // The callback fires AFTER the last compute node of the block has finished
+    // (just before the next block's first node is dispatched) with `block_idx`
+    // set to the index of the block that just completed (0-based, in model layer order).
+    //
+    // Use this to layer-stream weights: load block N+1 and evict block N from
+    // VRAM/mmap while compute is still running. The callback runs on the
+    // compute thread (currently the ggml scheduler thread); keep it cheap:
+    // no allocations, no I/O on the hot path. Return non-zero to continue
+    // compute, zero to abort the remaining graph (mirrors ggml abort semantics).
+    //
+    // If both a per-block callback (this) and a per-node eval callback (cb_eval
+    // in llama_context_params) are set, the per-block callback runs at block
+    // boundaries and the per-node callback runs for every other node.
+    //
+    // Pass NULL to clear. Safe to call between decode() calls; takes effect
+    // on the next llama_decode().
+    typedef int (*llama_block_cb)(void * user_data, int block_idx);
+    LLAMA_API void llama_set_block_callback(struct llama_context * ctx, llama_block_cb block_callback, void * block_callback_data);
+
     // Wait until all computations are finished
     // This is automatically done when using one of the functions below to obtain the computation results
     // and is not necessary to call it explicitly in most cases
