@@ -135,15 +135,26 @@ bool llama_block_callback_install(
         ggml_backend_sched_eval_callback user_node_cb,
         void *         user_node_cb_data,
         std::shared_ptr<llama_block_callback_state> & out_state) {
-    // Always populate out_state so callers (and tests) can drive the
-    // dispatch wrapper manually even without a scheduler. Pass
-    // sched == nullptr for "scan + state only, do not install".
-    auto state = std::make_shared<llama_block_callback_state>();
-    state->user_block_cb    = user_block_cb;
-    state->user_block_data  = user_block_data;
-    state->user_node_cb     = user_node_cb;
-    state->user_node_cb_data = user_node_cb_data;
-    llama_block_callback_scan(gf, *state);
+    // If a prior state is provided with existing boundaries AND gf is null,
+    // reuse that state's boundary map (graph-reuse path: same graph, same
+    // node pointers; only the callback function may have changed). When
+    // gf is non-null OR no prior state exists, build a fresh state and
+    // rescan.
+    std::shared_ptr<llama_block_callback_state> state;
+    if (gf == nullptr && out_state && !out_state->block_node_to_idx.empty()) {
+        state = out_state;
+        state->user_block_cb     = user_block_cb;
+        state->user_block_data   = user_block_data;
+        state->user_node_cb      = user_node_cb;
+        state->user_node_cb_data = user_node_cb_data;
+    } else {
+        state = std::make_shared<llama_block_callback_state>();
+        state->user_block_cb     = user_block_cb;
+        state->user_block_data   = user_block_data;
+        state->user_node_cb      = user_node_cb;
+        state->user_node_cb_data = user_node_cb_data;
+        llama_block_callback_scan(gf, *state);
+    }
 
     if (sched != nullptr) {
         ggml_backend_sched_set_eval_callback(

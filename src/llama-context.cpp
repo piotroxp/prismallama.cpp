@@ -1210,6 +1210,24 @@ llm_graph_result * llama_context::process_ubatch(const llama_ubatch & ubatch, ll
             ggml_backend_sched_synchronize(sched.get());
         }
 
+        // JAISIU-2319-A: refresh the block callback dispatch wrapper so
+        // the latest cparams.block_cb / block_cb_user_data take effect
+        // even on graph reuse. The boundary map is unchanged (same graph),
+        // so we pass gf=nullptr and let install() reuse the prior state.
+        if (cparams.block_cb != nullptr) {
+            llama_block_callback_install(
+                    sched.get(),
+                    /*gf=*/nullptr,
+                    cparams.block_cb,
+                    cparams.block_cb_user_data,
+                    cparams.cb_eval,
+                    cparams.cb_eval_user_data,
+                    block_cb_state);
+        } else {
+            ggml_backend_sched_set_eval_callback(sched.get(), cparams.cb_eval, cparams.cb_eval_user_data);
+            block_cb_state.reset();
+        }
+
         n_reused++;
     } else {
         res->reset();
