@@ -25,7 +25,7 @@ using json = nlohmann::ordered_json;
 static int main_automated_tests(void);
 
 static void run_multiple(const std::string& dir_path, bool stop_on_first_failure, const json& input, bool use_common = false);
-static void run_single(const std::string& contents, json input, bool use_common = false, const std::string & output_path = "");
+static void run_single(const std::string& contents, json input, bool use_common = false, bool dump_prog = false, const std::string & output_path = "");
 
 static std::string HELP = R"(
 Usage: test-chat-template [OPTIONS] PATH_TO_TEMPLATE
@@ -35,6 +35,7 @@ Options:
   --json <path>            Path to the JSON input file.
   --stop-on-first-fail     Stop testing on the first failure (default: false).
   --no-common              Use direct Jinja engine instead of common chat templates (default: use common).
+  --dump-prog              Dump the parsed program for debugging (only for single template runs).
   --output <path>          Path to output results (only for single template runs).
 If PATH_TO_TEMPLATE is a file, runs that single template.
 If PATH_TO_TEMPLATE is a directory, runs all .jinja files in that directory.
@@ -118,6 +119,7 @@ int main(int argc, char ** argv) {
     std::string & json_to_use = DEFAULT_JSON;
     bool stop_on_first_fail = false;
     bool use_common = true;
+    bool dump_prog = false;
 
     for (size_t i = 1; i < args.size(); i++) {
         if (args[i] == "--help" || args[i] == "-h") {
@@ -135,7 +137,9 @@ int main(int argc, char ** argv) {
             output_path = args[i + 1];
             i++;
         } else if (args[i] == "--no-common") {
-            use_common = true;
+            use_common = false;
+        } else if (args[i] == "--dump-prog") {
+            dump_prog = true;
         } else if (tmpl_path.empty()) {
             tmpl_path = args[i];
         } else {
@@ -172,7 +176,7 @@ int main(int argc, char ** argv) {
         std::string contents = std::string(
             std::istreambuf_iterator<char>(infile),
             std::istreambuf_iterator<char>());
-        run_single(contents, input_json, use_common, output_path);
+        run_single(contents, input_json, use_common, dump_prog, output_path);
     } else {
         std::cerr << "Error: PATH_TO_TEMPLATE is not a valid file or directory: " << tmpl_path << "\n";
         return 1;
@@ -276,10 +280,20 @@ static jinja::value_string format_using_direct_engine(
 }
 
 
-void run_single(const std::string& contents, json input, bool use_common, const std::string & output_path) {
+void run_single(const std::string& contents, json input, bool use_common, bool dump_prog, const std::string & output_path) {
     jinja::enable_debug(true);
 
     jinja::value_string output_parts;
+
+    if (dump_prog) {
+        jinja::lexer lexer;
+        auto lexer_res = lexer.tokenize(contents);
+        jinja::program ast = jinja::parse_from_tokens(lexer_res);
+        std::string prog_dump = jinja::runtime::debug_dump_program(ast, contents);
+        std::cout << "\n=== DUMPED PROGRAM ===\n";
+        std::cout << prog_dump << "\n";
+        return;
+    }
 
     if (use_common) {
         std::string bos_token = "<s>";
@@ -354,6 +368,7 @@ int main_automated_tests(void) {
         std::string bos_token = "";
         std::string eos_token = "";
         bool supported_with_jinja = true;
+        std::vector<llama_chat_message> extra_conversation = {};
     };
     std::vector<TestCase> test_cases {
         {
@@ -604,6 +619,36 @@ int main_automated_tests(void) {
             /* .expected_output_jinja= */ "<seed:bos>system\nYou are a helpful assistant<seed:eos><seed:bos>user\nHello<seed:eos><seed:bos>assistant\nHi there<seed:eos><seed:bos>user\nWho are you<seed:eos><seed:bos>assistant\nI am an assistant<seed:eos><seed:bos>user\nAnother question<seed:eos><seed:bos>assistant\n",
             /* .bos_token= */ "<seed:bos>",
             /* .eos_token= */ "<seed:eos>",
+        },
+        {
+            /* .name= */ "ibm-granite/granite-3.x (tool call)",
+            /* .template_str= */ "{%- for message in messages %}\n    {%- if message['role'] == 'assistant_tool_call' %}\n    {{- '<|start_of_role|>assistant<|end_of_role|><|tool_call|>' + message['content'] + '<|end_of_text|>\\n' }}\n    {%- else %}\n    {{- '<|start_of_role|>' + message['role'] + '<|end_of_role|>' + message['content'] + '<|end_of_text|>\\n' }}\n    {%- endif %}\n    {%- if loop.last and add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role|>' }}\n    {%- endif %}\n{%- endfor %}",
+            /* .expected_output= */       "<|start_of_role|>system<|end_of_role|>You are a helpful assistant<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Hello<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>Hi there<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Who are you<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>   I am an assistant   <|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Another question<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>What is the weather?<|end_of_text|>\n<|start_of_role|>assistant_tool_call<|end_of_role|><|tool_call|>[{\"name\": \"get_weather\", \"arguments\": {\"location\": \"NYC\"}}]<|end_of_text|>\n<|start_of_role|>tool_response<|end_of_role|>{\"temperature\": 72}<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>",
+            /* .expected_output_jinja= */ "<|start_of_role|>system<|end_of_role|>You are a helpful assistant<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Hello<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>Hi there<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Who are you<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>   I am an assistant   <|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Another question<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>What is the weather?<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|><|tool_call|>[{\"name\": \"get_weather\", \"arguments\": {\"location\": \"NYC\"}}]<|end_of_text|>\n<|start_of_role|>tool_response<|end_of_role|>{\"temperature\": 72}<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>",
+            /* .bos_token= */ "",
+            /* .eos_token= */ "",
+            /* .supported_with_jinja= */ true,
+            /* .extra_conversation= */ {{"user", "What is the weather?"}, {"assistant_tool_call", "[{\"name\": \"get_weather\", \"arguments\": {\"location\": \"NYC\"}}]"}, {"tool_response", "{\"temperature\": 72}"}},
+        },
+        {
+            /* .name= */ "ibm-granite/granite-4.0 (tool call)",
+            /* .template_str= */ "{%- for message in messages %}\n    {%- if message['role'] == 'assistant_tool_call' %}\n    {{- '<|start_of_role|>assistant<|end_of_role|><|tool_call|>' + message['content'] + '<|end_of_text|>\\n' }}\n    {%- else %}\n    {{- '<|start_of_role|>' + message['role'] + '<|end_of_role|>' + message['content'] + '<|end_of_text|>\\n' }}\n    {%- endif %}\n    {%- if loop.last and add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role|>' }}\n    {%- endif %}\n{%- endfor %}\n{# <tool_call> <tools> g4_default_system_message #}",
+            /* .expected_output= */       "<|start_of_role|>system<|end_of_role|>You are a helpful assistant<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Hello<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>Hi there<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Who are you<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>   I am an assistant   <|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Another question<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>What is the weather?<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|><|tool_call|><tool_call>\n{\"name\": \"get_weather\", \"arguments\": {\"location\": \"NYC\"}}\n</tool_call><|end_of_text|>\n<|start_of_role|>tool_response<|end_of_role|>{\"temperature\": 72}<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>",
+            /* .expected_output_jinja= */ "",
+            /* .bos_token= */ "",
+            /* .eos_token= */ "",
+            /* .supported_with_jinja= */ true,
+            /* .extra_conversation= */ {{"user", "What is the weather?"}, {"assistant_tool_call", "<tool_call>\n{\"name\": \"get_weather\", \"arguments\": {\"location\": \"NYC\"}}\n</tool_call>"}, {"tool_response", "{\"temperature\": 72}"}},
+        },
+        {
+            /* .name= */ "ibm-granite/granite-4.1 (tool call)",
+            /* .template_str= */ "{%- for message in messages %}\n    {%- if message['role'] == 'assistant_tool_call' %}\n    {{- '<|start_of_role|>assistant<|end_of_role|><|tool_call|>' + message['content'] + '<|end_of_text|>\\n' }}\n    {%- else %}\n    {{- '<|start_of_role|>' + message['role'] + '<|end_of_role|>' + message['content'] + '<|end_of_text|>\\n' }}\n    {%- endif %}\n    {%- if loop.last and add_generation_prompt %}\n    {{- '<|start_of_role|>assistant<|end_of_role|>' }}\n    {%- endif %}\n{%- endfor %}\n{# <tool_call> <tools> #}",
+            /* .expected_output= */       "<|start_of_role|>system<|end_of_role|>You are a helpful assistant<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Hello<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>Hi there<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Who are you<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>   I am an assistant   <|end_of_text|>\n<|start_of_role|>user<|end_of_role|>Another question<|end_of_text|>\n<|start_of_role|>user<|end_of_role|>What is the weather?<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|><|tool_call|><tool_call>\n{\"name\": \"get_weather\", \"arguments\": {\"location\": \"NYC\"}}\n</tool_call><|end_of_text|>\n<|start_of_role|>tool_response<|end_of_role|>{\"temperature\": 72}<|end_of_text|>\n<|start_of_role|>assistant<|end_of_role|>",
+            /* .expected_output_jinja= */ "",
+            /* .bos_token= */ "",
+            /* .eos_token= */ "",
+            /* .supported_with_jinja= */ true,
+            /* .extra_conversation= */ {{"user", "What is the weather?"}, {"assistant_tool_call", "<tool_call>\n{\"name\": \"get_weather\", \"arguments\": {\"location\": \"NYC\"}}\n</tool_call>"}, {"tool_response", "{\"temperature\": 72}"}},
         }
     };
     std::vector<char> formatted_chat(1024);
@@ -627,11 +672,13 @@ int main_automated_tests(void) {
 
     for (const auto & test_case : test_cases) {
         std::cout << "\n\n=== " << test_case.name << " ===\n\n";
-        formatted_chat.resize(1024);
+        auto conv = conversation;
+        conv.insert(conv.end(), test_case.extra_conversation.begin(), test_case.extra_conversation.end());
+        formatted_chat.resize(2048);
         res = llama_chat_apply_template(
             test_case.template_str.c_str(),
-            conversation.data(),
-            conversation.size(),
+            conv.data(),
+            conv.size(),
             add_generation_prompt,
             formatted_chat.data(),
             formatted_chat.size()
@@ -658,11 +705,15 @@ int main_automated_tests(void) {
         }
         std::cout << "\n\n=== " << test_case.name << " (jinja) ===\n\n";
         try {
+            auto msgs = messages;
+            for (const auto & msg : test_case.extra_conversation) {
+                msgs.push_back(simple_msg(msg.role, msg.content));
+            }
             auto output = format_using_common(
                                 test_case.template_str,
                                 test_case.bos_token,
                                 test_case.eos_token,
-                                messages);
+                                msgs);
             auto expected_output = normalize_newlines(test_case.expected_output_jinja.empty() ? test_case.expected_output : test_case.expected_output_jinja);
             if (output != expected_output) {
                 std::cout << "Template:```\n" << test_case.template_str << "\n```";
