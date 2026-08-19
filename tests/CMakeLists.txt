@@ -287,6 +287,7 @@ target_link_libraries(${TEST_TARGET} PRIVATE llama)
 # drive the dispatch wrapper directly through ggml_backend_sched_set_eval_callback.
 llama_build_and_test(test-block-callback.cpp)
 target_include_directories(test-block-callback PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_include_directories(test-block-callback PRIVATE ${PROJECT_SOURCE_DIR}/ggml/src)
 target_link_libraries(test-block-callback PRIVATE llama)
 
 llama_build_and_test(test-alloc.cpp)
