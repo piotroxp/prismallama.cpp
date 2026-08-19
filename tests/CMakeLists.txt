@@ -344,8 +344,17 @@ if (NOT LLAMA_USE_SYSTEM_GGML)
     # Needs non-public ggml-impl.h
     llama_build_and_test(test-gguf.cpp)
 
+    # JAISIU-2319-A: per-block eval callback test. Links to llama (not just
+    # common) so it can include the internal src/llama-block-callback.h and
+    # drive the dispatch wrapper directly through ggml_backend_sched_set_eval_callback.
+    llama_build_and_test(test-block-callback.cpp)
+    target_include_directories(test-block-callback PRIVATE ${PROJECT_SOURCE_DIR}/src)
+    target_include_directories(test-block-callback PRIVATE ${PROJECT_SOURCE_DIR}/ggml/src)
+    target_link_libraries(test-block-callback PRIVATE llama)
+
     # Needs non-public ggml{,-backend}-impl.h
     llama_build_and_test(test-alloc.cpp)
+    target_include_directories(test-alloc PRIVATE ${PROJECT_SOURCE_DIR}/ggml/src)
 endif()
 
 llama_build(test-export-graph-ops.cpp)

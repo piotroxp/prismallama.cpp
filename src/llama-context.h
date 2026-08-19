@@ -7,11 +7,13 @@
 #include "llama-adapter.h"
 #include "llama-impl.h"
 #include "llama-memory.h"
+#include "llama-block-callback.h"
 
 #include "ggml-cpp.h"
 #include "ggml-opt.h"
 
 #include <map>
+#include <memory>
 #include <vector>
 
 struct llama_model;
@@ -111,6 +113,11 @@ struct llama_context {
     void set_n_threads(int32_t n_threads, int32_t n_threads_batch);
 
     void set_abort_callback(bool (*abort_callback)(void * data), void * abort_callback_data);
+
+    // JAISIU-2319-A: install / replace / clear per-block eval callback.
+    // Pass NULL fn to clear. See set_block_callback() definition in
+    // src/llama-context.cpp for the contract.
+    void set_block_callback(llama_block_cb block_callback, void * block_callback_data);
 
     void set_embeddings (bool value);
     void set_embeddings_nextn(bool value, bool masked);
@@ -356,6 +363,11 @@ private:
 
     ggml_abort_callback abort_callback      = nullptr;
     void *              abort_callback_data = nullptr;
+
+    // JAISIU-2319-A: holds the dispatch state for the per-block eval
+    // callback. Kept alive across graph rebuilds so the ggml scheduler's
+    // raw pointer (stored in its callback user_data) stays valid.
+    std::shared_ptr<llama_block_callback_state> block_cb_state;
 
     std::vector<std::pair<ggml_backend_t, ggml_backend_set_n_threads_t>> set_n_threads_fns;
 

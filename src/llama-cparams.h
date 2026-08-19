@@ -62,5 +62,12 @@ struct llama_cparams {
     ggml_backend_sched_eval_callback cb_eval;
     void * cb_eval_user_data;
 
+    // Per-block eval callback (JAISIU-2319-A, prismalama fork).
+    // Stored in cparams so the dispatch helper can reconstruct context
+    // without touching llama_context internals. Mirrored from the
+    // llama_set_block_callback() public API; default = nullptr.
+    llama_block_cb block_cb = nullptr;
+    void *         block_cb_user_data = nullptr;
+
     llama_context * ctx_other;
 };
