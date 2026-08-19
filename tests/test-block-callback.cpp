@@ -67,15 +67,28 @@ int test_block_cb(void * user_data, int block_idx) {
 // cgraph->nodes (with op != GGML_OP_NONE) rather than in cgraph->leafs.
 // The eval callback walks cgraph->nodes only, so a leaf wouldn't be seen.
 //
+// Each raw input is marked GGML_TENSOR_FLAG_INPUT so the scheduler
+// treats it as user-provided (and does not try to compute it). The
+// `data` pointer is set to a static zero buffer so the backend copy
+// (which expects valid source memory for INPUT tensors) succeeds.
+//
 // Returns the graph. Caller owns the ggml_context.
+static float k_input_zero = 0.0f;
+static float k_input_one  = 1.0f;
+
 ggml_cgraph * build_fake_graph(ggml_context * ctx, int n_blocks, int ops_per_block = 3) {
     ggml_cgraph * gf = ggml_new_graph(ctx);
 
     ggml_tensor * prev = nullptr;
+    int input_idx = 0;
     for (int b = 0; b < n_blocks; b++) {
         for (int op = 0; op < ops_per_block; op++) {
-            // Leaf input — not in cgraph->nodes (will end up in leafs[]).
+            // Leaf input — flagged INPUT so the scheduler treats it as
+            // user-provided (rather than trying to compute a no-op leaf).
             ggml_tensor * raw = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 1);
+            ggml_set_input(raw);
+            // Alternate 0.0 / 1.0 so neg/add produces deterministic data.
+            raw->data = (input_idx++ % 2 == 0) ? &k_input_zero : &k_input_one;
 
             // Wrap in ggml_neg so it becomes a node (op != GGML_OP_NONE).
             ggml_tensor * t = ggml_neg(ctx, raw);
@@ -97,6 +110,8 @@ ggml_cgraph * build_fake_graph(ggml_context * ctx, int n_blocks, int ops_per_blo
 
     // Final logits tensor without suffix — should NOT be a boundary.
     ggml_tensor * logits_raw = ggml_new_tensor_1d(ctx, GGML_TYPE_F32, 1);
+    ggml_set_input(logits_raw);
+    logits_raw->data = &k_input_zero;
     ggml_tensor * logits     = ggml_neg(ctx, logits_raw);
     ggml_set_name(logits, "logits");
     if (prev != nullptr) {
