@@ -3163,6 +3163,10 @@ void llama_set_abort_callback(llama_context * ctx, bool (*abort_callback)(void *
     ctx->set_abort_callback(abort_callback, abort_callback_data);
 }
 
+void llama_set_block_callback(llama_context * ctx, llama_block_cb block_callback, void * block_callback_data) {
+    ctx->set_block_callback(block_callback, block_callback_data);
+}
+
 void llama_set_embeddings(llama_context * ctx, bool embeddings) {
     ctx->set_embeddings(embeddings);
 }
