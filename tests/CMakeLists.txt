@@ -282,6 +282,13 @@ get_filename_component(TEST_TARGET test-c.c NAME_WE)
 add_executable(${TEST_TARGET} test-c.c)
 target_link_libraries(${TEST_TARGET} PRIVATE llama)
 
+# JAISIU-2319-A: per-block eval callback test. Links to llama (not just
+# common) so it can include the internal src/llama-block-callback.h and
+# drive the dispatch wrapper directly through ggml_backend_sched_set_eval_callback.
+llama_build_and_test(test-block-callback.cpp)
+target_include_directories(test-block-callback PRIVATE ${PROJECT_SOURCE_DIR}/src)
+target_link_libraries(test-block-callback PRIVATE llama)
+
 llama_build_and_test(test-alloc.cpp)
 target_include_directories(test-alloc PRIVATE ${PROJECT_SOURCE_DIR}/ggml/src)
 
