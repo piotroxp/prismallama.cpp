@@ -2562,20 +2562,27 @@ ggml_tensor * llm_graph_context::build_moe_ffn(
         cb(experts, "ffn_moe_weighted", il);
     }
 
+    ggml_tensor * cur_experts[LLAMA_MAX_EXPERTS] = { nullptr };
+
     assert(n_expert_used > 0);
 
     // Use per-layer n_expert_used to bound the graph even during warmup (avoids
     // the large-add-nodes issue for uniform arches; for Puzzle the per-layer
     // value is correct). ref: https://github.com/ggml-org/llama.cpp/pull/14753
     const uint32_t n_expert_used_il = hparams.n_expert_used(il);
+    for (uint32_t i = 0; i < n_expert_used_il; ++i) {
+        cur_experts[i] = ggml_view_2d(ctx0, experts, n_embd, n_tokens, experts->nb[2], i*experts->nb[1]);
+    }
 
-    // One SUM_ROWS over experts instead of O(n_expert) view/add split boundaries (JAISIU-2156 Phase 2).
-    ggml_tensor * moe_out;
+    // aggregate experts — one sched split for the MoE output (JAISIU-2156 Phase 2)
+    ggml_tensor * moe_out = cur_experts[0];
+
+    for (uint32_t i = 1; i < n_expert_used_il; ++i) {
+        moe_out = ggml_add(ctx0, moe_out, cur_experts[i]);
+    }
+
     if (n_expert_used_il == 1) {
-        moe_out = ggml_cont(ctx0, ggml_reshape_2d(ctx0, experts, n_embd, n_tokens));
-    } else {
-        ggml_tensor * exp_p = ggml_permute(ctx0, experts, 1, 0, 2, 3); // [n_expert_used, n_embd, n_tokens]
-        moe_out = ggml_reshape_2d(ctx0, ggml_sum_rows(ctx0, exp_p), n_embd, n_tokens);
+        // avoid returning a non-contiguous tensor
         moe_out = ggml_cont(ctx0, moe_out);
     }
 
