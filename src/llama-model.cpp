@@ -1879,7 +1879,10 @@ bool llama_model_base::load_tensors(llama_model_loader & ml) {
         }
     }
 
-    ml.done_getting_tensors();
+    // ISTA GSQ-RCO packs Engram sidecar tensors (engram_k/q/wkv, engram_*) into the
+    // backbone shards under names ggml-org convert does not use. Allow a partial
+    // claim so the backbone loads; Engram attach for ISTA layout is a follow-up.
+    ml.done_getting_tensors(/*partial=*/ arch == LLM_ARCH_DEEPSEEK41);
 
     if (per_layer_tok_embd && ml.lazy.has(per_layer_tok_embd)) {
         LLAMA_LOG_INFO("%s: enabling prefetch for '%s'\n", __func__, per_layer_tok_embd->name);

@@ -7,9 +7,9 @@
 // Uses static __constant__ arrays from planar-iso-constants.cuh so each
 // compilation unit gets its own initialized copy — no cross-TU extern needed.
 
+#include "common.cuh"
 #include "ggml-common.h"
 #include "planar-iso-constants.cuh"
-#include <cuda_fp16.h>
 #include <cmath>
 
 // Init function from cpy-planar-iso.cu (still needed for cpy path)

@@ -106,6 +106,9 @@ GGML_API size_t quantize_mxfp4(const float * GGML_RESTRICT src, void * GGML_REST
 GGML_API size_t quantize_nvfp4(const float * GGML_RESTRICT src, void * GGML_RESTRICT dst, int64_t nrows, int64_t n_per_row, const float * imatrix);
 
 // TurboQuant KV cache compression (arXiv 2504.19874)
+/* Shared with ggml-cpu SET_ROWS → turbo quantize (separate DSOs). */
+GGML_API int turbo3_cpu_wht_group_size;
+
 GGML_API void quantize_row_turbo3_0_ref(const float * GGML_RESTRICT x, block_turbo3_0 * GGML_RESTRICT y, int64_t k);
 GGML_API void quantize_row_turbo4_0_ref(const float * GGML_RESTRICT x, block_turbo4_0 * GGML_RESTRICT y, int64_t k);
 GGML_API void dequantize_row_turbo3_0(const block_turbo3_0 * GGML_RESTRICT x, float * GGML_RESTRICT y, int64_t k);

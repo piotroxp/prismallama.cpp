@@ -253,6 +253,8 @@ static __device__ __forceinline__ void dequantize_iso4_0(const void * vx, const 
     float results[4] = {rw, rx, ry, rz};
     v.x = results[offset] * norm;
     v.y = results[offset + 1] * norm;
+}
+
 //================================== k-quants
 
 // Each call dequantizes one super-block of QK_K values into y using the

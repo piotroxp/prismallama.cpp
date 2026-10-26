@@ -31,10 +31,16 @@ void llama_model_deepseek41::load_arch_hparams(llama_model_loader & ml) {
     }
 
     // each compressed layer reads the KV / top-k of the latest source layer at or before it
+    // ISTA GSQ-RCO GGUFs use flat aliases (kv_source_layer_ids / index_source_layer_ids);
+    // ggml-org convert writes attention.kv_source_layers / attention.indexer.source_layers.
     std::vector<uint32_t> kv_src;
     std::vector<uint32_t> idx_src;
-    ml.get_arr(LLM_KV_ATTENTION_KV_SOURCE_LAYERS,      kv_src);
-    ml.get_arr(LLM_KV_ATTENTION_INDEXER_SOURCE_LAYERS, idx_src);
+    if (!ml.get_arr(LLM_KV_ATTENTION_KV_SOURCE_LAYERS, kv_src, false)) {
+        ml.get_arr(ml.get_arch_name() + ".kv_source_layer_ids", kv_src);
+    }
+    if (!ml.get_arr(LLM_KV_ATTENTION_INDEXER_SOURCE_LAYERS, idx_src, false)) {
+        ml.get_arr(ml.get_arch_name() + ".index_source_layer_ids", idx_src);
+    }
 
     const uint32_t n_layer = hparams.n_layer();
     const auto out_of_range = [&](const std::vector<uint32_t> & v) {
@@ -67,10 +73,20 @@ void llama_model_deepseek41::load_arch_hparams(llama_model_loader & ml) {
         hparams.dsv41_topk_src[il] = last_idx;
     }
 
-    ml.get_key(LLM_KV_ATTENTION_INDEXER_CANDIDATE_SOURCE_LAYER, hparams.dsv41_cand_src, false);
+    if (!ml.get_key(LLM_KV_ATTENTION_INDEXER_CANDIDATE_SOURCE_LAYER, hparams.dsv41_cand_src, false)) {
+        // ISTA: attention.candidate_source_layer_id (u32; not under indexer.)
+        uint32_t cand_u32 = 0;
+        if (ml.get_key(ml.get_arch_name() + ".attention.candidate_source_layer_id", cand_u32, false)) {
+            hparams.dsv41_cand_src = (int32_t) cand_u32;
+        }
+    }
     if (hparams.dsv41_cand_src >= 0) {
-        ml.get_key(LLM_KV_ATTENTION_INDEXER_CANDIDATE_TOP_K_BLOCKS, hparams.dsv41_cand_topk_blocks);
-        ml.get_key(LLM_KV_ATTENTION_INDEXER_CANDIDATE_BLOCK_SIZE,   hparams.dsv41_cand_block_size);
+        if (!ml.get_key(LLM_KV_ATTENTION_INDEXER_CANDIDATE_TOP_K_BLOCKS, hparams.dsv41_cand_topk_blocks, false)) {
+            ml.get_key(ml.get_arch_name() + ".attention.candidate_topk_blocks", hparams.dsv41_cand_topk_blocks);
+        }
+        if (!ml.get_key(LLM_KV_ATTENTION_INDEXER_CANDIDATE_BLOCK_SIZE, hparams.dsv41_cand_block_size, false)) {
+            ml.get_key(ml.get_arch_name() + ".attention.candidate_block_size", hparams.dsv41_cand_block_size);
+        }
         const int32_t cs = hparams.dsv41_cand_src;
         if ((uint32_t) cs >= n_layer || hparams.dsv41_topk_src[cs] != cs || hparams.dsv41_cand_block_size == 0 ||
                 hparams.dsv41_cand_topk_blocks == 0) {
