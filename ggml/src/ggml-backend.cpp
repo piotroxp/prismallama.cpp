@@ -1538,10 +1538,10 @@ void ggml_backend_sched_split_graph(ggml_backend_sched_t sched, struct ggml_cgra
             }
 
 #if defined(GGML_USE_HIP)
-            // Weight-reuse micro-splits dominate tg decode on gfx1100; keep one GPU region unless opted out.
+            // Optional: skip GPU weight-reuse micro-splits (can raise peak VRAM; opt-in only).
             if (need_new_split && node_backend_id == cur_backend_id) {
                 const char * v = getenv("LLAMA_SCHED_NO_WEIGHT_SPLIT");
-                if (v == NULL || v[0] != '0') {
+                if (v != NULL && v[0] != '0') {
                     ggml_backend_t b = sched->backends[cur_backend_id];
                     ggml_backend_dev_t dev = b ? ggml_backend_get_device(b) : nullptr;
                     if (dev && ggml_backend_dev_type(dev) != GGML_BACKEND_DEVICE_TYPE_CPU) {
