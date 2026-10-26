@@ -1442,6 +1442,53 @@ void ggml_backend_sched_split_graph(ggml_backend_sched_t sched, struct ggml_cgra
         GGML_ASSERT(*cur_backend_id != -1);
     }
 
+    // JAISIU-2156: merge consecutive splits on the same backend (weight-reuse cuts are too fine on HIP).
+    static auto ggml_backend_sched_coalesce_enabled = []() {
+        const char * v = getenv("LLAMA_SCHED_COALESCE");
+        if (v != NULL) {
+            return v[0] != '0';
+        }
+#if defined(GGML_USE_HIP)
+        return true;
+#else
+        return false;
+#endif
+    };
+
+    static auto ggml_backend_sched_coalesce_splits = [](ggml_backend_sched_t sched) {
+        int dst = 0;
+        for (int src = 0; src < sched->n_splits; ++src) {
+            struct ggml_backend_sched_split * s = &sched->splits[src];
+            if (dst > 0) {
+                struct ggml_backend_sched_split * prev = &sched->splits[dst - 1];
+                if (prev->backend_id == s->backend_id) {
+                    prev->i_end = s->i_end;
+                    for (int j = 0; j < s->n_inputs; ++j) {
+                        bool dup = false;
+                        for (int k = 0; k < prev->n_inputs; ++k) {
+                            if (prev->inputs[k] == s->inputs[j]) {
+                                dup = true;
+                                break;
+                            }
+                        }
+                        if (!dup) {
+                            if (prev->n_inputs >= prev->inputs_capacity) {
+                                ggml_backend_sched_split_inputs_grow(prev);
+                            }
+                            prev->inputs[prev->n_inputs++] = s->inputs[j];
+                        }
+                    }
+                    continue;
+                }
+            }
+            if (dst != src) {
+                sched->splits[dst] = sched->splits[src];
+            }
+            ++dst;
+        }
+        sched->n_splits = dst;
+    };
+
     // pass 5: split graph, find tensors that need to be copied
     {
         int i_split = 0;
@@ -1546,6 +1593,10 @@ void ggml_backend_sched_split_graph(ggml_backend_sched_t sched, struct ggml_cgra
         }
         split->i_end = graph->n_nodes;
         sched->n_splits = i_split + 1;
+    }
+
+    if (ggml_backend_sched_coalesce_enabled()) {
+        ggml_backend_sched_coalesce_splits(sched);
     }
 
     if (sched->debug) {

@@ -2405,8 +2405,24 @@ ggml_tensor * llm_graph_context::build_moe_ffn(
         up  = ggml_view_3d(ctx0, gate_up, n_ff, gate_up->ne[1], gate_up->ne[2], gate_up->nb[1], gate_up->nb[2], n_ff * gate_up->nb[0]);
         cb(up, "ffn_moe_up", il);
     } else {
-        // separate gate and up path
-        up = build_lora_mm_id(up_exps, cur, selected_experts, up_exps_s, slots); // [n_ff, n_expert_used, n_tokens]
+        // separate gate and up path — gate before up so sched/CUDA graphs list MUL_MAT_ID gate, up, GLU (JAISIU-2156)
+        ggml_tensor * moe_in = cur;
+
+        if (gate_exps) {
+            cur = build_lora_mm_id(gate_exps, moe_in, selected_experts, gate_exps_s, slots); // [n_ff, n_expert_used, n_tokens]
+            cb(cur, "ffn_moe_gate", il);
+
+            if (gate_exps_s) {
+                cb(cur, "ffn_moe_gate_scaled", il);
+            }
+
+            if (gate_exps_b) {
+                cur = ggml_add_id(ctx0, cur, gate_exps_b, selected_experts);
+                cb(cur, "ffn_moe_gate_biased", il);
+            }
+        }
+
+        up = build_lora_mm_id(up_exps, moe_in, selected_experts, up_exps_s, slots); // [n_ff, n_expert_used, n_tokens]
         cb(up, "ffn_moe_up", il);
 
         if (up_exps_s) {
@@ -2418,20 +2434,8 @@ ggml_tensor * llm_graph_context::build_moe_ffn(
             cb(up, "ffn_moe_up_biased", il);
         }
 
-        if (gate_exps) {
-            cur = build_lora_mm_id(gate_exps, cur, selected_experts, gate_exps_s, slots); // [n_ff, n_expert_used, n_tokens]
-            cb(cur, "ffn_moe_gate", il);
-        } else {
+        if (!gate_exps) {
             cur = up;
-        }
-
-        if (gate_exps_s) {
-            cb(cur, "ffn_moe_gate_scaled", il);
-        }
-
-        if (gate_exps_b) {
-            cur = ggml_add_id(ctx0, cur, gate_exps_b, selected_experts);
-            cb(cur, "ffn_moe_gate_biased", il);
         }
     }
 
