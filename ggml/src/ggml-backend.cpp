@@ -1445,14 +1445,10 @@ void ggml_backend_sched_split_graph(ggml_backend_sched_t sched, struct ggml_cgra
     // JAISIU-2156: merge consecutive splits on the same backend (weight-reuse cuts are too fine on HIP).
     static auto ggml_backend_sched_coalesce_enabled = []() {
         const char * v = getenv("LLAMA_SCHED_COALESCE");
-        if (v != NULL) {
-            return v[0] != '0';
+        if (v == NULL || v[0] == '\0') {
+            return false;
         }
-#if defined(GGML_USE_HIP)
-        return true;
-#else
-        return false;
-#endif
+        return v[0] != '0';
     };
 
     static auto ggml_backend_sched_coalesce_splits = [](ggml_backend_sched_t sched) {
