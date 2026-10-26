@@ -567,6 +567,7 @@ llama_model_loader::llama_model_loader(
     this->use_direct_io = load_mode == LLAMA_LOAD_MODE_DIRECT_IO;
 
     if (!fname.empty()) {
+        path_model = fname;
         // Load the main GGUF
         struct ggml_context * ctx = NULL;
         struct gguf_init_params params = {
@@ -858,6 +859,59 @@ const llama_model_loader::llama_tensor_weight * llama_model_loader::get_weight(c
     }
 
     return nullptr;
+}
+
+void llama_model_loader::add_tensor_alias(const std::string & alias, const std::string & existing) {
+    if (alias == existing) {
+        return;
+    }
+    const auto * w = get_weight(existing.c_str());
+    if (w == nullptr) {
+        return;
+    }
+    if (get_weight(alias.c_str()) != nullptr) {
+        return;
+    }
+    weights_map.emplace(alias, *w);
+}
+
+bool llama_model_loader::load_supplementary_gguf(const std::string & path) {
+    if (path.empty()) {
+        return false;
+    }
+
+    struct ggml_context * ctx = nullptr;
+    gguf_init_params params = {
+        /*.no_alloc = */ true,
+        /*.ctx      = */ &ctx,
+    };
+
+    gguf_context_ptr ctx_gguf { gguf_init_from_file(path.c_str(), params) };
+    if (!ctx_gguf) {
+        LLAMA_LOG_WARN("%s: failed to open supplementary GGUF '%s'\n", __func__, path.c_str());
+        return false;
+    }
+
+    files.emplace_back(new llama_file(path.c_str(), "rb", use_direct_io));
+    contexts.emplace_back(ctx);
+
+    const uint16_t idx = (uint16_t) (files.size() - 1);
+    int n_added = 0;
+    for (ggml_tensor * cur = ggml_get_first_tensor(ctx); cur; cur = ggml_get_next_tensor(ctx, cur)) {
+        const std::string tensor_name = ggml_get_name(cur);
+        if (weights_map.find(tensor_name) != weights_map.end()) {
+            continue;
+        }
+        n_elements += ggml_nelements(cur);
+        n_bytes    += ggml_nbytes(cur);
+        weights_map.emplace(tensor_name, llama_tensor_weight(files.back().get(), idx, ctx_gguf.get(), cur));
+        n_added++;
+    }
+
+    if (n_added > 0) {
+        LLAMA_LOG_INFO("%s: merged %d tensor(s) from '%s'\n", __func__, n_added, path.c_str());
+    }
+    return n_added > 0;
 }
 
 const llama_model_loader::llama_tensor_weight & llama_model_loader::require_weight(const char * name) const {

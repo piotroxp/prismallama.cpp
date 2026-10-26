@@ -2065,6 +2065,12 @@ bool llama_model_base::load_tensors(llama_model_loader & ml) {
 
     load_tensors_hadamard();
 
+    if (arch == LLM_ARCH_DEEPSEEK41) {
+        if (auto * m41 = dynamic_cast<llama_model_deepseek41 *>(this)) {
+            m41->load_ista_engram_tables(ml);
+        }
+    }
+
     return true;
 }
 

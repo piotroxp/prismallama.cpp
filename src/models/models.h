@@ -1502,6 +1502,13 @@ struct llama_model_deepseek41 : public llama_model_deepseek4 {
     // int64 mul/xor/mod); the token map and its pad id are V4.1 only
     uint32_t engram_pad_id = 0;
     std::vector<int32_t> engram_token_map;
+    std::vector<ggml_tensor *> engram_embd; // ISTA: lazy table per Engram module
+    bool engram_ista = false;
+
+    bool engram_enabled() const;
+
+    void setup_ista_engram(llama_model_loader & ml);
+    void load_ista_engram_tables(llama_model_loader & ml);
 
     int engram_index(int il) const;
 

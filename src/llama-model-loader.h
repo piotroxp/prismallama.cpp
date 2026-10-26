@@ -132,6 +132,7 @@ struct llama_model_loader {
     std::vector<ggml_context_ptr> contexts;
 
     std::string arch_name;
+    std::string path_model;
     LLM_KV      llm_kv    = LLM_KV(LLM_ARCH_UNKNOWN);
 
     size_t size_done = 0;
@@ -219,6 +220,12 @@ struct llama_model_loader {
     enum llm_arch get_arch() const;
 
     const llama_tensor_weight * get_weight(const char * name) const;
+
+    // map canonical tensor name (e.g. blk.N.engram_kv.weight) to an on-disk name (ISTA layout)
+    void add_tensor_alias(const std::string & alias, const std::string & existing);
+
+    // merge tensors from another GGUF (Engram sidecar); path must be absolute or cwd-relative
+    bool load_supplementary_gguf(const std::string & path);
 
     const llama_tensor_weight & require_weight(const char * name) const;
 
