@@ -1,19 +1,19 @@
-import type { MimeTypeUnion } from './common';
+import type { ColorMode } from "$lib/enums";
+import type { HealthCheckStatus, MCPConnectionPhase, MCPLogLevel } from "$lib/enums/mcp.enums";
+import type { ToolSource } from "$lib/enums/tools.enums";
 import type {
-	CallToolResult,
-	Client,
-	ClientCapabilities as SDKClientCapabilities,
-	GetPromptResult,
-	Implementation as SDKImplementation,
-	Prompt,
-	PromptMessage,
-	ServerCapabilities as SDKServerCapabilities,
-	Tool,
-	Transport
-} from '@modelcontextprotocol/sdk';
-import type { ColorMode } from '$lib/enums';
-import type { HealthCheckStatus, MCPConnectionPhase, MCPLogLevel } from '$lib/enums/mcp.enums';
-import type { ToolSource } from '$lib/enums/tools.enums';
+  CallToolResult,
+  Client,
+  ClientCapabilities as SDKClientCapabilities,
+  GetPromptResult,
+  Implementation as SDKImplementation,
+  Prompt,
+  PromptMessage,
+  ServerCapabilities as SDKServerCapabilities,
+  Tool,
+  Transport,
+} from "@modelcontextprotocol/sdk";
+import type { MimeTypeUnion } from "./common";
 
 export type { Tool, CallToolResult, Prompt, GetPromptResult, PromptMessage };
 export type ClientCapabilities = SDKClientCapabilities;
@@ -24,99 +24,99 @@ export type Implementation = SDKImplementation;
  * Log entry for connection events
  */
 export interface MCPConnectionLog {
-	timestamp: Date;
-	phase: MCPConnectionPhase;
-	message: string;
-	details?: unknown;
-	level: MCPLogLevel;
+  timestamp: Date;
+  phase: MCPConnectionPhase;
+  message: string;
+  details?: unknown;
+  level: MCPLogLevel;
 }
 
 /**
  * Server information returned after initialization
  */
 export interface MCPServerInfo {
-	name: string;
-	version: string;
-	title?: string;
-	description?: string;
-	websiteUrl?: string;
-	icons?: MCPResourceIcon[];
+  name: string;
+  version: string;
+  title?: string;
+  description?: string;
+  websiteUrl?: string;
+  icons?: MCPResourceIcon[];
 }
 
 /**
  * Detailed capabilities information
  */
 export interface MCPCapabilitiesInfo {
-	server: {
-		tools?: { listChanged?: boolean };
-		prompts?: { listChanged?: boolean };
-		resources?: { subscribe?: boolean; listChanged?: boolean };
-		logging?: boolean;
-		completions?: boolean;
-		tasks?: boolean;
-	};
-	client: {
-		roots?: { listChanged?: boolean };
-		sampling?: boolean;
-		elicitation?: { form?: boolean; url?: boolean };
-		tasks?: boolean;
-	};
+  server: {
+    tools?: { listChanged?: boolean };
+    prompts?: { listChanged?: boolean };
+    resources?: { subscribe?: boolean; listChanged?: boolean };
+    logging?: boolean;
+    completions?: boolean;
+    tasks?: boolean;
+  };
+  client: {
+    roots?: { listChanged?: boolean };
+    sampling?: boolean;
+    elicitation?: { form?: boolean; url?: boolean };
+    tasks?: boolean;
+  };
 }
 
 /**
  * Tool information for display
  */
 export interface MCPToolInfo {
-	name: string;
-	description?: string;
-	title?: string;
+  name: string;
+  description?: string;
+  title?: string;
 }
 
 /**
  * Prompt information for display
  */
 export interface MCPPromptInfo {
-	name: string;
-	description?: string;
-	title?: string;
-	serverName: string;
-	arguments?: Array<{
-		name: string;
-		description?: string;
-		required?: boolean;
-	}>;
+  name: string;
+  description?: string;
+  title?: string;
+  serverName: string;
+  arguments?: Array<{
+    name: string;
+    description?: string;
+    required?: boolean;
+  }>;
 }
 
 /**
  * Full connection details for visualization
  */
 export interface MCPConnectionDetails {
-	phase: MCPConnectionPhase;
-	transportType?: MCPTransportType;
-	protocolVersion?: string;
-	serverInfo?: MCPServerInfo;
-	capabilities?: MCPCapabilitiesInfo;
-	instructions?: string;
-	tools: MCPToolInfo[];
-	connectionTimeMs?: number;
-	error?: string;
-	logs: MCPConnectionLog[];
+  phase: MCPConnectionPhase;
+  transportType?: MCPTransportType;
+  protocolVersion?: string;
+  serverInfo?: MCPServerInfo;
+  capabilities?: MCPCapabilitiesInfo;
+  instructions?: string;
+  tools: MCPToolInfo[];
+  connectionTimeMs?: number;
+  error?: string;
+  logs: MCPConnectionLog[];
 }
 
 /**
  * Callback for connection phase changes
  */
 export type MCPPhaseCallback = (
-	phase: MCPConnectionPhase,
-	log: MCPConnectionLog,
-	details?: {
-		transportType?: MCPTransportType;
-		serverInfo?: MCPServerInfo;
-		serverCapabilities?: ServerCapabilities;
-		clientCapabilities?: ClientCapabilities;
-		protocolVersion?: string;
-		instructions?: string;
-	}
+  phase: MCPConnectionPhase,
+  log: MCPConnectionLog,
+  details?: {
+    transportType?: MCPTransportType;
+    serverInfo?: MCPServerInfo;
+    serverCapabilities?: ServerCapabilities;
+    clientCapabilities?: ClientCapabilities;
+    protocolVersion?: string;
+    instructions?: string;
+  },
 ) => void;
 
 /**
@@ -124,106 +124,106 @@ export type MCPPhaseCallback = (
  * Returned by MCPService.connect() and used for subsequent operations.
  */
 export interface MCPConnection {
-	client: Client;
-	transport: Transport;
-	tools: Tool[];
-	serverName: string;
-	transportType: MCPTransportType;
-	serverInfo?: MCPServerInfo;
-	serverCapabilities?: ServerCapabilities;
-	clientCapabilities?: ClientCapabilities;
-	protocolVersion?: string;
-	instructions?: string;
-	connectionTimeMs: number;
-	/** Configured timeout for individual requests (tool calls, etc.) in milliseconds */
-	requestTimeoutMs: number;
+  client: Client;
+  transport: Transport;
+  tools: Tool[];
+  serverName: string;
+  transportType: MCPTransportType;
+  serverInfo?: MCPServerInfo;
+  serverCapabilities?: ServerCapabilities;
+  clientCapabilities?: ClientCapabilities;
+  protocolVersion?: string;
+  instructions?: string;
+  connectionTimeMs: number;
+  /** Configured timeout for individual requests (tool calls, etc.) in milliseconds */
+  requestTimeoutMs: number;
 }
 
 /**
  * Extended health check state with detailed connection info
  */
 export type HealthCheckState =
-	| { status: HealthCheckStatus.IDLE }
-	| {
-			status: HealthCheckStatus.CONNECTING;
-			phase: MCPConnectionPhase;
-			logs: MCPConnectionLog[];
-	  }
-	| {
-			status: HealthCheckStatus.ERROR;
-			message: string;
-			phase?: MCPConnectionPhase;
-			logs: MCPConnectionLog[];
-	  }
-	| {
-			status: HealthCheckStatus.SUCCESS;
-			tools: MCPToolInfo[];
-			serverInfo?: MCPServerInfo;
-			capabilities?: MCPCapabilitiesInfo;
-			transportType?: MCPTransportType;
-			protocolVersion?: string;
-			instructions?: string;
-			connectionTimeMs?: number;
-			logs: MCPConnectionLog[];
-	  };
+  | { status: HealthCheckStatus.IDLE }
+  | {
+      status: HealthCheckStatus.CONNECTING;
+      phase: MCPConnectionPhase;
+      logs: MCPConnectionLog[];
+    }
+  | {
+      status: HealthCheckStatus.ERROR;
+      message: string;
+      phase?: MCPConnectionPhase;
+      logs: MCPConnectionLog[];
+    }
+  | {
+      status: HealthCheckStatus.SUCCESS;
+      tools: MCPToolInfo[];
+      serverInfo?: MCPServerInfo;
+      capabilities?: MCPCapabilitiesInfo;
+      transportType?: MCPTransportType;
+      protocolVersion?: string;
+      instructions?: string;
+      connectionTimeMs?: number;
+      logs: MCPConnectionLog[];
+    };
 
 /**
  * Health check parameters
  */
 export interface HealthCheckParams {
-	id: string;
-	enabled: boolean;
-	url: string;
-	headers?: string;
-	useProxy?: boolean;
+  id: string;
+  enabled: boolean;
+  url: string;
+  headers?: string;
+  useProxy?: boolean;
 }
 
 export type MCPServerConfig = {
-	transport?: MCPTransportType;
-	url: string;
-	protocols?: string | string[];
-	headers?: Record<string, string>;
-	credentials?: RequestCredentials;
-	handshakeTimeoutMs?: number;
-	requestTimeoutMs?: number;
-	capabilities?: ClientCapabilities;
-	useProxy?: boolean;
+  transport?: MCPTransportType;
+  url: string;
+  protocols?: string | string[];
+  headers?: Record<string, string>;
+  credentials?: RequestCredentials;
+  handshakeTimeoutMs?: number;
+  requestTimeoutMs?: number;
+  capabilities?: ClientCapabilities;
+  useProxy?: boolean;
 };
 
 export type MCPClientConfig = {
-	servers: Record<string, MCPServerConfig>;
-	protocolVersion?: string;
-	capabilities?: ClientCapabilities;
-	clientInfo?: Implementation;
-	requestTimeoutMs?: number;
+  servers: Record<string, MCPServerConfig>;
+  protocolVersion?: string;
+  capabilities?: ClientCapabilities;
+  clientInfo?: Implementation;
+  requestTimeoutMs?: number;
 };
 
 export type MCPToolCallArguments = Record<string, unknown>;
 
 export type MCPToolCall = {
-	id: string;
-	function: {
-		name: string;
-		arguments: string | MCPToolCallArguments;
-	};
+  id: string;
+  function: {
+    name: string;
+    arguments: string | MCPToolCallArguments;
+  };
 };
 
 /**
  * Minimum fields needed to display or identify an MCP server.
  */
 export interface MCPServerDisplayInfo {
-	id: string;
-	name?: string;
-	/** User-defined display name, takes precedence over every automatic label. */
-	displayName?: string;
-	url: string;
+  id: string;
+  name?: string;
+  /** User-defined display name, takes precedence over every automatic label. */
+  displayName?: string;
+  url: string;
 }
 
 export type MCPServerSettingsEntry = MCPServerDisplayInfo & {
-	enabled: boolean;
-	headers?: string;
-	iconUrl?: string;
-	useProxy?: boolean;
+  enabled: boolean;
+  headers?: string;
+  iconUrl?: string;
+  useProxy?: boolean;
 };
 
 /**
@@ -232,147 +232,147 @@ export type MCPServerSettingsEntry = MCPServerDisplayInfo & {
  * the upstream server until the user explicitly adds it.
  */
 export interface RecommendedMCPServer {
-	id: string;
-	name: string;
-	description: string;
-	url: string;
-	/** Local asset path (e.g. "/recommended-mcp/exa.ico") for the card favicon. Used regardless of theme. */
-	iconUrl?: string;
-	/** Light-theme favicon (e.g. "/recommended-mcp/github-light.png"). Preferred over `iconUrl` when paired with `iconUrlDark`. */
-	iconUrlLight?: string;
-	/** Dark-theme favicon (e.g. "/recommended-mcp/github-dark.png"). Preferred over `iconUrl` when paired with `iconUrlLight`. */
-	iconUrlDark?: string;
-	/** When true, picking this recommendation also flips the form's "Authorization" switch on so the user can paste a Bearer token right away. */
-	needsAuthorization?: boolean;
+  id: string;
+  name: string;
+  description: string;
+  url: string;
+  /** Local asset path (e.g. "/recommended-mcp/exa.ico") for the card favicon. Used regardless of theme. */
+  iconUrl?: string;
+  /** Light-theme favicon (e.g. "/recommended-mcp/github-light.png"). Preferred over `iconUrl` when paired with `iconUrlDark`. */
+  iconUrlLight?: string;
+  /** Dark-theme favicon (e.g. "/recommended-mcp/github-dark.png"). Preferred over `iconUrl` when paired with `iconUrlLight`. */
+  iconUrlDark?: string;
+  /** When true, picking this recommendation also flips the form's "Authorization" switch on so the user can paste a Bearer token right away. */
+  needsAuthorization?: boolean;
 }
 
 export interface MCPHostManagerConfig {
-	servers: MCPClientConfig['servers'];
-	clientInfo?: Implementation;
-	capabilities?: ClientCapabilities;
+  servers: MCPClientConfig["servers"];
+  clientInfo?: Implementation;
+  capabilities?: ClientCapabilities;
 }
 
 export interface OpenAIToolDefinition {
-	type: 'function';
-	function: {
-		name: string;
-		description?: string;
-		parameters: Record<string, unknown>;
-	};
+  type: "function";
+  function: {
+    name: string;
+    description?: string;
+    parameters: Record<string, unknown>;
+  };
 }
 
 export interface ServerStatus {
-	name: string;
-	isConnected: boolean;
-	toolCount: number;
-	error?: string;
+  name: string;
+  isConnected: boolean;
+  toolCount: number;
+  error?: string;
 }
 
 export interface MCPServerConnectionConfig {
-	name: string;
-	server: MCPServerConfig;
-	clientInfo?: Implementation;
-	capabilities?: ClientCapabilities;
+  name: string;
+  server: MCPServerConfig;
+  clientInfo?: Implementation;
+  capabilities?: ClientCapabilities;
 }
 
 export interface ToolCallParams {
-	name: string;
-	arguments: Record<string, unknown>;
+  name: string;
+  arguments: Record<string, unknown>;
 }
 
 export interface ToolExecutionResult {
-	content: string;
-	isError: boolean;
+  content: string;
+  isError: boolean;
 }
 
 export interface ServerToolInfo {
-	display_name: string;
-	tool: string;
-	type: ToolSource.SERVER;
-	permissions: {
-		write: boolean;
-	};
-	uses_cwd: boolean;
-	definition: OpenAIToolDefinition;
+  display_name: string;
+  tool: string;
+  type: ToolSource.SERVER;
+  permissions: {
+    write: boolean;
+  };
+  uses_cwd: boolean;
+  definition: OpenAIToolDefinition;
 }
 
 /**
  * Progress tracking state for a specific operation
  */
 export interface MCPProgressState {
-	progressToken: string | number;
-	serverName: string;
-	progress: number;
-	total?: number;
-	message?: string;
-	startTime: Date;
-	lastUpdate: Date;
+  progressToken: string | number;
+  serverName: string;
+  progress: number;
+  total?: number;
+  message?: string;
+  startTime: Date;
+  lastUpdate: Date;
 }
 
 /**
  * Resource annotations for audience and priority hints
  */
 export interface MCPResourceAnnotations {
-	audience?: ('user' | 'assistant')[];
-	priority?: number;
-	lastModified?: string;
+  audience?: ("user" | "assistant")[];
+  priority?: number;
+  lastModified?: string;
 }
 
 /**
  * Icon definition for resources
  */
 export interface MCPResourceIcon {
-	src: string;
-	mimeType?: MimeTypeUnion;
-	sizes?: string[];
-	theme?: ColorMode.LIGHT | ColorMode.DARK;
+  src: string;
+  mimeType?: MimeTypeUnion;
+  sizes?: string[];
+  theme?: ColorMode.LIGHT | ColorMode.DARK;
 }
 
 /**
  * A known resource that the server is capable of reading
  */
 export interface MCPResource {
-	uri: string;
-	name: string;
-	title?: string;
-	description?: string;
-	mimeType?: MimeTypeUnion;
-	annotations?: MCPResourceAnnotations;
-	icons?: MCPResourceIcon[];
-	_meta?: Record<string, unknown>;
+  uri: string;
+  name: string;
+  title?: string;
+  description?: string;
+  mimeType?: MimeTypeUnion;
+  annotations?: MCPResourceAnnotations;
+  icons?: MCPResourceIcon[];
+  _meta?: Record<string, unknown>;
 }
 
 /**
  * A template for dynamically generating resource URIs
  */
 export interface MCPResourceTemplate {
-	uriTemplate: string;
-	name: string;
-	title?: string;
-	description?: string;
-	mimeType?: MimeTypeUnion;
-	annotations?: MCPResourceAnnotations;
-	icons?: MCPResourceIcon[];
-	_meta?: Record<string, unknown>;
+  uriTemplate: string;
+  name: string;
+  title?: string;
+  description?: string;
+  mimeType?: MimeTypeUnion;
+  annotations?: MCPResourceAnnotations;
+  icons?: MCPResourceIcon[];
+  _meta?: Record<string, unknown>;
 }
 
 /**
  * Text content from a resource
  */
 export interface MCPTextResourceContent {
-	uri: string;
-	mimeType?: MimeTypeUnion;
-	text: string;
+  uri: string;
+  mimeType?: MimeTypeUnion;
+  text: string;
 }
 
 /**
  * Binary (blob) content from a resource
  */
 export interface MCPBlobResourceContent {
-	uri: string;
-	mimeType?: MimeTypeUnion;
-	/** Base64-encoded binary data */
-	blob: string;
+  uri: string;
+  mimeType?: MimeTypeUnion;
+  /** Base64-encoded binary data */
+  blob: string;
 }
 
 /**
@@ -384,78 +384,78 @@ export type MCPResourceContent = MCPTextResourceContent | MCPBlobResourceContent
  * Result from reading a resource
  */
 export interface MCPReadResourceResult {
-	contents: MCPResourceContent[];
-	_meta?: Record<string, unknown>;
+  contents: MCPResourceContent[];
+  _meta?: Record<string, unknown>;
 }
 
 /**
  * Resource information for display in UI
  */
 export interface MCPResourceInfo {
-	uri: string;
-	name: string;
-	title?: string;
-	description?: string;
-	mimeType?: MimeTypeUnion;
-	serverName: string;
-	annotations?: MCPResourceAnnotations;
-	icons?: MCPResourceIcon[];
+  uri: string;
+  name: string;
+  title?: string;
+  description?: string;
+  mimeType?: MimeTypeUnion;
+  serverName: string;
+  annotations?: MCPResourceAnnotations;
+  icons?: MCPResourceIcon[];
 }
 
 /**
  * Resource template information for display in UI
  */
 export interface MCPResourceTemplateInfo {
-	uriTemplate: string;
-	name: string;
-	title?: string;
-	description?: string;
-	mimeType?: MimeTypeUnion;
-	serverName: string;
-	annotations?: MCPResourceAnnotations;
-	icons?: MCPResourceIcon[];
+  uriTemplate: string;
+  name: string;
+  title?: string;
+  description?: string;
+  mimeType?: MimeTypeUnion;
+  serverName: string;
+  annotations?: MCPResourceAnnotations;
+  icons?: MCPResourceIcon[];
 }
 
 /**
  * Cached resource content with metadata
  */
 export interface MCPCachedResource {
-	resource: MCPResourceInfo;
-	content: MCPResourceContent[];
-	fetchedAt: Date;
-	/** Whether this resource has an active subscription */
-	subscribed?: boolean;
+  resource: MCPResourceInfo;
+  content: MCPResourceContent[];
+  fetchedAt: Date;
+  /** Whether this resource has an active subscription */
+  subscribed?: boolean;
 }
 
 /**
  * Resource attachment for chat context
  */
 export interface MCPResourceAttachment {
-	id: string;
-	resource: MCPResourceInfo;
-	content?: MCPResourceContent[];
-	loading?: boolean;
-	error?: string;
+  id: string;
+  resource: MCPResourceInfo;
+  content?: MCPResourceContent[];
+  loading?: boolean;
+  error?: string;
 }
 
 /**
  * State for resource subscriptions
  */
 export interface MCPResourceSubscription {
-	uri: string;
-	serverName: string;
-	subscribedAt: Date;
-	lastUpdate?: Date;
+  uri: string;
+  serverName: string;
+  subscribedAt: Date;
+  lastUpdate?: Date;
 }
 
 /**
  * Aggregated resources state per server
  */
 export interface MCPServerResources {
-	serverName: string;
-	resources: MCPResource[];
-	templates: MCPResourceTemplate[];
-	lastFetched?: Date;
-	loading: boolean;
-	error?: string;
+  serverName: string;
+  resources: MCPResource[];
+  templates: MCPResourceTemplate[];
+  lastFetched?: Date;
+  loading: boolean;
+  error?: string;
 }

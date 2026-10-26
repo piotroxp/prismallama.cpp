@@ -16,6 +16,7 @@ llama-debug \
   --save-logits \
   --verbose
 ```
+
 The tensor data is logged as debug and required the --verbose flag. The reason
 for this is that while useful for a model with many layers there can be a lot of
 output. You can filter the tensor names using the `--tensor-filter` option.
@@ -27,8 +28,10 @@ useful to enable the `--verbose` flag along with `--tensor-filter` to focus on
 specific tensors.
 
 ### Options
+
 This example supports all standard `llama.cpp` options and also accepts the
 following options:
+
 ```console
 $ llama-debug --help
 ...
@@ -45,10 +48,10 @@ $ llama-debug --help
 When `--save-logits` is enabled, the following files are created in the output
 directory:
 
-* `llamacpp-<model>[-embeddings].bin`        - Binary output (logits or embeddings)
-* `llamacpp-<model>[-embeddings].txt`        - Text output (logits or embeddings, one per line)
-* `llamacpp-<model>[-embeddings]-prompt.txt` - Prompt text and token IDs
-* `llamacpp-<model>[-embeddings]-tokens.bin` - Binary token IDs for programmatic comparison
+- `llamacpp-<model>[-embeddings].bin` - Binary output (logits or embeddings)
+- `llamacpp-<model>[-embeddings].txt` - Text output (logits or embeddings, one per line)
+- `llamacpp-<model>[-embeddings]-prompt.txt` - Prompt text and token IDs
+- `llamacpp-<model>[-embeddings]-tokens.bin` - Binary token IDs for programmatic comparison
 
 These files can be compared against the original model's output to verify the
 converted model.

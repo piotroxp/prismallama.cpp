@@ -23,7 +23,7 @@ export const CODE_BLOCK_REGEXP = /(```[\s\S]*?```|`[^`\n]+`)/g;
  * group 3: round-bracket
  */
 export const LATEX_MATH_AND_CODE_PATTERN =
-	/(```[\S\s]*?```|`.*?`)|(?<!\\)\\\[([\S\s]*?[^\\])\\]|(?<!\\)\\\((.*?)\\\)/g;
+  /(```[\S\s]*?```|`.*?`)|(?<!\\)\\\[([\S\s]*?[^\\])\\]|(?<!\\)\\\((.*?)\\\)/g;
 
 /** Regex to capture the content of a $$...\\\\...$$ block (display-formula with line-break) */
 export const LATEX_LINEBREAK_REGEXP = /\$\$([\s\S]*?\\\\[\s\S]*?)\$\$/;
@@ -49,10 +49,10 @@ export const LATEX_DISPLAY_BLOCK_REGEXP = /([\S].*?)\\\[([\s\S]*?)\\\](.*)/g;
 export const LATEX_TRIGGER_REGEXP = /[$\\]/;
 
 /** Inline LaTeX math delimiter (the dollar sign). */
-export const LATEX_INLINE_DELIMITER = '$';
+export const LATEX_INLINE_DELIMITER = "$";
 
 /** Display LaTeX math delimiter (paired dollar signs). */
-export const LATEX_DISPLAY_DELIMITER = '$$';
+export const LATEX_DISPLAY_DELIMITER = "$$";
 
 /** Matches a single non-whitespace character. */
 export const LATEX_NON_WHITESPACE_REGEXP = /\S/;
@@ -83,7 +83,7 @@ export const LATEX_CURRENCY_DOLLAR_REGEXP = /\$(?=\d)/g;
  * `(?<!\\)`) after the display-block pass has run. Group 1 holds the
  * matched formula. */
 export const LATEX_PROTECT_REGEXP =
-	/(\$\$[\s\S]*?\$\$|(?<!\\)\\\[[\s\S]*?\\\]|(?<!\\)\\\(.*?\\\))/g;
+  /(\$\$[\s\S]*?\$\$|(?<!\\)\\\[[\s\S]*?\\\]|(?<!\\)\\\(.*?\\\))/g;
 
 /** Matches unescaped inline `\(...\)` (at least one char inside) used to
  * convert `\(` → `$` after the protect pass. */
@@ -94,32 +94,32 @@ export const LATEX_INLINE_CONVERT_REGEXP = /(?<!\\)\\\((.+?)\\\)/g;
 export const LATEX_DISPLAY_CONVERT_REGEXP = /(?<!\\)\\\[([\s\S]*?)\\\]/g;
 
 /** `\(` — opens an inline LaTeX math block. */
-export const LATEX_INLINE_OPEN = '\\(';
+export const LATEX_INLINE_OPEN = "\\(";
 
 /** `\)` — closes an inline LaTeX math block. */
-export const LATEX_INLINE_CLOSE = '\\)';
+export const LATEX_INLINE_CLOSE = "\\)";
 
 /** `\[` — opens a display LaTeX math block. */
-export const LATEX_DISPLAY_OPEN = '\\[';
+export const LATEX_DISPLAY_OPEN = "\\[";
 
 /** `\]` — closes a display LaTeX math block. */
-export const LATEX_DISPLAY_CLOSE = '\\]';
+export const LATEX_DISPLAY_CLOSE = "\\]";
 
 /** `\` — the LaTeX escape character. */
-export const LATEX_BACKSLASH = '\\';
+export const LATEX_BACKSLASH = "\\";
 
 /** `\$` — dollar sign escaped so it isn't parsed as math (used to disambiguate
  * currency amounts like `$5`). */
-export const LATEX_CURRENCY_ESCAPE = '\\$';
+export const LATEX_CURRENCY_ESCAPE = "\\$";
 
 /** `\ce{` — mhchem chemistry command prefix. */
-export const LATEX_MHCHEM_CE = '\\ce{';
+export const LATEX_MHCHEM_CE = "\\ce{";
 
 /** `\pu{` — mhchem physics-unit command prefix. */
-export const LATEX_MHCHEM_PU = '\\pu{';
+export const LATEX_MHCHEM_PU = "\\pu{";
 
 /** map from mchem-regexp to replacement */
 export const MHCHEM_PATTERN_MAP: readonly [RegExp, string][] = [
-	[/(\s)\$\\ce{/g, '$1$\\\\ce{'],
-	[/(\s)\$\\pu{/g, '$1$\\\\pu{']
+  [/(\s)\$\\ce{/g, "$1$\\\\ce{"],
+  [/(\s)\$\\pu{/g, "$1$\\\\pu{"],
 ] as const;

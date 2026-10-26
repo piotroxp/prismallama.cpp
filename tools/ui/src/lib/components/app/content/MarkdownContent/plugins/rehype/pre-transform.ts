@@ -1,6 +1,6 @@
-import type { Element, ElementContent, Root, Text } from 'hast';
-import type { Plugin } from 'unified';
-import { visit } from 'unist-util-visit';
+import type { Element, ElementContent, Root, Text } from "hast";
+import type { Plugin } from "unified";
+import { visit } from "unist-util-visit";
 
 /**
  * Metadata a diagram pre carries on its unist data field. The source code holds
@@ -8,7 +8,7 @@ import { visit } from 'unist-util-visit';
  * which the enhancer reuses to build a matching source view.
  */
 export interface DiagramPreData {
-	sourceCode: Element;
+  sourceCode: Element;
 }
 
 /**
@@ -16,13 +16,13 @@ export interface DiagramPreData {
  * Handles nested elements (e.g., span wrappers from syntax highlighting).
  */
 function extractText(node: ElementContent): string {
-	if (node.type === 'text') return node.value;
+  if (node.type === "text") return node.value;
 
-	if (node.type === 'element') {
-		return (node.children ?? []).map(extractText).join('');
-	}
+  if (node.type === "element") {
+    return (node.children ?? []).map(extractText).join("");
+  }
 
-	return '';
+  return "";
 }
 
 /**
@@ -39,56 +39,56 @@ function extractText(node: ElementContent): string {
  * rehypeEnhanceCodeBlocks.
  */
 export function createPreTransform(
-	languages: string | string[],
-	targetClass: string,
-	contentGuard?: (text: string) => boolean
+  languages: string | string[],
+  targetClass: string,
+  contentGuard?: (text: string) => boolean,
 ): Plugin<[], Root> {
-	const codeClasses = (Array.isArray(languages) ? languages : [languages]).map(
-		(language) => `language-${language}`
-	);
+  const codeClasses = (Array.isArray(languages) ? languages : [languages]).map(
+    (language) => `language-${language}`,
+  );
 
-	return () => {
-		return (tree: Root) => {
-			visit(tree, 'element', (node: Element, index, parent) => {
-				if (node.tagName !== 'pre' || !parent || index === undefined) return;
+  return () => {
+    return (tree: Root) => {
+      visit(tree, "element", (node: Element, index, parent) => {
+        if (node.tagName !== "pre" || !parent || index === undefined) return;
 
-				const codeElement = node.children.find(
-					(child): child is Element => child.type === 'element' && child.tagName === 'code'
-				);
+        const codeElement = node.children.find(
+          (child): child is Element => child.type === "element" && child.tagName === "code",
+        );
 
-				if (!codeElement) return;
+        if (!codeElement) return;
 
-				const className = codeElement.properties?.className;
+        const className = codeElement.properties?.className;
 
-				if (!Array.isArray(className)) return;
+        if (!Array.isArray(className)) return;
 
-				const matches = className.some(
-					(cls) => typeof cls === 'string' && codeClasses.includes(cls)
-				);
+        const matches = className.some(
+          (cls) => typeof cls === "string" && codeClasses.includes(cls),
+        );
 
-				if (!matches) return;
+        if (!matches) return;
 
-				// Recursively extract text to handle nested spans from syntax highlighting
-				const text = codeElement.children.map(extractText).join('').trim();
+        // Recursively extract text to handle nested spans from syntax highlighting
+        const text = codeElement.children.map(extractText).join("").trim();
 
-				if (!text) return;
+        if (!text) return;
 
-				if (contentGuard && !contentGuard(text)) return;
+        if (contentGuard && !contentGuard(text)) return;
 
-				const pre: Element = {
-					children: [{ type: 'text', value: text } as Text],
-					// Keep the highlighted code element so the block can offer a source
-					// view that matches the app code blocks without re highlighting.
-					data: { sourceCode: codeElement } satisfies DiagramPreData,
-					properties: {
-						className: [targetClass]
-					},
-					tagName: 'pre',
-					type: 'element'
-				};
+        const pre: Element = {
+          children: [{ type: "text", value: text } as Text],
+          // Keep the highlighted code element so the block can offer a source
+          // view that matches the app code blocks without re highlighting.
+          data: { sourceCode: codeElement } satisfies DiagramPreData,
+          properties: {
+            className: [targetClass],
+          },
+          tagName: "pre",
+          type: "element",
+        };
 
-				(parent.children as ElementContent[])[index] = pre;
-			});
-		};
-	};
+        (parent.children as ElementContent[])[index] = pre;
+      });
+    };
+  };
 }

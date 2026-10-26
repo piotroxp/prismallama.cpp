@@ -3,6 +3,7 @@
 Currently this implementation supports [glm-edge-v-2b](https://huggingface.co/THUDM/glm-edge-v-2b) and [glm-edge-v-5b](https://huggingface.co/THUDM/glm-edge-v-5b).
 
 ## Usage
+
 Build the `llama-mtmd-cli` binary.
 
 After building, run: `./llama-mtmd-cli` to see the usage. For example:

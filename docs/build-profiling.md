@@ -1,17 +1,21 @@
 ## Build profiling
+
 This page is a working document for analyzing the current build and try to
 identify ways to improve the build time.
 
 ### Requirements
+
 The profiling script requires clang to be used as the compiler tool chain and
 also requires that ClangBuildAnalyzer is installed.
 
 Mac:
+
 ```console
 brew install clang-build-analyzer
 ```
 
 Linux:
+
 ```console
 git clone https://github.com/aras-p/ClangBuildAnalyzer.git
 cd ClangBuildAnalyzer
@@ -24,21 +28,26 @@ Windows: install LLVM/clang and Ninja (e.g. via the
 [LLVM releases page](https://github.com/llvm/llvm-project/releases) and
 `winget install Ninja-build.Ninja`), then build ClangBuildAnalyzer the same
 way as on Linux:
+
 ```console
 git clone https://github.com/aras-p/ClangBuildAnalyzer.git
 cd ClangBuildAnalyzer
 cmake -B build -G Ninja -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_BUILD_TYPE=Release
 cmake --build build --config Release
 ```
+
 Then add `ClangBuildAnalyzer\build` to `PATH`.
 
 ### Usage
+
 Mac/Linux:
+
 ```console
 $ ./scripts/build-profile.sh
 ```
 
 Windows:
+
 ```console
 > .\scripts\build-profile.ps1
 ```
@@ -54,9 +63,10 @@ is required on ARM64.
 ### Linux (Ubuntu 24.04)
 
 Environment:
-- Clang:     18.1.3 (Ubuntu clang version 18.1.3 (1ubuntu1))
+
+- Clang: 18.1.3 (Ubuntu clang version 18.1.3 (1ubuntu1))
 - libstdc++: GCC 13.3.0 (Ubuntu 13.3.0-6ubuntu2~24.04.1)
-- Target:    x86_64-pc-linux-gnu
+- Target: x86_64-pc-linux-gnu
 
 ```console
 +------------------------+-----+------------+------------+------------+
@@ -73,13 +83,15 @@ PCH  = precompiled header.
 Full = includes building Server, Tools, and Tests.
 UB   = unity build for models
 ```
+
 Note that the number of translation units (TUs) increases when using precompiled
 headers — each PCH target adds one extra TU for the precompilation step itself.
 
 ### Mac (Apple M3)
 
 Environment:
-- Clang:  Apple clang version 17.0.0 (clang-1700.3.19.1)
+
+- Clang: Apple clang version 17.0.0 (clang-1700.3.19.1)
 - libc++: ships with Apple clang 17.0.0 (Xcode toolchain)
 - Target: arm64-apple-macosx15.6
 
@@ -102,8 +114,9 @@ UB   = unity build for models
 ### Windows (ARM64)
 
 Environment:
-- Clang:  clang version 22.1.8 (LLVM, `C:\Program Files\LLVM`)
-- STL:    MSVC STL (Visual Studio 2022 Build Tools 14.44.35207)
+
+- Clang: clang version 22.1.8 (LLVM, `C:\Program Files\LLVM`)
+- STL: MSVC STL (Visual Studio 2022 Build Tools 14.44.35207)
 - Target: aarch64-pc-windows-msvc
 
 ```console

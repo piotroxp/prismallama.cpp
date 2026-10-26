@@ -1,4 +1,3 @@
-
 # Android
 
 ## Build GUI binding using Android Studio
@@ -10,16 +9,17 @@ This Android binding supports hardware acceleration up to `SME2` for **Arm** and
 It automatically detects the host's hardware to load compatible kernels. As a result, it runs seamlessly on both the latest premium devices and older devices that may lack modern CPU features or have limited RAM, without requiring any manual configuration.
 
 A minimal Android app frontend is included to showcase the binding’s core functionalities:
-1.	**Parse GGUF metadata** via `GgufMetadataReader` from either a `ContentResolver` provided `Uri` from shared storage, or a local `File` from your app's private storage.
-2.	**Obtain a `InferenceEngine`** instance through the `AiChat` facade and load your selected model via its app-private file path.
-3.	**Send a raw user prompt** for automatic template formatting, prefill, and batch decoding. Then collect the generated tokens in a Kotlin `Flow`.
+
+1. **Parse GGUF metadata** via `GgufMetadataReader` from either a `ContentResolver` provided `Uri` from shared storage, or a local `File` from your app's private storage.
+2. **Obtain a `InferenceEngine`** instance through the `AiChat` facade and load your selected model via its app-private file path.
+3. **Send a raw user prompt** for automatic template formatting, prefill, and batch decoding. Then collect the generated tokens in a Kotlin `Flow`.
 
 For a production-ready experience that leverages advanced features such as system prompts and benchmarks, plus friendly UI features such as model management and Arm feature visualizer, check out [Arm AI Chat](https://play.google.com/store/apps/details?id=com.arm.aichat) on Google Play.
 This project is made possible through a collaborative effort by Arm's **CT-ML**, **CE-ML** and **STE** groups:
 
-| ![Home screen](https://naco-siren.github.io/ai-chat/policy/index/1-llm-starter-pack.png)  | ![System prompt](https://naco-siren.github.io/ai-chat/policy/index/5-system-prompt.png)  | !["Haiku"](https://naco-siren.github.io/ai-chat/policy/index/4-metrics.png)  |
-|:------------------------------------------------------:|:----------------------------------------------------:|:--------------------------------------------------------:|
-|                      Home screen                       |                    System prompt                     |                         "Haiku"                          |
+| ![Home screen](https://naco-siren.github.io/ai-chat/policy/index/1-llm-starter-pack.png) | ![System prompt](https://naco-siren.github.io/ai-chat/policy/index/5-system-prompt.png) | !["Haiku"](https://naco-siren.github.io/ai-chat/policy/index/4-metrics.png) |
+| :--------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------: |
+|                                       Home screen                                        |                                      System prompt                                      |                                   "Haiku"                                   |
 
 ## Build CLI on Android using Termux
 
@@ -53,6 +53,7 @@ To see what it might look like visually, here's an old demo of an interactive se
 https://user-images.githubusercontent.com/271616/225014776-1d567049-ad71-4ef2-b050-55b0b3b9274c.mp4
 
 ## Cross-compile CLI using Android NDK
+
 It's possible to build `llama.cpp` for Android on your host system via CMake and the Android NDK. If you are interested in this path, ensure you already have an environment prepared to cross-compile programs for Android (i.e., install the Android SDK/NDK and set `ANDROID_NDK` to the NDK root). Note that, unlike desktop environments, the Android environment ships with a limited set of native libraries, and so only those libraries are available to CMake when building with the Android NDK (see: https://developer.android.com/ndk/guides/stable_apis.)
 
 Once you're ready and have cloned `llama.cpp`, invoke the following in the project directory:
@@ -70,10 +71,11 @@ $ cmake \
 ```
 
 Notes:
-  - `GGML_NATIVE=OFF` is required for cross-compilation because the host CPU is not the Android target CPU
-  - While later versions of Android NDK ship with OpenMP, it must still be installed by CMake as a dependency, which is not supported at this time
-  - `llamafile` does not appear to support Android devices (see: https://github.com/Mozilla-Ocho/llamafile/issues/325)
-  - `LLAMA_OPENSSL=OFF` avoids depending on OpenSSL, which is not part of the Android NDK stable native API set
+
+- `GGML_NATIVE=OFF` is required for cross-compilation because the host CPU is not the Android target CPU
+- While later versions of Android NDK ship with OpenMP, it must still be installed by CMake as a dependency, which is not supported at this time
+- `llamafile` does not appear to support Android devices (see: https://github.com/Mozilla-Ocho/llamafile/issues/325)
+- `LLAMA_OPENSSL=OFF` avoids depending on OpenSSL, which is not part of the Android NDK stable native API set
 
 The above command configures a portable Android `arm64-v8a` build. Do not add a global `-march` flag unless you intentionally want to raise the baseline instruction set for every compiled source.
 

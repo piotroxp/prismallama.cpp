@@ -6,23 +6,23 @@
  * (including those not in a predefined list) receive the attribute.
  */
 
-import type { Element, Root } from 'hast';
-import type { Plugin } from 'unified';
-import { visit } from 'unist-util-visit';
+import type { Element, Root } from "hast";
+import type { Plugin } from "unified";
+import { visit } from "unist-util-visit";
 
 /**
  * Rehype plugin to add dir="auto" to all elements that have children.
  * This provides bidirectional text support for mixed RTL/LTR content.
  */
 export const rehypeRtlSupport: Plugin<[], Root> = () => {
-	return (tree: Root) => {
-		visit(tree, 'element', (node: Element) => {
-			if (node.children && node.children.length > 0) {
-				node.properties = {
-					...node.properties,
-					dir: 'auto'
-				};
-			}
-		});
-	};
+  return (tree: Root) => {
+    visit(tree, "element", (node: Element) => {
+      if (node.children && node.children.length > 0) {
+        node.properties = {
+          ...node.properties,
+          dir: "auto",
+        };
+      }
+    });
+  };
 };

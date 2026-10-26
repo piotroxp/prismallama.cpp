@@ -2,6 +2,7 @@
 
 > [!WARNING]
 > **Note:** ZenDNN is **not** the same as zDNN.
+>
 > - **ZenDNN** (this page): AMD's deep learning library for AMD EPYC CPUs
 > - **zDNN**: IBM's Deep Neural Network acceleration library for IBM Z & LinuxONE Mainframes ([see zDNN documentation](zDNN.md))
 
@@ -28,9 +29,9 @@ For more information about ZenDNN, visit: https://www.amd.com/en/developer/zendn
 
 ## OS
 
-| OS      | Status  | Verified                                       |
-|:-------:|:-------:|:----------------------------------------------:|
-| Linux   | Support | Ubuntu 20.04, 22.04, 24.04                     |
+|  OS   | Status  |          Verified          |
+| :---: | :-----: | :------------------------: |
+| Linux | Support | Ubuntu 20.04, 22.04, 24.04 |
 
 For the latest list of supported operating systems, see the [ZenDNN Supported OS](https://github.com/amd/ZenDNN/blob/a18adf8c605fb5f5e52cefd7eda08a7b18febbaf/README.md#15-supported-os).
 
@@ -42,14 +43,14 @@ For the latest list of supported operating systems, see the [ZenDNN Supported OS
 
 ZenDNN is optimized for AMD EPYC™ processors and AMD Ryzen™ processors based on "Zen" microarchitecture and newer.
 
-| CPU Family                    | Status  | Notes                              |
-|:-----------------------------:|:-------:|:----------------------------------:|
-| AMD EPYC™ 9005 Series (Turin) | Support | 5th Gen - Zen 5 architecture       |
-| AMD EPYC™ 9004 Series (Genoa) | Support | 4th Gen - Zen 4 architecture       |
-| AMD EPYC™ 7003 Series (Milan) | Support | 3rd Gen - Zen 3 architecture       |
-| AMD Ryzen™ AI MAX (Strix Halo)| Support | High-performance mobile processors |
+|           CPU Family           | Status  |               Notes                |
+| :----------------------------: | :-----: | :--------------------------------: |
+| AMD EPYC™ 9005 Series (Turin)  | Support |    5th Gen - Zen 5 architecture    |
+| AMD EPYC™ 9004 Series (Genoa)  | Support |    4th Gen - Zen 4 architecture    |
+| AMD EPYC™ 7003 Series (Milan)  | Support |    3rd Gen - Zen 3 architecture    |
+| AMD Ryzen™ AI MAX (Strix Halo) | Support | High-performance mobile processors |
 
-*Notes:*
+_Notes:_
 
 - Best performance is achieved on AMD EPYC™ processors with high core counts (e.g., EPYC 9005 series).
 - ZenDNN leverages AMD's advanced CPU features including AVX2 and AVX-512 instruction sets.
@@ -59,22 +60,22 @@ ZenDNN is optimized for AMD EPYC™ processors and AMD Ryzen™ processors based
 
 The ZenDNN backend accelerates **matrix multiplication (MUL_MAT)** and **expert-based matrix multiplication (MUL_MAT_ID)** operations. Other operations are handled by the standard CPU backend.
 
-| Operation    | Status  | Notes                                          |
-|:-------------|:-------:|:----------------------------------------------:|
-| MUL_MAT      | Support | Accelerated via ZenDNN LowOHA MatMul           |
-| MUL_MAT_ID   | Support | Accelerated via ZenDNN LowOHA MatMul (MoE)     |
+| Operation  | Status  |                   Notes                    |
+| :--------- | :-----: | :----------------------------------------: |
+| MUL_MAT    | Support |    Accelerated via ZenDNN LowOHA MatMul    |
+| MUL_MAT_ID | Support | Accelerated via ZenDNN LowOHA MatMul (MoE) |
 
-*Note:* Since MUL_MAT and MUL_MAT_ID are accelerated, models will benefit most from ZenDNN when matrix multiplications dominate the computational workload (which is typical for transformer-based LLMs and Mixture-of-Experts models).
+_Note:_ Since MUL_MAT and MUL_MAT_ID are accelerated, models will benefit most from ZenDNN when matrix multiplications dominate the computational workload (which is typical for transformer-based LLMs and Mixture-of-Experts models).
 
 ## DataType Supports
 
-| DataType               | Status  | Notes                                         |
-|:----------------------:|:-------:|:---------------------------------------------:|
-| FP32                   | Support | Full precision floating point                 |
-| BF16                   | Support | BFloat16 (best performance on Zen 4/Zen 5)    |
-| Q8_0                   | Support | 8-bit quantized weights via [dynamic quantization](https://github.com/amd/ZenDNN/blob/main/docs/operator/lowoha_matmul_operator.md) |
+| DataType | Status  |                                                                Notes                                                                |
+| :------: | :-----: | :---------------------------------------------------------------------------------------------------------------------------------: |
+|   FP32   | Support |                                                    Full precision floating point                                                    |
+|   BF16   | Support |                                             BFloat16 (best performance on Zen 4/Zen 5)                                              |
+|   Q8_0   | Support | 8-bit quantized weights via [dynamic quantization](https://github.com/amd/ZenDNN/blob/main/docs/operator/lowoha_matmul_operator.md) |
 
-*Notes:*
+_Notes:_
 
 - **BF16** provides best performance on Zen 4 and Zen 5 EPYC™ processors (Genoa, Turin).
 - **Q8_0** is available for quantized model weights since ZenDNN supports dynamic quantization [LowOHA MatMul operator](https://github.com/amd/ZenDNN/blob/main/docs/operator/lowoha_matmul_operator.md).
@@ -171,6 +172,7 @@ export ZENDNNL_MATMUL_ALGO=1    # Blocked AOCL DLP algo for best performance
 Access the server at `http://localhost:9931`.
 
 **Performance tips**:
+
 - Use `ZENDNNL_MATMUL_ALGO=1` for optimal performance
 - For NUMA systems: `numactl --cpunodebind=0 --membind=0 ./build/bin/llama-server ...`
 
@@ -224,12 +226,14 @@ A: Yes. The ZenDNN backend supports Q8_0 quantized models for supported matrix m
 **Q: Why is my inference not faster with ZenDNN?**
 
 A: Ensure:
+
 1. You're using an AMD EPYC or Ryzen processor (Zen 2 or newer)
 2. `ZENDNNL_MATMUL_ALGO=1` is set for best performance (Blocked AOCL DLP)
 3. You're using a sufficiently large model (small models may not benefit as much)
 4. Enable profiling to verify ZenDNN MatMul is being called
 
 ### **GitHub Contribution**:
+
 Please add the **[ZenDNN]** prefix/tag in issues/PRs titles to help the ZenDNN-team check/address them without delay.
 
 ## TODO

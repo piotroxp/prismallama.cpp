@@ -3,159 +3,159 @@
 // the native undo stack), and Tab is NOT intercepted (WCAG 2.1.2 no
 // keyboard trap), matching the plain textarea.
 
-import ChatFormInputRichHarness from './components/ChatFormInputRichHarness.svelte';
-import { tick } from 'svelte';
-import { describe, expect, it } from 'vitest';
-import { render } from 'vitest-browser-svelte';
+import { tick } from "svelte";
+import { describe, expect, it } from "vitest";
+import { render } from "vitest-browser-svelte";
+import ChatFormInputRichHarness from "./components/ChatFormInputRichHarness.svelte";
 
-const SOURCE = 'see [docs](file:///a/b)';
+const SOURCE = "see [docs](file:///a/b)";
 
 function editableIn(container: HTMLElement): HTMLElement {
-	const el = container.querySelector('[role="textbox"]');
+  const el = container.querySelector('[role="textbox"]');
 
-	if (!(el instanceof HTMLElement)) throw new Error('ChatFormInputRich not rendered');
+  if (!(el instanceof HTMLElement)) throw new Error("ChatFormInputRich not rendered");
 
-	return el;
+  return el;
 }
 
-function type(root: HTMLElement, text: string, inputType = 'insertText') {
-	root.appendChild(document.createTextNode(text));
-	root.dispatchEvent(new InputEvent('input', { bubbles: true, inputType }));
+function type(root: HTMLElement, text: string, inputType = "insertText") {
+  root.appendChild(document.createTextNode(text));
+  root.dispatchEvent(new InputEvent("input", { bubbles: true, inputType }));
 }
 
 function keydown(root: HTMLElement, init: KeyboardEventInit) {
-	const event = new KeyboardEvent('keydown', { bubbles: true, cancelable: true, ...init });
+  const event = new KeyboardEvent("keydown", { bubbles: true, cancelable: true, ...init });
 
-	root.dispatchEvent(event);
+  root.dispatchEvent(event);
 
-	return event;
+  return event;
 }
 
-describe('ChatFormInputRich undo/redo', () => {
-	it('undoes and redoes an edit across a badge-containing buffer', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: SOURCE });
+describe("ChatFormInputRich undo/redo", () => {
+  it("undoes and redoes an edit across a badge-containing buffer", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: SOURCE });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
+    const root = editableIn(screen.container);
 
-		type(root, ' more');
-		await tick();
-		expect(screen.component.getValue()).toBe(`${SOURCE} more`);
+    type(root, " more");
+    await tick();
+    expect(screen.component.getValue()).toBe(`${SOURCE} more`);
 
-		const undoEvent = keydown(root, { ctrlKey: true, key: 'z' });
+    const undoEvent = keydown(root, { ctrlKey: true, key: "z" });
 
-		await tick();
-		expect(undoEvent.defaultPrevented).toBe(true);
-		expect(screen.component.getValue()).toBe(SOURCE);
+    await tick();
+    expect(undoEvent.defaultPrevented).toBe(true);
+    expect(screen.component.getValue()).toBe(SOURCE);
 
-		const redoEvent = keydown(root, { ctrlKey: true, key: 'z', shiftKey: true });
+    const redoEvent = keydown(root, { ctrlKey: true, key: "z", shiftKey: true });
 
-		await tick();
-		expect(redoEvent.defaultPrevented).toBe(true);
-		expect(screen.component.getValue()).toBe(`${SOURCE} more`);
-	});
+    await tick();
+    expect(redoEvent.defaultPrevented).toBe(true);
+    expect(screen.component.getValue()).toBe(`${SOURCE} more`);
+  });
 
-	it('redoes with Ctrl+Y as well', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: SOURCE });
+  it("redoes with Ctrl+Y as well", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: SOURCE });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
+    const root = editableIn(screen.container);
 
-		type(root, ' more');
-		await tick();
-		keydown(root, { key: 'z', metaKey: true });
-		await tick();
-		expect(screen.component.getValue()).toBe(SOURCE);
+    type(root, " more");
+    await tick();
+    keydown(root, { key: "z", metaKey: true });
+    await tick();
+    expect(screen.component.getValue()).toBe(SOURCE);
 
-		keydown(root, { ctrlKey: true, key: 'y' });
-		await tick();
-		expect(screen.component.getValue()).toBe(`${SOURCE} more`);
-	});
+    keydown(root, { ctrlKey: true, key: "y" });
+    await tick();
+    expect(screen.component.getValue()).toBe(`${SOURCE} more`);
+  });
 
-	it('coalesces a typing burst into one undo step', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: 'abc' });
+  it("coalesces a typing burst into one undo step", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: "abc" });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
+    const root = editableIn(screen.container);
 
-		type(root, 'd');
-		type(root, 'e');
-		await tick();
-		expect(screen.component.getValue()).toBe('abcde');
+    type(root, "d");
+    type(root, "e");
+    await tick();
+    expect(screen.component.getValue()).toBe("abcde");
 
-		keydown(root, { ctrlKey: true, key: 'z' });
-		await tick();
-		expect(screen.component.getValue()).toBe('abc');
-	});
+    keydown(root, { ctrlKey: true, key: "z" });
+    await tick();
+    expect(screen.component.getValue()).toBe("abc");
+  });
 
-	it('keeps a newline as its own undo step', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: 'abc' });
+  it("keeps a newline as its own undo step", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: "abc" });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
+    const root = editableIn(screen.container);
 
-		type(root, 'd');
-		type(root, '\n', 'insertLineBreak');
-		await tick();
-		expect(screen.component.getValue()).toBe('abcd\n');
+    type(root, "d");
+    type(root, "\n", "insertLineBreak");
+    await tick();
+    expect(screen.component.getValue()).toBe("abcd\n");
 
-		keydown(root, { ctrlKey: true, key: 'z' });
-		await tick();
-		expect(screen.component.getValue()).toBe('abcd');
+    keydown(root, { ctrlKey: true, key: "z" });
+    await tick();
+    expect(screen.component.getValue()).toBe("abcd");
 
-		keydown(root, { ctrlKey: true, key: 'z' });
-		await tick();
-		expect(screen.component.getValue()).toBe('abc');
-	});
+    keydown(root, { ctrlKey: true, key: "z" });
+    await tick();
+    expect(screen.component.getValue()).toBe("abc");
+  });
 
-	it('is a no-op when there is nothing to undo', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: 'abc' });
+  it("is a no-op when there is nothing to undo", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: "abc" });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
-		const event = keydown(root, { ctrlKey: true, key: 'z' });
+    const root = editableIn(screen.container);
+    const event = keydown(root, { ctrlKey: true, key: "z" });
 
-		await tick();
+    await tick();
 
-		expect(event.defaultPrevented).toBe(true);
-		expect(screen.component.getValue()).toBe('abc');
-	});
+    expect(event.defaultPrevented).toBe(true);
+    expect(screen.component.getValue()).toBe("abc");
+  });
 
-	it('abandons the redo branch after a fresh edit', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: 'abc' });
+  it("abandons the redo branch after a fresh edit", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: "abc" });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
+    const root = editableIn(screen.container);
 
-		type(root, 'd');
-		await tick();
-		keydown(root, { ctrlKey: true, key: 'z' });
-		await tick();
-		expect(screen.component.getValue()).toBe('abc');
+    type(root, "d");
+    await tick();
+    keydown(root, { ctrlKey: true, key: "z" });
+    await tick();
+    expect(screen.component.getValue()).toBe("abc");
 
-		type(root, 'e');
-		await tick();
-		keydown(root, { ctrlKey: true, key: 'z', shiftKey: true });
-		await tick();
-		expect(screen.component.getValue()).toBe('abce');
-	});
+    type(root, "e");
+    await tick();
+    keydown(root, { ctrlKey: true, key: "z", shiftKey: true });
+    await tick();
+    expect(screen.component.getValue()).toBe("abce");
+  });
 });
 
-describe('ChatFormInputRich Tab key', () => {
-	it('does not trap Tab (focus can leave the editable)', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: SOURCE });
+describe("ChatFormInputRich Tab key", () => {
+  it("does not trap Tab (focus can leave the editable)", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: SOURCE });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
-		const event = keydown(root, { key: 'Tab' });
+    const root = editableIn(screen.container);
+    const event = keydown(root, { key: "Tab" });
 
-		expect(event.defaultPrevented).toBe(false);
-	});
+    expect(event.defaultPrevented).toBe(false);
+  });
 });

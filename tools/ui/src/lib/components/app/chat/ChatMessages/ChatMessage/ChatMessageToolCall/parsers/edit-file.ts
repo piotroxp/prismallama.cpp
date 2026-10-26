@@ -4,69 +4,69 @@
 // `error` fields. The path is display-only (block title), so a call
 // that has not streamed one still shows its diffs.
 
+import { TOOL_ARG_PATH_KEYS } from "$lib/constants";
+import { BuiltInTool } from "$lib/enums";
+import type { AgenticSection, EditFileEdit, EditFileMeta, EditFileTitleMeta } from "$lib/types";
+import { tryParseToolResultObject } from "$lib/utils";
 import {
-	extractToolArgPath,
-	extractToolArgString,
-	fileNameFromPath,
-	parseToolArgs
-} from './_shared';
-import { TOOL_ARG_PATH_KEYS } from '$lib/constants';
-import { BuiltInTool } from '$lib/enums';
-import type { AgenticSection, EditFileEdit, EditFileMeta, EditFileTitleMeta } from '$lib/types';
-import { tryParseToolResultObject } from '$lib/utils';
+  extractToolArgPath,
+  extractToolArgString,
+  fileNameFromPath,
+  parseToolArgs,
+} from "./_shared";
 
 export function parseEditFileMeta(section: AgenticSection): EditFileMeta | null {
-	const args = parseToolArgs(BuiltInTool.SERVER_EDIT_FILE, section, { partial: true });
+  const args = parseToolArgs(BuiltInTool.SERVER_EDIT_FILE, section, { partial: true });
 
-	if (!args) return null;
+  if (!args) return null;
 
-	const filePath = extractToolArgPath(args);
-	const fileName = fileNameFromPath(filePath);
-	// Filter the streamed edits array strictly: each entry must be an
-	// object with a non-empty `old_text`. Edits without an old_text
-	// would diff against empty and render as a full re-write.
-	const rawEdits = Array.isArray(args.edits) ? args.edits : [];
-	const edits: EditFileEdit[] = [];
+  const filePath = extractToolArgPath(args);
+  const fileName = fileNameFromPath(filePath);
+  // Filter the streamed edits array strictly: each entry must be an
+  // object with a non-empty `old_text`. Edits without an old_text
+  // would diff against empty and render as a full re-write.
+  const rawEdits = Array.isArray(args.edits) ? args.edits : [];
+  const edits: EditFileEdit[] = [];
 
-	for (const e of rawEdits) {
-		if (!e || typeof e !== 'object' || Array.isArray(e)) continue;
+  for (const e of rawEdits) {
+    if (!e || typeof e !== "object" || Array.isArray(e)) continue;
 
-		const obj = e as Record<string, unknown>;
-		const oldText = typeof obj.old_text === 'string' ? obj.old_text : '';
+    const obj = e as Record<string, unknown>;
+    const oldText = typeof obj.old_text === "string" ? obj.old_text : "";
 
-		if (!oldText) continue;
+    if (!oldText) continue;
 
-		const newText = typeof obj.new_text === 'string' ? obj.new_text : '';
+    const newText = typeof obj.new_text === "string" ? obj.new_text : "";
 
-		edits.push({ newText, oldText });
-	}
+    edits.push({ newText, oldText });
+  }
 
-	const resultObj = tryParseToolResultObject(section.toolResult);
+  const resultObj = tryParseToolResultObject(section.toolResult);
 
-	let resultMessage: string | undefined;
-	let editsApplied: number | undefined;
-	let errorMessage: string | undefined;
+  let resultMessage: string | undefined;
+  let editsApplied: number | undefined;
+  let errorMessage: string | undefined;
 
-	if (typeof resultObj?.error === 'string') {
-		errorMessage = resultObj.error;
-	} else if (resultObj) {
-		if (typeof resultObj.result === 'string') {
-			resultMessage = resultObj.result;
-		}
+  if (typeof resultObj?.error === "string") {
+    errorMessage = resultObj.error;
+  } else if (resultObj) {
+    if (typeof resultObj.result === "string") {
+      resultMessage = resultObj.result;
+    }
 
-		if (Number.isFinite(Number(resultObj.edits_applied))) {
-			editsApplied = Number(resultObj.edits_applied);
-		}
-	}
+    if (Number.isFinite(Number(resultObj.edits_applied))) {
+      editsApplied = Number(resultObj.edits_applied);
+    }
+  }
 
-	return {
-		edits,
-		editsApplied,
-		errorMessage,
-		fileName,
-		filePath,
-		resultMessage
-	};
+  return {
+    edits,
+    editsApplied,
+    errorMessage,
+    fileName,
+    filePath,
+    resultMessage,
+  };
 }
 
 /**
@@ -76,34 +76,34 @@ export function parseEditFileMeta(section: AgenticSection): EditFileMeta | null 
  * fallback for arg shapes the extraction can't see.
  */
 export function parseEditFileTitleMeta(section: AgenticSection): EditFileTitleMeta | null {
-	if (section.toolName !== BuiltInTool.SERVER_EDIT_FILE || !section.toolArgs) return null;
+  if (section.toolName !== BuiltInTool.SERVER_EDIT_FILE || !section.toolArgs) return null;
 
-	let filePath = extractToolArgString(section.toolArgs, TOOL_ARG_PATH_KEYS);
+  let filePath = extractToolArgString(section.toolArgs, TOOL_ARG_PATH_KEYS);
 
-	if (!filePath) {
-		filePath = extractToolArgPath(
-			parseToolArgs(BuiltInTool.SERVER_EDIT_FILE, section, { partial: true })
-		);
-	}
+  if (!filePath) {
+    filePath = extractToolArgPath(
+      parseToolArgs(BuiltInTool.SERVER_EDIT_FILE, section, { partial: true }),
+    );
+  }
 
-	const fileName = fileNameFromPath(filePath);
-	const resultObj = tryParseToolResultObject(section.toolResult);
+  const fileName = fileNameFromPath(filePath);
+  const resultObj = tryParseToolResultObject(section.toolResult);
 
-	let resultMessage: string | undefined;
-	let editsApplied: number | undefined;
-	let errorMessage: string | undefined;
+  let resultMessage: string | undefined;
+  let editsApplied: number | undefined;
+  let errorMessage: string | undefined;
 
-	if (typeof resultObj?.error === 'string') {
-		errorMessage = resultObj.error;
-	} else if (resultObj) {
-		if (typeof resultObj.result === 'string') {
-			resultMessage = resultObj.result;
-		}
+  if (typeof resultObj?.error === "string") {
+    errorMessage = resultObj.error;
+  } else if (resultObj) {
+    if (typeof resultObj.result === "string") {
+      resultMessage = resultObj.result;
+    }
 
-		if (Number.isFinite(Number(resultObj.edits_applied))) {
-			editsApplied = Number(resultObj.edits_applied);
-		}
-	}
+    if (Number.isFinite(Number(resultObj.edits_applied))) {
+      editsApplied = Number(resultObj.edits_applied);
+    }
+  }
 
-	return { editsApplied, errorMessage, fileName, filePath, resultMessage };
+  return { editsApplied, errorMessage, fileName, filePath, resultMessage };
 }

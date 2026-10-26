@@ -6,12 +6,10 @@
 - [Develop](#develop)
 - [Roadmap](#roadmap)
 
-
 ## Background
 
 **ET** is a llama.cpp backend targeting the fully open source manycore
 RISC-V accelerator platform [ET-SOC](https://github.com/aifoundry-org/et-man).
-
 
 ## Limitations
 
@@ -29,6 +27,7 @@ As a result of the above, only select models can run fully on ET-SOC
 will likely fallback to CPU backend).
 
 Fully supported models:
+
 - Qwen3 models (without MoE), e.g.
   [ggml-org/Qwen3-0.6B-GGUF:q8_0](https://huggingface.co/ggml-org/Qwen3-0.6B-GGUF/blob/main/Qwen3-0.6B-Q8_0.gguf) or
   [ggml-org/Qwen3-14B-GGUF:q8_0](https://huggingface.co/ggml-org/Qwen3-14B-GGUF/blob/main/Qwen3-14B-Q8_0.gguf).
@@ -39,7 +38,6 @@ Fully supported models:
 - Llama 3.1 model family.
 - RWKV v7 model family.
 - TinyLLaMA
-
 
 ## Build
 
@@ -79,6 +77,7 @@ cmake --build build --config Release
 ```
 
 Build targeting sysemu backend instead of physical hardware:
+
 ```sh
 cmake -B build -DGGML_ET=ON -DGGML_ET_SYSEMU=ON
 cmake --build build --config Release
@@ -123,7 +122,7 @@ Most kernels are very naive with lots of low hanging fruits left:
 > build process includes step that checks compiled kernels and fails if any unimplemented
 > instructions are found. Problematic ones follow:
 > `FDIV.PI`, `FDIVU.PI`, `FREMU.PI`, `FREM.PI`, `FDIV.S`, `FDIV.PS`, `FSQRT.S`, `FSQRT.PS`, `FRSQ.PS`, `FSIN.PS`
->  and (long cast) `FCVT.S.L`, `FCVT.S.LU`, `FCVT.L.S`, `FCVT.LU.S`
+> and (long cast) `FCVT.S.L`, `FCVT.S.LU`, `FCVT.L.S`, `FCVT.LU.S`
 > What this means, is that for now you should avoid doing any division involving floats,
 > any trigonometry or casting longs into floats.
 > Some workarounds are implemented in `math_fp.h` (`et_fdiv`, `et_powf` etc) and
@@ -150,6 +149,7 @@ Line is prefixed with `ET_PERF`:
 ET_PERF|op=MUL_MAT|kernel=mul_mat_f32_Q8_0xf32|duration_us=3112|tensor=Qcur-0|shape=[4096,2,1,1]|start_us=48437862009|end_us=48437865121|flops=67100672
 ET_PERF|op=ROPE|kernel=rope_f32|duration_us=9266|tensor=Qcur-0|shape=[128,32,2,1]|start_us=48437865128|end_us=48437874394|mode=0x0|n_dims=128|freq_base=500000.00|freq_scale=1.00
 ```
+
 Keys depend on the operation, but some are always present.
 `flops` in this case counts effective floating point operations and not floating
 point operations per second.
@@ -171,7 +171,7 @@ validated for the LLaMA 3.2 model family and Qwen 3.5.
 As of writing the documentation the ET backend is capable of running most models and smaller ones at usable speed given the low power profile of the processor. We'd
 address the following capabilities in the future:
 
-* Enable Uberkernel for all models
-* More oprtator support
-* Better TTS model support
-* Enable more quantization format support
+- Enable Uberkernel for all models
+- More oprtator support
+- Better TTS model support
+- Enable more quantization format support

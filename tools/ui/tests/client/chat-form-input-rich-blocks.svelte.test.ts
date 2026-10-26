@@ -3,177 +3,177 @@
 // serialization must fold those back into `\n` so the emitted value never
 // diverges from what is on screen.
 
-import ChatFormInputRichHarness from './components/ChatFormInputRichHarness.svelte';
-import { tick } from 'svelte';
-import { describe, expect, it } from 'vitest';
-import { render } from 'vitest-browser-svelte';
+import { tick } from "svelte";
+import { describe, expect, it } from "vitest";
+import { render } from "vitest-browser-svelte";
+import ChatFormInputRichHarness from "./components/ChatFormInputRichHarness.svelte";
 
-const SOURCE = 'see [docs](file:///a/b) here';
+const SOURCE = "see [docs](file:///a/b) here";
 
 function editableIn(container: HTMLElement): HTMLElement {
-	const el = container.querySelector('[role="textbox"]');
+  const el = container.querySelector('[role="textbox"]');
 
-	if (!(el instanceof HTMLElement)) throw new Error('ChatFormInputRich not rendered');
+  if (!(el instanceof HTMLElement)) throw new Error("ChatFormInputRich not rendered");
 
-	return el;
+  return el;
 }
 
 function fireInput(root: HTMLElement) {
-	root.dispatchEvent(new InputEvent('input', { bubbles: true }));
+  root.dispatchEvent(new InputEvent("input", { bubbles: true }));
 }
 
 function setCaret(node: Node, offset: number) {
-	const range = document.createRange();
+  const range = document.createRange();
 
-	range.setStart(node, offset);
-	range.setEnd(node, offset);
-	const selection = window.getSelection();
+  range.setStart(node, offset);
+  range.setEnd(node, offset);
+  const selection = window.getSelection();
 
-	if (!selection) throw new Error('no selection');
+  if (!selection) throw new Error("no selection");
 
-	selection.removeAllRanges();
-	selection.addRange(range);
+  selection.removeAllRanges();
+  selection.addRange(range);
 }
 
-describe('ChatFormInputRich browser newline shapes', () => {
-	it('serializes a Chromium Enter <div> wrapper as a newline', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: SOURCE });
+describe("ChatFormInputRich browser newline shapes", () => {
+  it("serializes a Chromium Enter <div> wrapper as a newline", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: SOURCE });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
-		const div = document.createElement('div');
+    const root = editableIn(screen.container);
+    const div = document.createElement("div");
 
-		div.textContent = 'second line';
-		root.appendChild(div);
-		fireInput(root);
-		await tick();
+    div.textContent = "second line";
+    root.appendChild(div);
+    fireInput(root);
+    await tick();
 
-		expect(screen.component.getValue()).toBe(`${SOURCE}\nsecond line`);
-	});
+    expect(screen.component.getValue()).toBe(`${SOURCE}\nsecond line`);
+  });
 
-	it('serializes a Firefox full <div> wrap as lines, badge included', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: SOURCE });
+  it("serializes a Firefox full <div> wrap as lines, badge included", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: SOURCE });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
-		const first = document.createElement('div');
+    const root = editableIn(screen.container);
+    const first = document.createElement("div");
 
-		while (root.firstChild) first.appendChild(root.firstChild);
-		const second = document.createElement('div');
+    while (root.firstChild) first.appendChild(root.firstChild);
+    const second = document.createElement("div");
 
-		second.textContent = 'second line';
-		root.appendChild(first);
-		root.appendChild(second);
-		fireInput(root);
-		await tick();
+    second.textContent = "second line";
+    root.appendChild(first);
+    root.appendChild(second);
+    fireInput(root);
+    await tick();
 
-		expect(screen.component.getValue()).toBe(`${SOURCE}\nsecond line`);
-	});
+    expect(screen.component.getValue()).toBe(`${SOURCE}\nsecond line`);
+  });
 
-	it('serializes a <br> as a newline', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: 'here' });
+  it("serializes a <br> as a newline", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: "here" });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
+    const root = editableIn(screen.container);
 
-		root.appendChild(document.createElement('br'));
-		root.appendChild(document.createTextNode('second line'));
-		fireInput(root);
-		await tick();
+    root.appendChild(document.createElement("br"));
+    root.appendChild(document.createTextNode("second line"));
+    fireInput(root);
+    await tick();
 
-		expect(screen.component.getValue()).toBe('here\nsecond line');
-	});
+    expect(screen.component.getValue()).toBe("here\nsecond line");
+  });
 
-	it('ignores a trailing <br> (browser caret placeholder)', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: 'abc' });
+  it("ignores a trailing <br> (browser caret placeholder)", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: "abc" });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
+    const root = editableIn(screen.container);
 
-		root.appendChild(document.createElement('br'));
-		fireInput(root);
-		await tick();
+    root.appendChild(document.createElement("br"));
+    fireInput(root);
+    await tick();
 
-		expect(screen.component.getValue()).toBe('abc');
-	});
+    expect(screen.component.getValue()).toBe("abc");
+  });
 
-	it('serializes one newline per empty-line <div><br></div>', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: 'abc' });
+  it("serializes one newline per empty-line <div><br></div>", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: "abc" });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
+    const root = editableIn(screen.container);
 
-		for (let i = 0; i < 2; i++) {
-			const div = document.createElement('div');
+    for (let i = 0; i < 2; i++) {
+      const div = document.createElement("div");
 
-			div.appendChild(document.createElement('br'));
-			root.appendChild(div);
-		}
-		fireInput(root);
-		await tick();
+      div.appendChild(document.createElement("br"));
+      root.appendChild(div);
+    }
+    fireInput(root);
+    await tick();
 
-		expect(screen.component.getValue()).toBe('abc\n\n');
-	});
+    expect(screen.component.getValue()).toBe("abc\n\n");
+  });
 
-	it('treats a <div><br></div>-only buffer as empty for the placeholder', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: 'abc' });
+  it("treats a <div><br></div>-only buffer as empty for the placeholder", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: "abc" });
 
-		await tick();
+    await tick();
 
-		const root = editableIn(screen.container);
-		const div = document.createElement('div');
+    const root = editableIn(screen.container);
+    const div = document.createElement("div");
 
-		div.appendChild(document.createElement('br'));
-		root.replaceChildren(div);
-		fireInput(root);
-		await tick();
+    div.appendChild(document.createElement("br"));
+    root.replaceChildren(div);
+    fireInput(root);
+    await tick();
 
-		expect(screen.component.getValue()).toBe('');
-		expect(root.dataset.empty).toBe('true');
-	});
+    expect(screen.component.getValue()).toBe("");
+    expect(root.dataset.empty).toBe("true");
+  });
 
-	it('maps the caret across block boundaries in both directions', async () => {
-		const screen = render(ChatFormInputRichHarness, { value: 'abc\ndef' });
+  it("maps the caret across block boundaries in both directions", async () => {
+    const screen = render(ChatFormInputRichHarness, { value: "abc\ndef" });
 
-		await tick();
+    await tick();
 
-		// Rebuild into the Chromium block shape; the source is unchanged,
-		// so no re-render fires.
-		const root = editableIn(screen.container);
-		const div = document.createElement('div');
+    // Rebuild into the Chromium block shape; the source is unchanged,
+    // so no re-render fires.
+    const root = editableIn(screen.container);
+    const div = document.createElement("div");
 
-		div.textContent = 'def';
-		root.replaceChildren(document.createTextNode('abc'), div);
-		fireInput(root);
-		await tick();
-		expect(screen.component.getValue()).toBe('abc\ndef');
+    div.textContent = "def";
+    root.replaceChildren(document.createTextNode("abc"), div);
+    fireInput(root);
+    await tick();
+    expect(screen.component.getValue()).toBe("abc\ndef");
 
-		const divText = div.firstChild;
+    const divText = div.firstChild;
 
-		if (!divText) throw new Error('div text missing');
+    if (!divText) throw new Error("div text missing");
 
-		setCaret(divText, 2);
-		expect(screen.component.getCaretOffset()).toBe(6);
+    setCaret(divText, 2);
+    expect(screen.component.getCaretOffset()).toBe(6);
 
-		screen.component.setCaretOffset(6);
-		const selection = window.getSelection();
+    screen.component.setCaretOffset(6);
+    const selection = window.getSelection();
 
-		expect(selection?.anchorNode).toBe(divText);
-		expect(selection?.anchorOffset).toBe(2);
+    expect(selection?.anchorNode).toBe(divText);
+    expect(selection?.anchorOffset).toBe(2);
 
-		// The boundary newline itself: offset 3 is the end of "abc", offset
-		// 4 the start of the "def" line.
-		screen.component.setCaretOffset(4);
-		expect(window.getSelection()?.anchorNode).toBe(divText);
-		expect(window.getSelection()?.anchorOffset).toBe(0);
+    // The boundary newline itself: offset 3 is the end of "abc", offset
+    // 4 the start of the "def" line.
+    screen.component.setCaretOffset(4);
+    expect(window.getSelection()?.anchorNode).toBe(divText);
+    expect(window.getSelection()?.anchorOffset).toBe(0);
 
-		screen.component.setCaretOffset(3);
-		expect(window.getSelection()?.anchorNode).toBe(root.firstChild);
-		expect(window.getSelection()?.anchorOffset).toBe(3);
-	});
+    screen.component.setCaretOffset(3);
+    expect(window.getSelection()?.anchorNode).toBe(root.firstChild);
+    expect(window.getSelection()?.anchorOffset).toBe(3);
+  });
 });

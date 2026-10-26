@@ -6,9 +6,9 @@
  * @returns The redacted string
  */
 export function redactValue(value: string, showLastChars?: number): string {
-	if (showLastChars) {
-		return `....${value.slice(-showLastChars)}`;
-	}
+  if (showLastChars) {
+    return `....${value.slice(-showLastChars)}`;
+  }
 
-	return '[redacted]';
+  return "[redacted]";
 }

@@ -8,22 +8,22 @@
 
 /** Tool-call tokens emitted by the template for assistant tool calls, matched case-insensitively. */
 const TOOL_CALL_TOKENS = [
-	'tool_call',
-	'tool_calls',
-	'function_call',
-	'tool_use',
-	'<tool',
-	'<|tool'
+  "tool_call",
+  "tool_calls",
+  "function_call",
+  "tool_use",
+  "<tool",
+  "<|tool",
 ];
 /** Jinja reference to the `tools` array passed in by the caller. */
 const JINJA_TOOLS_VAR = /\{\{[^{}]*\btools\b[^{}]*\}\}|\{%[^{}]*\btools\b[^{}]*%\}/i;
 
 export function detectToolUseSupport(t: string): boolean {
-	if (!t) return false;
+  if (!t) return false;
 
-	if (JINJA_TOOLS_VAR.test(t)) return true;
+  if (JINJA_TOOLS_VAR.test(t)) return true;
 
-	const template = t.toLowerCase();
+  const template = t.toLowerCase();
 
-	return TOOL_CALL_TOKENS.some((token) => template.includes(token));
+  return TOOL_CALL_TOKENS.some((token) => template.includes(token));
 }

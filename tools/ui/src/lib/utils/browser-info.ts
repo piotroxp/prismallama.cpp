@@ -8,20 +8,20 @@
  * @see buildBrowserInfoToolDefinition in constants/browser-info.ts - tool schema sent to the LLM
  */
 
-import { browser } from '$app/environment';
+import { browser } from "$app/environment";
 import {
-	BROWSER_INFO_NOTE,
-	BROWSER_INFO_OS_UA_PATTERNS,
-	BROWSER_INFO_OS_UNKNOWN
-} from '$lib/constants';
-import type { ToolExecutionResult } from '$lib/types';
+  BROWSER_INFO_NOTE,
+  BROWSER_INFO_OS_UA_PATTERNS,
+  BROWSER_INFO_OS_UNKNOWN,
+} from "$lib/constants";
+import type { ToolExecutionResult } from "$lib/types";
 
 export function detectOs(userAgent: string): string {
-	for (const [pattern, os] of BROWSER_INFO_OS_UA_PATTERNS) {
-		if (pattern.test(userAgent)) return os;
-	}
+  for (const [pattern, os] of BROWSER_INFO_OS_UA_PATTERNS) {
+    if (pattern.test(userAgent)) return os;
+  }
 
-	return BROWSER_INFO_OS_UNKNOWN;
+  return BROWSER_INFO_OS_UNKNOWN;
 }
 
 /**
@@ -29,11 +29,11 @@ export function detectOs(userAgent: string): string {
  * `os` the same way, minus `cwd` - there is no working directory to report.
  */
 export function executeBrowserInfoTool(): ToolExecutionResult {
-	return {
-		content: JSON.stringify({
-			note: BROWSER_INFO_NOTE,
-			os: browser ? detectOs(navigator.userAgent) : BROWSER_INFO_OS_UNKNOWN
-		}),
-		isError: false
-	};
+  return {
+    content: JSON.stringify({
+      note: BROWSER_INFO_NOTE,
+      os: browser ? detectOs(navigator.userAgent) : BROWSER_INFO_OS_UNKNOWN,
+    }),
+    isError: false,
+  };
 }

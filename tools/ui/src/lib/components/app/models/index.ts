@@ -35,7 +35,7 @@
  * />
  * ```
  */
-export { default as ModelBadge } from './ModelBadge.svelte';
+export { default as ModelBadge } from "./ModelBadge.svelte";
 
 /**
  * **ModelId** - Parsed model identifier display
@@ -44,22 +44,22 @@ export { default as ModelBadge } from './ModelBadge.svelte';
  * aliases, and tags. Supports raw mode to show the unprocessed model name.
  * Respects the user's `showRawModelNames` setting.
  */
-export { default as ModelCapabilities } from './ModelCapabilities.svelte';
-export { default as ModelContext } from './ModelContext.svelte';
-export { default as ModelId } from './ModelId.svelte';
-export { default as ModelAvatar } from './ModelAvatar.svelte';
-export { default as ModelDownloadProgressBar } from './ModelDownloadProgressBar.svelte';
-export { default as ModelLoadControl } from './ModelLoadControl.svelte';
-export { default as ModelOrgAvatar } from './ModelOrgAvatar.svelte';
-export { default as ModelRowActions } from './ModelRowActions.svelte';
-export { default as ModelsSection } from './ModelsSection.svelte';
+export { default as ModelCapabilities } from "./ModelCapabilities.svelte";
+export { default as ModelContext } from "./ModelContext.svelte";
+export { default as ModelId } from "./ModelId.svelte";
+export { default as ModelAvatar } from "./ModelAvatar.svelte";
+export { default as ModelDownloadProgressBar } from "./ModelDownloadProgressBar.svelte";
+export { default as ModelLoadControl } from "./ModelLoadControl.svelte";
+export { default as ModelOrgAvatar } from "./ModelOrgAvatar.svelte";
+export { default as ModelRowActions } from "./ModelRowActions.svelte";
+export { default as ModelsSection } from "./ModelsSection.svelte";
 
 /** Capability and modality icon row, shared by every model-id surface. */
-export { default as ModelCapabilityIcons } from './ModelCapabilityIcons.svelte';
+export { default as ModelCapabilityIcons } from "./ModelCapabilityIcons.svelte";
 
 /** Draft sidecar badges, rendered as `+ [KIND] [QUANT]` per sidecar. */
-export { default as ModelDraftSidecars } from './ModelDraftSidecars.svelte';
+export { default as ModelDraftSidecars } from "./ModelDraftSidecars.svelte";
 
 /** Compact draft download line, embedded in the item it belongs to. */
-export { default as ModelDraftSubline } from './ModelDraftSubline.svelte';
-export * from './ModelsSelector';
+export { default as ModelDraftSubline } from "./ModelDraftSubline.svelte";
+export * from "./ModelsSelector";

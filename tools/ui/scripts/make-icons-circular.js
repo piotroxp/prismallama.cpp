@@ -13,127 +13,127 @@
  * maskable-icon and apple-touch-icon are left untouched.
  */
 
-import fs from 'fs';
-import path from 'path';
-import sharp from 'sharp';
-import { fileURLToPath } from 'url';
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
+import sharp from "sharp";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const STATIC_DIR = path.resolve(__dirname, '..', 'static');
+const STATIC_DIR = path.resolve(__dirname, "..", "static");
 const paddingPct = process.argv.reduce((acc, arg, i, args) => {
-	if (arg === '--padding-pct' && args[i + 1]) return parseFloat(args[i + 1]);
+  if (arg === "--padding-pct" && args[i + 1]) return parseFloat(args[i + 1]);
 
-	return acc;
+  return acc;
 }, 0);
 // Scale down the source image before cropping to circle
 const scalePct = process.argv.reduce((acc, arg, i, args) => {
-	if (arg === '--scale-pct' && args[i + 1]) return parseFloat(args[i + 1]);
+  if (arg === "--scale-pct" && args[i + 1]) return parseFloat(args[i + 1]);
 
-	return acc;
+  return acc;
 }, 85); // default 85% - icon fills 85% of the circular area
 // Source for circular icons: the maskable icon (white bg, full logo)
-const sourceIcon = 'maskable-icon-512x512.png';
-const targetIcons = ['pwa-64x64.png', 'pwa-192x192.png', 'pwa-512x512.png'];
+const sourceIcon = "maskable-icon-512x512.png";
+const targetIcons = ["pwa-64x64.png", "pwa-192x192.png", "pwa-512x512.png"];
 // maskable-icon and apple-touch-icon stay square
-const untouchedIcons = ['maskable-icon-512x512.png', 'apple-touch-icon-180x180.png'];
+const untouchedIcons = ["maskable-icon-512x512.png", "apple-touch-icon-180x180.png"];
 
 async function makeCircle(targetFilename) {
-	const targetPath = path.join(STATIC_DIR, targetFilename);
-	const sourcePath = path.join(STATIC_DIR, sourceIcon);
+  const targetPath = path.join(STATIC_DIR, targetFilename);
+  const sourcePath = path.join(STATIC_DIR, sourceIcon);
 
-	if (!fs.existsSync(sourcePath)) {
-		console.log(`⏭️  ${sourceIcon} not found, skipping`);
+  if (!fs.existsSync(sourcePath)) {
+    console.log(`⏭️  ${sourceIcon} not found, skipping`);
 
-		return;
-	}
+    return;
+  }
 
-	if (!fs.existsSync(targetPath)) {
-		console.log(`⏭️  ${targetFilename} not found, skipping`);
+  if (!fs.existsSync(targetPath)) {
+    console.log(`⏭️  ${targetFilename} not found, skipping`);
 
-		return;
-	}
+    return;
+  }
 
-	const metadata = await sharp(targetPath).metadata();
-	const size = Math.max(metadata.width, metadata.height);
-	const radius = Math.floor((size * (1 - paddingPct / 100)) / 2);
-	const center = Math.floor(size / 2);
-	// Build circular mask as RGBA buffer: white opaque circle on transparent bg
-	const maskBuf = Buffer.alloc(size * size * 4, 0);
+  const metadata = await sharp(targetPath).metadata();
+  const size = Math.max(metadata.width, metadata.height);
+  const radius = Math.floor((size * (1 - paddingPct / 100)) / 2);
+  const center = Math.floor(size / 2);
+  // Build circular mask as RGBA buffer: white opaque circle on transparent bg
+  const maskBuf = Buffer.alloc(size * size * 4, 0);
 
-	for (let y = 0; y < size; y++) {
-		for (let x = 0; x < size; x++) {
-			const dx = x - center;
-			const dy = y - center;
-			const dist = Math.sqrt(dx * dx + dy * dy);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const dx = x - center;
+      const dy = y - center;
+      const dist = Math.sqrt(dx * dx + dy * dy);
 
-			if (dist < radius) {
-				const i = (y * size + x) * 4;
+      if (dist < radius) {
+        const i = (y * size + x) * 4;
 
-				maskBuf[i] = 255;
-				maskBuf[i + 1] = 255;
-				maskBuf[i + 2] = 255;
-				maskBuf[i + 3] = 255;
-			}
-		}
-	}
+        maskBuf[i] = 255;
+        maskBuf[i + 1] = 255;
+        maskBuf[i + 2] = 255;
+        maskBuf[i + 3] = 255;
+      }
+    }
+  }
 
-	const tmpMask = path.join(STATIC_DIR, '.mask-tmp.png');
+  const tmpMask = path.join(STATIC_DIR, ".mask-tmp.png");
 
-	await sharp(maskBuf, {
-		raw: { channels: 4, height: size, width: size }
-	})
-		.png()
-		.toFile(tmpMask);
+  await sharp(maskBuf, {
+    raw: { channels: 4, height: size, width: size },
+  })
+    .png()
+    .toFile(tmpMask);
 
-	// Step 1: Scale source relative to circle diameter (not full icon), composite centered onto white canvas of full size
-	const circleDiameter = Math.floor(size * (1 - paddingPct / 100));
-	const scaledSize = Math.floor((circleDiameter * scalePct) / 100);
-	const offset = Math.floor((size - scaledSize) / 2);
-	const scaledBuf = await sharp(sourcePath)
-		.resize(scaledSize, scaledSize, {
-			background: { alpha: 1, b: 255, g: 255, r: 255 },
-			fit: 'cover'
-		})
-		.ensureAlpha()
-		.png()
-		.toBuffer();
-	// Step 2: Composite scaled image onto white background, then apply circular mask
-	const output = await sharp({
-		create: {
-			background: { alpha: 1, b: 255, g: 255, r: 255 },
-			channels: 4,
-			height: size,
-			width: size
-		}
-	})
-		.composite([
-			{ input: scaledBuf, left: offset, top: offset },
-			{ blend: 'dest-in', input: tmpMask, left: 0, top: 0 }
-		])
-		.png()
-		.toBuffer();
+  // Step 1: Scale source relative to circle diameter (not full icon), composite centered onto white canvas of full size
+  const circleDiameter = Math.floor(size * (1 - paddingPct / 100));
+  const scaledSize = Math.floor((circleDiameter * scalePct) / 100);
+  const offset = Math.floor((size - scaledSize) / 2);
+  const scaledBuf = await sharp(sourcePath)
+    .resize(scaledSize, scaledSize, {
+      background: { alpha: 1, b: 255, g: 255, r: 255 },
+      fit: "cover",
+    })
+    .ensureAlpha()
+    .png()
+    .toBuffer();
+  // Step 2: Composite scaled image onto white background, then apply circular mask
+  const output = await sharp({
+    create: {
+      background: { alpha: 1, b: 255, g: 255, r: 255 },
+      channels: 4,
+      height: size,
+      width: size,
+    },
+  })
+    .composite([
+      { input: scaledBuf, left: offset, top: offset },
+      { blend: "dest-in", input: tmpMask, left: 0, top: 0 },
+    ])
+    .png()
+    .toBuffer();
 
-	fs.writeFileSync(targetPath, output);
-	fs.unlinkSync(tmpMask);
+  fs.writeFileSync(targetPath, output);
+  fs.unlinkSync(tmpMask);
 
-	console.log(
-		`✓ ${targetFilename} → circle from ${sourceIcon}, ${paddingPct}% padding (size=${size}, r=${radius}, scale=${scalePct}%, circleDiameter=${circleDiameter})`
-	);
+  console.log(
+    `✓ ${targetFilename} → circle from ${sourceIcon}, ${paddingPct}% padding (size=${size}, r=${radius}, scale=${scalePct}%, circleDiameter=${circleDiameter})`,
+  );
 }
 
 async function main() {
-	console.log(`Circular mask: ${paddingPct}% padding, ${scalePct}% scale, source=${sourceIcon}\n`);
-	for (const icon of targetIcons) {
-		await makeCircle(icon);
-	}
+  console.log(`Circular mask: ${paddingPct}% padding, ${scalePct}% scale, source=${sourceIcon}\n`);
+  for (const icon of targetIcons) {
+    await makeCircle(icon);
+  }
 
-	console.log('\nUnchanged:');
-	for (const icon of untouchedIcons) {
-		const fp = path.join(STATIC_DIR, icon);
+  console.log("\nUnchanged:");
+  for (const icon of untouchedIcons) {
+    const fp = path.join(STATIC_DIR, icon);
 
-		console.log(`  ${icon} (${fs.existsSync(fp) ? fs.statSync(fp).size + ' bytes' : 'missing'})`);
-	}
+    console.log(`  ${icon} (${fs.existsSync(fp) ? fs.statSync(fp).size + " bytes" : "missing"})`);
+  }
 }
 
 main();

@@ -9,30 +9,30 @@ If you are an end user consuming `llama-server` as a product, please refer to th
 In-scope types of feature:
 
 - Backend:
-    - Basic inference features: text completion, embeddings output
-    - Chat-oriented features: chat completion, tool calling
-    - Third-party API compatibility, e.g. OAI-compat, Anthropic-compat
-    - Multimodal input/output
-    - Memory management: save/load state, context checkpoints
-    - Model management
-    - Features that are required by the Web UI
+  - Basic inference features: text completion, embeddings output
+  - Chat-oriented features: chat completion, tool calling
+  - Third-party API compatibility, e.g. OAI-compat, Anthropic-compat
+  - Multimodal input/output
+  - Memory management: save/load state, context checkpoints
+  - Model management
+  - Features that are required by the Web UI
 - Frontend:
-    - Chat-oriented features, example: basic chat, image upload, edit messages
-    - Agentic features, example: MCP
-    - Model management
+  - Chat-oriented features, example: basic chat, image upload, edit messages
+  - Agentic features, example: MCP
+  - Model management
 
 Note: For security reasons, features that require reading or writing external files must be **disabled by default**. This covers features like: MCP, model save/load
 
 Out-of-scope features:
 
 - Backend:
-    - Features that require a loop of external API calls, e.g. server-side agentic loop. This is because external API calls in C++ are costly to maintain. Any complex third-party logic should be implemented outside of server code.
-    - Features that expose the internal state of the model to the API, example: getting the intermediate activation from API. This is because llama.cpp doesn't support a stable API for doing this, and relying on `eval_callback` can make it complicated to maintain as this API is not intended to be used in multi-sequence setup.
-    - Model-specific features. All API calls and features must remain model-agnostic.
+  - Features that require a loop of external API calls, e.g. server-side agentic loop. This is because external API calls in C++ are costly to maintain. Any complex third-party logic should be implemented outside of server code.
+  - Features that expose the internal state of the model to the API, example: getting the intermediate activation from API. This is because llama.cpp doesn't support a stable API for doing this, and relying on `eval_callback` can make it complicated to maintain as this API is not intended to be used in multi-sequence setup.
+  - Model-specific features. All API calls and features must remain model-agnostic.
 - Frontend:
-    - Third-party plugins, it is costly to maintain a public plugin API for such features. Instead, users can make their own MCP server for their needs.
-    - Customizable themes, it is also costly to maintain. While we do focus on the aesthetic, we try to achieve this by perfecting a small set of themes.
-    - Browser-specific features, example: [Chrome's built-in AI API](https://developer.chrome.com/docs/ai/built-in-apis).
+  - Third-party plugins, it is costly to maintain a public plugin API for such features. Instead, users can make their own MCP server for their needs.
+  - Customizable themes, it is also costly to maintain. While we do focus on the aesthetic, we try to achieve this by perfecting a small set of themes.
+  - Browser-specific features, example: [Chrome's built-in AI API](https://developer.chrome.com/docs/ai/built-in-apis).
 
 ## Backend
 
@@ -109,8 +109,8 @@ Here is an example trace of an API request for text completion:
 - The request is routed to the corresponding handler inside `server_routes`. In this case, `handle_completions_impl` is invoked.
 - The handler parses the input request, constructs a new `server_task`, and passes it to `server_res_generator`.
 - `server_res_generator` creates a new `task_result_state` for each task:
-    - `task_result_state` stays in the HTTP layer, responsible for keeping track of the current state of the response (e.g., parsing tool calls or thinking messages).
-    - `server_task` is moved into `server_queue` inside `server_context`.
+  - `task_result_state` stays in the HTTP layer, responsible for keeping track of the current state of the response (e.g., parsing tool calls or thinking messages).
+  - `server_task` is moved into `server_queue` inside `server_context`.
 - `server_context` launches the task by moving it into an available slot (see `launch_slot_with_task()`).
 - `update_slot()` processes the task as described in the "Batching" section above.
 - Results may be sent using `send_partial_response` or `send_final_response`, which creates a new `server_task_result` and pushes it to the response queue.
@@ -148,13 +148,13 @@ Router mode binds the same paths to proxy handlers. A `conv_id -> child` map (`c
 
 Lifecycle: `server_stream_session_manager_start()` runs in main after common init, `server_stream_session_manager_stop()` runs first in `clean_up()` and finalizes every live session so no reader hangs. Reader blocking and the post drop drain both run on httplib worker threads, which block on a condvar rather than spin.
 
-| Constant | Value | Role |
-| --- | --- | --- |
-| `STREAM_SESSION_TTL_SECONDS` | 300 | retention of a completed session before GC |
-| `STREAM_SESSION_MAX_BYTES` | 4 MiB | ring cap per session |
-| `STREAM_SESSION_GC_INTERVAL_SECONDS` | 60 | GC tick |
-| `STREAM_READ_WAKE_INTERVAL_MS` | 200 | read_from wake to recheck should_stop |
-| `STREAM_LOOKUP_TIMEOUT_MS` | 250 | router to child loopback budget |
+| Constant                             | Value | Role                                       |
+| ------------------------------------ | ----- | ------------------------------------------ |
+| `STREAM_SESSION_TTL_SECONDS`         | 300   | retention of a completed session before GC |
+| `STREAM_SESSION_MAX_BYTES`           | 4 MiB | ring cap per session                       |
+| `STREAM_SESSION_GC_INTERVAL_SECONDS` | 60    | GC tick                                    |
+| `STREAM_READ_WAKE_INTERVAL_MS`       | 200   | read_from wake to recheck should_stop      |
+| `STREAM_LOOKUP_TIMEOUT_MS`           | 250   | router to child loopback budget            |
 
 ```mermaid
 graph TD
@@ -187,6 +187,7 @@ This endpoint is intended to be used internally by the Web UI and subject to cha
 **GET /tools**
 
 Get a list of tools, each tool has these fields:
+
 - `tool` (string): the ID name of the tool, to be used in POST call. Example: `read_file`
 - `display_name` (string): the name to be displayed on UI. Example: `Read file`
 - `type` (string): `"server"` for a server tool, or `"mcp"` for a tool exposed by an MCP server
@@ -196,10 +197,12 @@ Get a list of tools, each tool has these fields:
 **POST /tools**
 
 Invoke a tool call, request body is a JSON object with:
+
 - `tool` (string): the name of the tool
 - `params` (object): a mapping from argument name (string) to argument value
 
 Headers:
+
 - `x-tool-cwd`: optional; if set, use as the CWD for tool; this is not part of tool's params because it's meant to be set by the runtime, not the LLM itself
 - `x-tool-runtime`: optional; if set, run the tool inside this isolate instead of on the host. Either `docker-container:<id>` or `podman-container:<id>`, using an already-running container, or `ssh:<target>`, running the tool on a remote host
 
@@ -209,7 +212,7 @@ Format 1: Plain text. The text will be placed into a field called `plain_text_re
 
 ```json
 {
-    "plain_text_response": "this is a text response"
+  "plain_text_response": "this is a text response"
 }
 ```
 
@@ -217,8 +220,8 @@ The client should extract this value and place it inside message content (note: 
 
 ```json
 {
-    "role": "tool",
-    "content": "this is a text response"
+  "role": "tool",
+  "content": "this is a text response"
 }
 ```
 
@@ -226,7 +229,7 @@ Format 2: Normal JSON response, example:
 
 ```json
 {
-    "error": "cannot open this file"
+  "error": "cannot open this file"
 }
 ```
 
@@ -234,8 +237,8 @@ That requires `JSON.stringify` when formatted to message content:
 
 ```json
 {
-    "role": "tool",
-    "content": "{\"error\":\"cannot open this file\"}"
+  "role": "tool",
+  "content": "{\"error\":\"cannot open this file\"}"
 }
 ```
 
@@ -245,19 +248,19 @@ returns 404 if tool doesn't support it.
 Response is SSE stream, one `data: <json>` line per chunk:
 
 ```json
-{"chunk": "hello\n"}
+{ "chunk": "hello\n" }
 ```
 
 followed by a final event once the tool returns:
 
 ```json
-{"done": true}
+{ "done": true }
 ```
 
 or, if `invoke()` threw:
 
 ```json
-{"done": true, "error": "..."}
+{ "done": true, "error": "..." }
 ```
 
 There is no `[DONE]` sentinel (unlike `/chat/completions`), the stream ends after the `done`
@@ -267,10 +270,12 @@ There is no `[DONE]` sentinel (unlike `/chat/completions`), the stream ends afte
 Upon spawning a new child process using `subprocess`, both child and router listen to the stdout/stderr (combined)
 
 For the direction from child to router:
+
 - Generic messages are logs, it will be forwarded to router's stdout
 - Special state update messages are prefixed by `cmd_child_to_router:state:`, followed by a JSON. See `server_models::handle_child_state` for more
 
 For the direction from router to child:
+
 - When server sends `cmd_router_to_child:exit`, the child should exit gracefully --> if after `DEFAULT_STOP_TIMEOUT` and the child is still running, force-kill it
 
 ### Model management API (router mode)
@@ -280,11 +285,13 @@ Model management API was added via PR [#23976](https://github.com/ggml-org/llama
 The main goal of this API is to allow downloading models and/or removing models from the web UI. It relies on the model cache infrastructure under the hood to manage the list of models dynamically.
 
 Instead of building everything from the ground up (like what most AI agents will do when you ask them to implement a similar feature), we built on top of existing, already well-engineered components inside the codebase:
+
 - Model cache infrastructure as mentioned above (`common/download.h`)
 - Server response queue (`server-queue.h`). We use this feature to broadcast events to SSE clients.
 - Server router thread management (`server-models.h`). We re-use the same thread model that is used for managing subprocess life cycle, except that we don't create a new subprocess, but launch the download right inside the thread.
 
 The flow for downloading a new model:
+
 - POST request comes in --> `post_router_models` --> validation
 - A new `llama-server` subprocess will be spawned with the `SERVER_ROLE_DOWNLOAD` role (see `server_role_type` in `server-common.h`)
 - Child process runs the download and report status back to router via stdin/out
@@ -294,6 +301,7 @@ The flow for downloading a new model:
 ### Sleep mode
 
 Sleep mode was initially introduced in PR [#18228](https://github.com/ggml-org/llama.cpp/pull/18228). The main idea is to have:
+
 - `server_queue` keeping track of the idle timeout
 - When the timeout is detected, `server_queue` signals to `server_context_impl` that it should go into sleep
 - `server_context_impl` frees all `llama_context` and `mtmd_context`
@@ -301,22 +309,24 @@ Sleep mode was initially introduced in PR [#18228](https://github.com/ggml-org/l
 Compared to simply exiting the whole process, this approach allows accessing some read-only endpoints during sleep, while also handling wakeup-on-request. Any inference request will wake the server up.
 
 Call stack on entering sleeping:
+
 - `server_queue::start_loop` (main thread) sees no task for `idle_sleep_ms` --> `sleeping = true`
 - `cb0(true)` --> `server_routes::update_cached_responses`
-    - snapshots `/props`, `/models` and metrics; the model is still alive here
+  - snapshots `/props`, `/models` and metrics; the model is still alive here
 - `cb1(true)` --> `server_context_impl::handle_sleeping_state`
-    - `callback_state(SERVER_STATE_SLEEPING)` --> reported to router in child mode
-    - `destroy()` --> frees `llama_context` and `mtmd_context`
+  - `callback_state(SERVER_STATE_SLEEPING)` --> reported to router in child mode
+  - `destroy()` --> frees `llama_context` and `mtmd_context`
 - `condition_tasks.wait` until `req_stop_sleeping`
 
 Call stack on waking up:
+
 - `server_res_generator` constructor (HTTP thread) --> `server_queue::wait_until_no_sleep`
-    - sets `req_stop_sleeping = true`, then waits until `sleeping == false`
+  - sets `req_stop_sleeping = true`, then waits until `sleeping == false`
 - `server_queue::start_loop` (main thread) wakes up
 - `cb1(false)` --> `server_context_impl::handle_sleeping_state`
-    - `load_model()`, which then emits `callback_state(SERVER_STATE_READY)`
+  - `load_model()`, which then emits `callback_state(SERVER_STATE_READY)`
 - `cb0(false)` --> `server_routes::update_cached_responses`
-    - nothing to do, the cache is only read during sleep
+  - nothing to do, the cache is only read during sleep
 - `sleeping = false` --> `notify_all` unblocks the HTTP thread, the request is handled as usual
 
 Endpoints created with `create_response(true)` (`/health`, `/props`, `/models`, `/metrics`) skip `wait_until_no_sleep`, so they answer from the cached responses instead of waking the server.
@@ -337,9 +347,6 @@ Endpoints created with `create_response(true)` (`/health`, `/props`, `/models`, 
 - Sleeping mode: https://github.com/ggml-org/llama.cpp/pull/18228
 - Resumable streaming (SSE replay buffer): https://github.com/ggml-org/llama.cpp/pull/23226
 
-
-
-
 ## Web UI
 
 The project includes a web-based user interface for interacting with `llama-server`. It supports both single-model (`MODEL` mode) and multi-model (`ROUTER` mode) operation.
@@ -348,21 +355,21 @@ The SvelteKit-based Web UI is introduced in this PR: https://github.com/ggml-org
 
 ### Features
 
--   **Chat interface** with streaming responses
--   **Multi-model support** (ROUTER mode) - switch between models, auto-load on selection
--   **Modality validation** - ensures selected model supports conversation's attachments (images, audio)
--   **Conversation management** - branching, regeneration, editing with history preservation
--   **Attachment support** - images, audio, PDFs (with vision/text fallback)
--   **Configurable parameters** - temperature, top_p, etc. synced with server defaults
--   **Dark/light theme**
+- **Chat interface** with streaming responses
+- **Multi-model support** (ROUTER mode) - switch between models, auto-load on selection
+- **Modality validation** - ensures selected model supports conversation's attachments (images, audio)
+- **Conversation management** - branching, regeneration, editing with history preservation
+- **Attachment support** - images, audio, PDFs (with vision/text fallback)
+- **Configurable parameters** - temperature, top_p, etc. synced with server defaults
+- **Dark/light theme**
 
 ### Tech Stack
 
--   **SvelteKit** - frontend framework with Svelte 5 runes for reactive state
--   **TailwindCSS** + **shadcn-svelte** - styling and UI components
--   **Vite** - build tooling
--   **IndexedDB** (Dexie) - local storage for conversations
--   **LocalStorage** - user settings persistence
+- **SvelteKit** - frontend framework with Svelte 5 runes for reactive state
+- **TailwindCSS** + **shadcn-svelte** - styling and UI components
+- **Vite** - build tooling
+- **IndexedDB** (Dexie) - local storage for conversations
+- **LocalStorage** - user settings persistence
 
 ### Architecture
 
@@ -372,17 +379,17 @@ The UI follows a layered architecture:
 Routes → Components → Hooks → Stores → Services → Storage/API
 ```
 
--   **Stores** - reactive state management (`chatStore`, `conversationsStore`, `modelsStore`, `serverStore`, `settingsStore`)
--   **Services** - stateless API/database communication (`ChatService`, `ModelsService`, `PropsService`, `DatabaseService`)
--   **Hooks** - reusable logic (`useModelChangeValidation`, `useProcessingState`)
+- **Stores** - reactive state management (`chatStore`, `conversationsStore`, `modelsStore`, `serverStore`, `settingsStore`)
+- **Services** - stateless API/database communication (`ChatService`, `ModelsService`, `PropsService`, `DatabaseService`)
+- **Hooks** - reusable logic (`useModelChangeValidation`, `useProcessingState`)
 
 For detailed architecture diagrams, see [`tools/ui/docs/`](../ui/docs/):
 
--   `high-level-architecture.mmd` - full architecture with all modules
--   `high-level-architecture-simplified.mmd` - simplified overview
--   `data-flow-simplified-model-mode.mmd` - data flow for single-model mode
--   `data-flow-simplified-router-mode.mmd` - data flow for multi-model mode
--   `flows/*.mmd` - detailed per-domain flows (chat, conversations, models, etc.)
+- `high-level-architecture.mmd` - full architecture with all modules
+- `high-level-architecture-simplified.mmd` - simplified overview
+- `data-flow-simplified-model-mode.mmd` - data flow for single-model mode
+- `data-flow-simplified-router-mode.mmd` - data flow for multi-model mode
+- `flows/*.mmd` - detailed per-domain flows (chat, conversations, models, etc.)
 
 ### Development
 

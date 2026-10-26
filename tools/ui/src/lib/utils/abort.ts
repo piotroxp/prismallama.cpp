@@ -7,13 +7,13 @@
  */
 
 // the standard DOMException name for a cancelled operation
-const ABORT_ERROR_NAME = 'AbortError';
+const ABORT_ERROR_NAME = "AbortError";
 // browser specific TypeError messages emitted when a fetch reader is cut by page unload,
 // navigation, or a transient network drop. functionally aborts, not actionable errors
 const ABORT_LIKE_MESSAGE_PATTERNS = [
-	/input stream/i, // Firefox: stream cut at unload
-	/network connection was lost/i, // Safari: transient network drop
-	/load failed/i // Safari: page navigation during fetch
+  /input stream/i, // Firefox: stream cut at unload
+  /network connection was lost/i, // Safari: transient network drop
+  /load failed/i, // Safari: page navigation during fetch
 ];
 
 /**
@@ -32,9 +32,9 @@ const ABORT_LIKE_MESSAGE_PATTERNS = [
  * ```
  */
 export function throwIfAborted(signal?: AbortSignal): void {
-	if (signal?.aborted) {
-		throw new DOMException('Operation was aborted', ABORT_ERROR_NAME);
-	}
+  if (signal?.aborted) {
+    throw new DOMException("Operation was aborted", ABORT_ERROR_NAME);
+  }
 }
 
 /**
@@ -58,24 +58,24 @@ export function throwIfAborted(signal?: AbortSignal): void {
  * ```
  */
 export function isAbortError(error: unknown): boolean {
-	if (error instanceof DOMException && error.name === ABORT_ERROR_NAME) {
-		return true;
-	}
+  if (error instanceof DOMException && error.name === ABORT_ERROR_NAME) {
+    return true;
+  }
 
-	if (error instanceof Error) {
-		if (error.name === ABORT_ERROR_NAME) {
-			return true;
-		}
+  if (error instanceof Error) {
+    if (error.name === ABORT_ERROR_NAME) {
+      return true;
+    }
 
-		// these patterns are functionally aborts, keep them out of the red console
-		if (error instanceof TypeError) {
-			const msg = error.message ?? '';
+    // these patterns are functionally aborts, keep them out of the red console
+    if (error instanceof TypeError) {
+      const msg = error.message ?? "";
 
-			if (ABORT_LIKE_MESSAGE_PATTERNS.some((re) => re.test(msg))) return true;
-		}
-	}
+      if (ABORT_LIKE_MESSAGE_PATTERNS.some((re) => re.test(msg))) return true;
+    }
+  }
 
-	return false;
+  return false;
 }
 
 /**
@@ -96,23 +96,23 @@ export function isAbortError(error: unknown): boolean {
  * ```
  */
 export function createLinkedController(...signals: (AbortSignal | undefined)[]): AbortController {
-	const controller = new AbortController();
+  const controller = new AbortController();
 
-	for (const signal of signals) {
-		if (!signal) continue;
+  for (const signal of signals) {
+    if (!signal) continue;
 
-		// If already aborted, abort immediately
-		if (signal.aborted) {
-			controller.abort(signal.reason);
+    // If already aborted, abort immediately
+    if (signal.aborted) {
+      controller.abort(signal.reason);
 
-			return controller;
-		}
+      return controller;
+    }
 
-		// Link to parent signal
-		signal.addEventListener('abort', () => controller.abort(signal.reason), { once: true });
-	}
+    // Link to parent signal
+    signal.addEventListener("abort", () => controller.abort(signal.reason), { once: true });
+  }
 
-	return controller;
+  return controller;
 }
 
 /**
@@ -128,7 +128,7 @@ export function createLinkedController(...signals: (AbortSignal | undefined)[]):
  * ```
  */
 export function createTimeoutSignal(ms: number): AbortSignal {
-	return AbortSignal.timeout(ms);
+  return AbortSignal.timeout(ms);
 }
 
 /**
@@ -149,25 +149,25 @@ export function createTimeoutSignal(ms: number): AbortSignal {
  * ```
  */
 export async function withAbortSignal<T>(promise: Promise<T>, signal?: AbortSignal): Promise<T> {
-	if (!signal) return promise;
+  if (!signal) return promise;
 
-	throwIfAborted(signal);
+  throwIfAborted(signal);
 
-	return new Promise<T>((resolve, reject) => {
-		const abortHandler = () => {
-			reject(new DOMException('Operation was aborted', ABORT_ERROR_NAME));
-		};
+  return new Promise<T>((resolve, reject) => {
+    const abortHandler = () => {
+      reject(new DOMException("Operation was aborted", ABORT_ERROR_NAME));
+    };
 
-		signal.addEventListener('abort', abortHandler, { once: true });
+    signal.addEventListener("abort", abortHandler, { once: true });
 
-		promise
-			.then((value) => {
-				signal.removeEventListener('abort', abortHandler);
-				resolve(value);
-			})
-			.catch((error) => {
-				signal.removeEventListener('abort', abortHandler);
-				reject(error);
-			});
-	});
+    promise
+      .then((value) => {
+        signal.removeEventListener("abort", abortHandler);
+        resolve(value);
+      })
+      .catch((error) => {
+        signal.removeEventListener("abort", abortHandler);
+        reject(error);
+      });
+  });
 }

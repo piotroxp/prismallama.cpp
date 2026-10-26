@@ -1,4 +1,4 @@
-import { CONVERSATION_ID_SEPARATOR } from '$lib/constants';
+import { CONVERSATION_ID_SEPARATOR } from "$lib/constants";
 
 /**
  * Build the conversation identity used by the server side replay buffer.
@@ -9,9 +9,9 @@ import { CONVERSATION_ID_SEPARATOR } from '$lib/constants';
  * router resolves the owning child through its conv_id -> model map.
  */
 export function streamIdentity(conversationId: string, model?: string | null): string {
-	if (!conversationId) return '';
+  if (!conversationId) return "";
 
-	if (!model) return conversationId;
+  if (!model) return conversationId;
 
-	return `${conversationId}${CONVERSATION_ID_SEPARATOR}${model}`;
+  return `${conversationId}${CONVERSATION_ID_SEPARATOR}${model}`;
 }

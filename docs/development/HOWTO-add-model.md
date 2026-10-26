@@ -10,6 +10,7 @@ Adding a model requires few steps:
 After following these steps, you can open PR.
 
 Also, it is important to check that the examples and main ggml backends (CUDA, METAL, CPU) are working with the new architecture, especially:
+
 - [cli](/tools/cli/)
 - [completion](/tools/completion/)
 - [imatrix](/tools/imatrix/)
@@ -52,6 +53,7 @@ Add an enum entry in `MODEL_ARCH`, the model human friendly name in `MODEL_ARCH_
 NOTE: Pick the GGUF arch string (and the matching `src/models/<name>.cpp` filename, see section 3) carefully up front, following existing naming conventions. Once GGUF files are published under a given arch string, renaming it later breaks the community's existing files, so this is not something to leave for cleanup in a follow-up PR.
 
 Example for `falcon` model:
+
 ```python
     MODEL_ARCH.FALCON: [
         MODEL_TENSOR.TOKEN_EMBD,
@@ -91,6 +93,7 @@ block_mappings_cfg: dict[MODEL_TENSOR, tuple[str, ...]] = {
 `transformer.blocks.{bid}.norm_1` will be mapped to `blk.{bid}.attn_norm` in GGUF.
 
 Depending on the model configuration, tokenizer, code and tensors layout, you will have to override:
+
 - `TextModel#set_gguf_parameters`
 - `MmprojModel#set_gguf_parameters`
 - `ModelBase#set_vocab`
@@ -101,10 +104,11 @@ NOTE: Tensor names must end with `.weight` or `.bias` suffixes, that is the conv
 ### 2. Define the model architecture in `llama.cpp`
 
 The model params and tensors layout must be defined in `llama.cpp` source files:
+
 1. Define a new `llm_arch` enum value in `src/llama-arch.h`.
 2. In `src/llama-arch.cpp`:
-    - Add the architecture name to the `LLM_ARCH_NAMES` map.
-    - You may also need to update `LLM_KV_NAMES`, `LLM_TENSOR_NAMES` and `LLM_TENSOR_INFOS`
+   - Add the architecture name to the `LLM_ARCH_NAMES` map.
+   - You may also need to update `LLM_KV_NAMES`, `LLM_TENSOR_NAMES` and `LLM_TENSOR_INFOS`
 3. Add any non-standard metadata loading in the `llama_model_loader` constructor in `src/llama-model-loader.cpp`.
 4. If the model has a RoPE operation, add a case for the architecture in `llama_model_rope_type` function in `src/llama-model.cpp`.
 5. Check for other places that switch/iterate over every `llm_arch` value, e.g. `src/llama-model-saver.cpp` and any mandatory-hparam lists (such as which archs require MoE metadata). Grep for `LLM_ARCH_` usages to find them. Missing one of these is a common cause of CI test failures (e.g. `test-llama-archs`) after adding a new arch.
@@ -114,6 +118,7 @@ NOTE: The dimensions in `ggml` are typically in the reverse order of the `pytorc
 ### 3. Build the GGML graph implementation
 
 This is the funniest part, you have to provide the inference graph implementation of the new model architecture in `src/llama-model.cpp`:
+
 1. Create a new struct that inherits from `llama_model_base`.
 2. Implement the graph-building logic in its `build_arch_graph` method.
 3. The `build_arch_graph` method should return a constructed graph (inherited from `llm_graph_context`). Have a look at existing implementations like `llama_model_llama`, `llama_model_dbrx` or `llama_model_bert`.
@@ -133,6 +138,7 @@ If the new model supports multimodal inputs, you will need to add a new encoder 
 4. Implement the encoder GGML graph, either in a dedicated file if the model is truly different from existing ones, or by reusing an existing implementation (for example: siglip, pixtral, or qwen) and adding a model-specific projector.
 
 Note:
+
 - Many multimodal encoders are based on models that are already supported. Make sure to read the existing encoder definitions in `tools/mtmd/models` before adding a new one. In `libmtmd`, it is generally better to extend an existing model than to duplicate code.
 - To debug the multimodal preprocessor and encoder, you can use [llama-mtmd-debug](tools/mtmd/debug/mtmd-debug.cpp).
 - Adding a model-specific API or CLI is an anti-pattern in `libmtmd`. The goal of `libmtmd` is to provide an easy-to-use, model-agnostic library for multimodal pipeline.
@@ -150,6 +156,7 @@ The conversion is the same as above, but a new model needs its own `DecisionType
 > Most of the logic is handled in `tools/server/server-decision.cpp`, to avoid too many changes to `libllama`.
 
 Note:
+
 - If a new public API is needed in `libllama`, add it to `llama-ext.h`.
 - Metadata with a single use case must be hard-coded in `server-decision.cpp` instead of being saved to the GGUF. This avoids bloating the conversion code.
 - Most importantly, keep your change as small and as self-contained as possible. Reuse the existing infrastructure whenever you can.
@@ -163,6 +170,7 @@ For more information, see [PR #29818](https://github.com/ggml-org/llama.cpp/pull
 If the model contains constant modifications of tensors in the graph (for example, `norm(1 + weight)`) or performs tensor permutations/chunking, perform the modifications during conversion rather than in the graph code. This keeps the inference graph simpler and avoids extra runtime ops.
 
 Examples:
+
 - Gemma 3 folds the `1 +` of its `norm(1 + weight)` normalization into the weights at conversion time, so the graph just does a plain RMS norm.
 - Qwen3-Next applies its tensor permutation during conversion (in `modify_tensors`), so the graph can consume the already-permuted weights directly.
 
@@ -177,6 +185,7 @@ However, since `ggml_rope_ext` only provides a subset of the RoPE implementation
 For more information about `ggml_rope_ext`, please refer to the in-code documentation in `ggml.h`.
 
 Examples:
+
 - `libmtmd` implements 2D RoPE with `GGML_ROPE_TYPE_NORMAL` ordering by splitting the input tensor in half, applying `ggml_rope_ext` separately to each half, then joining them back together using `ggml_concat`.
 - The [Kimi-K2.5](https://github.com/ggml-org/llama.cpp/pull/19170) vision encoder uses vision RoPE with interleaved frequencies. The weights must be permuted during conversion in order to reuse the `build_rope_2d()` function.
 - [Gemma 4](https://github.com/ggml-org/llama.cpp/pull/21309) uses "proportional" RoPE. We employ a trick where `rope_freqs` is set to a very large value in the last dimensions to prevent those dimensions from being rotated. See the `Gemma4Model` class in `convert_hf_to_gguf.py`.

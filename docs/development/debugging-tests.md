@@ -36,6 +36,7 @@ For further reference use `debug-test.sh -h` to print help.
 &nbsp;
 
 ### How does the script work?
+
 If you want to be able to use the concepts contained in the script separately, the important ones are briefly outlined below.
 
 #### Step 1: Reset and Setup folder context
@@ -59,9 +60,9 @@ make -j
 
 The output of this command will give you the command & arguments needed to run GDB.
 
-* `-R test-tokenizer` : looks for all the test files named `test-tokenizer*` (R=Regex)
-* `-N` : "show-only" disables test execution & shows test commands that you can feed to GDB.
-* `-V` : Verbose Mode
+- `-R test-tokenizer` : looks for all the test files named `test-tokenizer*` (R=Regex)
+- `-N` : "show-only" disables test execution & shows test commands that you can feed to GDB.
+- `-V` : Verbose Mode
 
 ```bash
 ctest -R "test-tokenizer" -V -N
@@ -86,8 +87,9 @@ Labels: main
 #### Step 4: Identify Test Command for Debugging
 
 So for test #1 above we can tell these two pieces of relevant information:
-* Test Binary: `~/llama.cpp/build-ci-debug/bin/test-tokenizer-0`
-* Test GGUF Model: `~/llama.cpp/tests/../models/ggml-vocab-llama-spm.gguf`
+
+- Test Binary: `~/llama.cpp/build-ci-debug/bin/test-tokenizer-0`
+- Test GGUF Model: `~/llama.cpp/tests/../models/ggml-vocab-llama-spm.gguf`
 
 #### Step 5: Run GDB on test command
 

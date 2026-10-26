@@ -36,8 +36,8 @@ For more info, please refer to the [AGENTS.md](AGENTS.md) file.
 - New CLI or public API additions carry a **higher bar** than internal changes - justify why an existing mechanism doesn't suffice.
 - Meeting all of the above still doesn't guarantee a merge - see [Pull requests (for maintainers)](#pull-requests-for-maintainers).
 - If you are a new contributor
-    - Limit your open PRs to 1
-    - Do not submit trivial fixes (e.g. typos, formatting changes)
+  - Limit your open PRs to 1
+  - Do not submit trivial fixes (e.g. typos, formatting changes)
 
 ### Preparing your PR
 
@@ -50,7 +50,7 @@ For more info, please refer to the [AGENTS.md](AGENTS.md) file.
 - Create separate PRs for each feature or fix:
   - Avoid combining unrelated changes in a single PR
   - When adding support for a new model or feature, focus on **CPU support only** in the initial PR unless you have a good reason not to. Add support for other backends like CUDA in follow-up PRs
-  - In particular, adding new data types (extension of the `ggml_type` enum) carries with it a disproportionate maintenance burden. As such, to add a new quantization type you will need to meet the following *additional* criteria *at minimum*:
+  - In particular, adding new data types (extension of the `ggml_type` enum) carries with it a disproportionate maintenance burden. As such, to add a new quantization type you will need to meet the following _additional_ criteria _at minimum_:
     - convert a small model to GGUF using the new type and upload it to HuggingFace
     - provide [perplexity](https://github.com/ggml-org/llama.cpp/tree/master/tools/perplexity) comparisons to FP16/BF16 (whichever is the native precision) as well as to types of similar size
     - provide KL divergence data calculated vs. the FP16/BF16 (whichever is the native precision) version for both the new type as well as types of similar size
@@ -77,6 +77,7 @@ For more info, please refer to the [AGENTS.md](AGENTS.md) file.
 - Wait for CI results before merging
 
 Maintainers reserve the right to decline review or close pull requests for any reason, without any questions, particularly under any of the following conditions:
+
 - The proposed change is already mentioned in the roadmap or an existing issue, and it has been assigned to someone.
 - The pull request duplicates an existing one.
 - The contributor fails to adhere to this contributing guide or the AI policy.
@@ -91,18 +92,19 @@ Maintainers reserve the right to decline review or close pull requests for any r
 - Clean-up any trailing whitespaces, use 4 spaces for indentation, brackets on the same line, `void * ptr`, `int & a`
 - Use sized integer types such as `int32_t` in the public API, e.g. `size_t` may also be appropriate for allocation sizes or byte offsets
 - Declare structs with `struct foo {}` instead of `typedef struct foo {} foo`
-    - In C++ code omit optional `struct` and `enum` keyword whenever they are not necessary
-    ```cpp
-    // OK
-    llama_context * ctx;
-    const llama_rope_type rope_type;
+  - In C++ code omit optional `struct` and `enum` keyword whenever they are not necessary
 
-    // not OK
-    struct llama_context * ctx;
-    const enum llama_rope_type rope_type;
-    ```
+  ```cpp
+  // OK
+  llama_context * ctx;
+  const llama_rope_type rope_type;
 
-    _(NOTE: this guideline is yet to be applied to the `llama.cpp` codebase. New code should follow this guideline.)_
+  // not OK
+  struct llama_context * ctx;
+  const enum llama_rope_type rope_type;
+  ```
+
+  _(NOTE: this guideline is yet to be applied to the `llama.cpp` codebase. New code should follow this guideline.)_
 
 - Try to follow the existing patterns in the code (indentation, spaces, etc.). In case of doubt use `clang-format` (from clang-tools v15+) to format the added code
 - For anything not covered in the current guidelines, refer to the [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
@@ -116,54 +118,54 @@ Maintainers reserve the right to decline review or close pull requests for any r
 - Use `snake_case` for function, variable and type names
 - Naming usually optimizes for longest common prefix (see https://github.com/ggml-org/ggml/pull/302#discussion_r1243240963)
 
-    ```cpp
-    // not OK
-    int small_number;
-    int big_number;
+  ```cpp
+  // not OK
+  int small_number;
+  int big_number;
 
-    // OK
-    int number_small;
-    int number_big;
-    ```
+  // OK
+  int number_small;
+  int number_big;
+  ```
 
 - Enum values are always in upper case and prefixed with the enum name
 
-    ```cpp
-    enum llama_vocab_type {
-        LLAMA_VOCAB_TYPE_NONE = 0,
-        LLAMA_VOCAB_TYPE_SPM  = 1,
-        LLAMA_VOCAB_TYPE_BPE  = 2,
-        LLAMA_VOCAB_TYPE_WPM  = 3,
-        LLAMA_VOCAB_TYPE_UGM  = 4,
-        LLAMA_VOCAB_TYPE_RWKV = 5,
-    };
-    ```
+  ```cpp
+  enum llama_vocab_type {
+      LLAMA_VOCAB_TYPE_NONE = 0,
+      LLAMA_VOCAB_TYPE_SPM  = 1,
+      LLAMA_VOCAB_TYPE_BPE  = 2,
+      LLAMA_VOCAB_TYPE_WPM  = 3,
+      LLAMA_VOCAB_TYPE_UGM  = 4,
+      LLAMA_VOCAB_TYPE_RWKV = 5,
+  };
+  ```
 
 - The general naming pattern is `<class>_<method>`, with `<method>` being `<action>_<noun>`
 
-    ```cpp
-    llama_model_init();           // class: "llama_model",         method: "init"
-    llama_sampler_chain_remove(); // class: "llama_sampler_chain", method: "remove"
-    llama_sampler_get_seed();     // class: "llama_sampler",       method: "get_seed"
-    llama_set_embeddings();       // class: "llama_context",       method: "set_embeddings"
-    llama_n_threads();            // class: "llama_context",       method: "n_threads"
-    llama_adapter_lora_free();    // class: "llama_adapter_lora",  method: "free"
-    ```
+  ```cpp
+  llama_model_init();           // class: "llama_model",         method: "init"
+  llama_sampler_chain_remove(); // class: "llama_sampler_chain", method: "remove"
+  llama_sampler_get_seed();     // class: "llama_sampler",       method: "get_seed"
+  llama_set_embeddings();       // class: "llama_context",       method: "set_embeddings"
+  llama_n_threads();            // class: "llama_context",       method: "n_threads"
+  llama_adapter_lora_free();    // class: "llama_adapter_lora",  method: "free"
+  ```
 
-    - The `get` `<action>` can be omitted
-    - The `<noun>` can be omitted if not necessary
-    - The `_context` suffix of the `<class>` is optional. Use it to disambiguate symbols when needed
-    - Use `init`/`free` for constructor/destructor `<action>`
+  - The `get` `<action>` can be omitted
+  - The `<noun>` can be omitted if not necessary
+  - The `_context` suffix of the `<class>` is optional. Use it to disambiguate symbols when needed
+  - Use `init`/`free` for constructor/destructor `<action>`
 
 - Use the `_t` suffix when a type is supposed to be opaque to the user - it's not relevant to them if it is a struct or anything else
 
-    ```cpp
-    typedef struct llama_context * llama_context_t;
+  ```cpp
+  typedef struct llama_context * llama_context_t;
 
-    enum llama_pooling_type llama_pooling_type(const llama_context_t ctx);
-    ```
+  enum llama_pooling_type llama_pooling_type(const llama_context_t ctx);
+  ```
 
-    _(NOTE: this guideline is yet to be applied to the `llama.cpp` codebase. New code should follow this guideline)_
+  _(NOTE: this guideline is yet to be applied to the `llama.cpp` codebase. New code should follow this guideline)_
 
 - C/C++ filenames are all lowercase with dashes. Headers use the `.h` extension. Source files use the `.c` or `.cpp` extension
 - Python filenames are all lowercase with underscores
@@ -174,10 +176,10 @@ Maintainers reserve the right to decline review or close pull requests for any r
 
 - _(TODO: add guidelines with examples and apply them to the codebase)_
 
-    ```cpp
-    #ifdef FOO
-    #endif // FOO
-    ```
+  ```cpp
+  #ifdef FOO
+  #endif // FOO
+  ```
 
 # Code maintenance
 

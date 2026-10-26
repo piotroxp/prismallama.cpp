@@ -1,10 +1,12 @@
 # Docker
 
 ## Prerequisites
-* Docker must be installed and running on your system.
-* Create a folder to store big models & intermediate files (ex. /llama/models)
+
+- Docker must be installed and running on your system.
+- Create a folder to store big models & intermediate files (ex. /llama/models)
 
 ## Images
+
 We have three Docker images available for this project:
 
 1. `ghcr.io/ggml-org/llama.cpp:full`: This image includes both the `llama-cli` and `llama-completion` executables and the tools to convert LLaMA models into ggml and convert into 4-bit quantization. (platforms: `linux/amd64`, `linux/arm64`, `linux/s390x`)
@@ -173,6 +175,7 @@ docker run --device /dev/dri/renderD128:/dev/dri/renderD128 --device /dev/dri/ca
 docker run --device /dev/dri/renderD128:/dev/dri/renderD128 --device /dev/dri/card0:/dev/dri/card0 -v /path/to/models:/models local/llama.cpp:server-intel -m /models/7B/ggml-model-q4_0.gguf --port 8080 --host 0.0.0.0 -n 512 --n-gpu-layers 99
 ```
 
-*Notes:*
+_Notes:_
+
 - Docker has been tested successfully on native Linux. WSL support has not been verified yet.
-- You may need to install Intel GPU driver on the **host** machine *(Please refer to the [Linux configuration](./backend/SYCL.md#linux) for details)*.
+- You may need to install Intel GPU driver on the **host** machine _(Please refer to the [Linux configuration](./backend/SYCL.md#linux) for details)_.

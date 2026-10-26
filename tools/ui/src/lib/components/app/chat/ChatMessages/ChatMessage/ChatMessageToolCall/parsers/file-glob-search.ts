@@ -4,63 +4,63 @@
 // parser keeps the original raw-text fallback for MCP servers that
 // emit unparseable output.
 
-import { parseToolArgs } from './_shared';
-import { BuiltInTool } from '$lib/enums';
-import type { AgenticSection } from '$lib/types';
-import { splitSearchSummaryList } from '$lib/utils';
+import { BuiltInTool } from "$lib/enums";
+import type { AgenticSection } from "$lib/types";
+import { splitSearchSummaryList } from "$lib/utils";
+import { parseToolArgs } from "./_shared";
 
 export type FileGlobSearchMeta = {
-	path: string;
-	include: string;
-	exclude?: string;
-	matches: string[];
-	totalMatches?: number;
-	errorMessage?: string;
+  path: string;
+  include: string;
+  exclude?: string;
+  matches: string[];
+  totalMatches?: number;
+  errorMessage?: string;
 };
 
 export function parseFileGlobSearchMeta(section: AgenticSection): FileGlobSearchMeta | null {
-	const args = parseToolArgs(BuiltInTool.SERVER_FILE_GLOB_SEARCH, section);
+  const args = parseToolArgs(BuiltInTool.SERVER_FILE_GLOB_SEARCH, section);
 
-	if (!args) return null;
+  if (!args) return null;
 
-	const path = typeof args.path === 'string' ? args.path : '';
-	const include = typeof args.include === 'string' && args.include ? args.include : '**';
-	const exclude = typeof args.exclude === 'string' && args.exclude ? args.exclude : undefined;
+  const path = typeof args.path === "string" ? args.path : "";
+  const include = typeof args.include === "string" && args.include ? args.include : "**";
+  const exclude = typeof args.exclude === "string" && args.exclude ? args.exclude : undefined;
 
-	if (!path) return null;
+  if (!path) return null;
 
-	let matches: string[] = [];
-	let totalMatches: number | undefined;
-	let errorMessage: string | undefined;
+  let matches: string[] = [];
+  let totalMatches: number | undefined;
+  let errorMessage: string | undefined;
 
-	const toolResultString = section.toolResult;
+  const toolResultString = section.toolResult;
 
-	if (toolResultString) {
-		try {
-			const parsed: unknown = JSON.parse(toolResultString);
+  if (toolResultString) {
+    try {
+      const parsed: unknown = JSON.parse(toolResultString);
 
-			if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-				const obj = parsed as Record<string, unknown>;
+      if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+        const obj = parsed as Record<string, unknown>;
 
-				if (typeof obj.error === 'string') {
-					errorMessage = obj.error;
-				} else if (typeof obj.plain_text_response === 'string') {
-					const split = splitSearchSummaryList(obj.plain_text_response, (total) => {
-						totalMatches = total;
-					});
+        if (typeof obj.error === "string") {
+          errorMessage = obj.error;
+        } else if (typeof obj.plain_text_response === "string") {
+          const split = splitSearchSummaryList(obj.plain_text_response, (total) => {
+            totalMatches = total;
+          });
 
-					matches = split.lines;
-				}
-			}
-		} catch {
-			// See grep-search.ts: same fallback used there.
-			const split = splitSearchSummaryList(toolResultString, (total) => {
-				totalMatches = total;
-			});
+          matches = split.lines;
+        }
+      }
+    } catch {
+      // See grep-search.ts: same fallback used there.
+      const split = splitSearchSummaryList(toolResultString, (total) => {
+        totalMatches = total;
+      });
 
-			matches = split.lines;
-		}
-	}
+      matches = split.lines;
+    }
+  }
 
-	return { errorMessage, exclude, include, matches, path, totalMatches };
+  return { errorMessage, exclude, include, matches, path, totalMatches };
 }

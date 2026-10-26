@@ -2,7 +2,7 @@
 
 llama.cpp supports speculative decoding, a technique that can significantly accelerate token generation by predicting multiple tokens ahead of the main model.
 
-[Speculative decoding](https://en.wikipedia.org/wiki/Transformer_(deep_learning)#Speculative_decoding) leverages the fact that computing n tokens in a batch (as in prompt processing) is more efficient than computing n sequentially (as in response generation). By generating draft tokens quickly and then verifying them with the target model in a single batch, this approach can achieve substantial speedups when the draft predictions are frequently correct.
+[Speculative decoding](<https://en.wikipedia.org/wiki/Transformer_(deep_learning)#Speculative_decoding>) leverages the fact that computing n tokens in a batch (as in prompt processing) is more efficient than computing n sequentially (as in response generation). By generating draft tokens quickly and then verifying them with the target model in a single batch, this approach can achieve substantial speedups when the draft predictions are frequently correct.
 
 ## Implementations
 
@@ -144,6 +144,7 @@ This implementation looks for the current n-gram of size n (called the _key_) in
 The number of accepted tokens is stored for each used n-gram.
 
 **Example:**
+
 ```
 llama-server [...] --spec-type ngram-map-k --spec-draft-n-max 64
 ```
@@ -155,6 +156,7 @@ This experimental implementation looks for the current n-gram of size n (called 
 The number of accepted tokens is stored for each used n-gram.
 
 **Example:** Server options to be used if there are a lot of longer repetitions.
+
 ```
 llama-server [...] --spec-type ngram-map-k4v --spec-ngram-map-k4v-size-n 8 --spec-ngram-map-k4v-size-m 8 --spec-ngram-map-k4v-min-hits 2 --spec-draft-n-max 64
 ```
@@ -362,26 +364,28 @@ Use exactly one of these options:
 
 Specifies a comma-separated list of speculative decoding types to use.
 
-| Type | Description |
-|------|-------------|
-| `none` | No speculative decoding (default) |
-| `draft-simple` | Use a simple draft model for speculation |
-| `draft-eagle3` | Use an EAGLE-3 draft model that reads the target's hidden states |
-| `draft-dflash` | Use a DFlash block-diffusion draft model that emits a block per step |
-| `draft-dspark` | Use a DSpark draft model (DFlash backbone + semi-autoregressive Markov head) |
-| `draft-mtp` | Use Multi Token Prediction (MTP) heads from the main model |
-| `ngram-cache` | Use n-gram cache lookup |
-| `ngram-simple` | Use simple n-gram pattern matching |
-| `ngram-map-k` | Use n-gram pattern matching with n-gram-keys |
+| Type            | Description                                                                              |
+| --------------- | ---------------------------------------------------------------------------------------- |
+| `none`          | No speculative decoding (default)                                                        |
+| `draft-simple`  | Use a simple draft model for speculation                                                 |
+| `draft-eagle3`  | Use an EAGLE-3 draft model that reads the target's hidden states                         |
+| `draft-dflash`  | Use a DFlash block-diffusion draft model that emits a block per step                     |
+| `draft-dspark`  | Use a DSpark draft model (DFlash backbone + semi-autoregressive Markov head)             |
+| `draft-mtp`     | Use Multi Token Prediction (MTP) heads from the main model                               |
+| `ngram-cache`   | Use n-gram cache lookup                                                                  |
+| `ngram-simple`  | Use simple n-gram pattern matching                                                       |
+| `ngram-map-k`   | Use n-gram pattern matching with n-gram-keys                                             |
 | `ngram-map-k4v` | Use n-gram pattern matching with n-gram-keys and up to four m-gram values (experimental) |
-| `ngram-mod` | Use basic ngram hasher for speculative decoding with shared pool |
+| `ngram-mod`     | Use basic ngram hasher for speculative decoding with shared pool                         |
 
 **Example:** Server-instance used to refactor source code.
+
 ```bash
 ./llama-server [...] --spec-type ngram-simple
 ```
 
 **Example:** Multiple speculative implementations.
+
 ```bash
 ./llama-server [...] --spec-type ngram-mod,ngram-map-k4v
 ```
@@ -421,6 +425,7 @@ Each n-gram implementation has its own parameter:
 - `--spec-ngram-map-k4v-min-hits` for `ngram-map-k4v`
 
 ## Statistics
+
 Each speculative decoding implementation prints statistics.
 
 ```
@@ -437,7 +442,6 @@ statistics ngram_mod: #calls = 810, #gen drafts = 15, #acc drafts = 15, #gen tok
 ```
 statistics ngram_map_k: #calls(b,g,a) = 6 1690 26, #gen drafts = 26, #acc drafts = 26, #gen tokens = 1248, #acc tokens = 968, dur(b,g,a) = 2.234, 1.427, 0.016 ms
 ```
-
 
 - `#calls(b,g,a)`: number of calls of begin (new prompt), generation and accumulation of this implementations
 - `#gen drafts`: number of drafts generated by this implementation

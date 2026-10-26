@@ -1,4 +1,3 @@
-
 Project-specific instructions:
 
 ## Coding

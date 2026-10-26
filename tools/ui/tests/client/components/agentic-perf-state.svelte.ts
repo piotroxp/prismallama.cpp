@@ -4,14 +4,14 @@
 // so the driver can mutate it without depending on how the test renderer
 // forwards props.
 
-import type { DatabaseMessage } from '$lib/types';
+import type { DatabaseMessage } from "$lib/types";
 
 export const perfState = $state<{
-	message: DatabaseMessage | null;
-	toolMessages: DatabaseMessage[];
-	isStreaming: boolean;
+  message: DatabaseMessage | null;
+  toolMessages: DatabaseMessage[];
+  isStreaming: boolean;
 }>({
-	isStreaming: true,
-	message: null,
-	toolMessages: []
+  isStreaming: true,
+  message: null,
+  toolMessages: [],
 });

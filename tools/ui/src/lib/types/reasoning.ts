@@ -1,5 +1,5 @@
 export interface ReasoningEffortLevel {
-	value: string;
-	label: string;
-	hasInfo?: boolean;
+  value: string;
+  label: string;
+  hasInfo?: boolean;
 }

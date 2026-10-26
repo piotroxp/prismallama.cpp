@@ -1,17 +1,17 @@
-import { FILE_PATH_SEPARATOR_REGEX, NEWLINE } from '$lib/constants';
+import { FILE_PATH_SEPARATOR_REGEX, NEWLINE } from "$lib/constants";
 import {
-	PREFIX_FILE,
-	PREFIX_MIME,
-	PREFIX_SIZE,
-	READ_MEDIA_SIZE_REGEX
-} from '$lib/constants/read-media';
-import type { AgenticSection } from '$lib/types';
+  PREFIX_FILE,
+  PREFIX_MIME,
+  PREFIX_SIZE,
+  READ_MEDIA_SIZE_REGEX,
+} from "$lib/constants/read-media";
+import type { AgenticSection } from "$lib/types";
 
 export interface ReadMediaMeta {
-	fileName: string;
-	path: string;
-	sizeBytes?: number;
-	mimeType?: string;
+  fileName: string;
+  path: string;
+  sizeBytes?: number;
+  mimeType?: string;
 }
 
 /**
@@ -26,31 +26,31 @@ export interface ReadMediaMeta {
  * agenticStore.extractBase64Attachments before storage.
  */
 export function parseReadMediaMeta(section: AgenticSection): ReadMediaMeta | null {
-	if (!section.toolResult) return null;
+  if (!section.toolResult) return null;
 
-	const lines = section.toolResult.split(NEWLINE);
+  const lines = section.toolResult.split(NEWLINE);
 
-	let fileName = '';
-	let path = '';
-	let sizeBytes: number | undefined;
-	let mimeType: string | undefined;
+  let fileName = "";
+  let path = "";
+  let sizeBytes: number | undefined;
+  let mimeType: string | undefined;
 
-	for (const line of lines) {
-		const trimmed = line.trim();
+  for (const line of lines) {
+    const trimmed = line.trim();
 
-		if (trimmed.startsWith(PREFIX_FILE)) {
-			path = trimmed.slice(PREFIX_FILE.length).trim();
-			fileName = path.split(FILE_PATH_SEPARATOR_REGEX).pop() ?? path;
-		} else if (trimmed.startsWith(PREFIX_SIZE)) {
-			const match = trimmed.match(READ_MEDIA_SIZE_REGEX);
+    if (trimmed.startsWith(PREFIX_FILE)) {
+      path = trimmed.slice(PREFIX_FILE.length).trim();
+      fileName = path.split(FILE_PATH_SEPARATOR_REGEX).pop() ?? path;
+    } else if (trimmed.startsWith(PREFIX_SIZE)) {
+      const match = trimmed.match(READ_MEDIA_SIZE_REGEX);
 
-			if (match) sizeBytes = Number(match[1]);
-		} else if (trimmed.startsWith(PREFIX_MIME)) {
-			mimeType = trimmed.slice(PREFIX_MIME.length).trim();
-		}
-	}
+      if (match) sizeBytes = Number(match[1]);
+    } else if (trimmed.startsWith(PREFIX_MIME)) {
+      mimeType = trimmed.slice(PREFIX_MIME.length).trim();
+    }
+  }
 
-	if (!path) return null;
+  if (!path) return null;
 
-	return { fileName, mimeType, path, sizeBytes };
+  return { fileName, mimeType, path, sizeBytes };
 }

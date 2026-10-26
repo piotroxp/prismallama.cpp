@@ -16,7 +16,7 @@
  * Modal dialog for adding a new MCP server with URL and optional headers.
  * Validates URL format and integrates with mcpStore and conversationsStore.
  */
-export { default as DialogMcpServerAddNew } from './DialogMcpServerAddNew.svelte';
+export { default as DialogMcpServerAddNew } from "./DialogMcpServerAddNew.svelte";
 
 /**
  * **DialogMcpServers** - MCP servers dialog shown from the chat form
@@ -24,7 +24,7 @@ export { default as DialogMcpServerAddNew } from './DialogMcpServerAddNew.svelte
  * Shows the same MCP server list as the `/mcp-servers` route inside a modal
  * dialog.
  */
-export { default as DialogMcpServers } from './DialogMcpServers.svelte';
+export { default as DialogMcpServers } from "./DialogMcpServers.svelte";
 
 /**
  * **DialogSettingsChat** - Chat settings shown in a modal dialog
@@ -33,7 +33,7 @@ export { default as DialogMcpServers } from './DialogMcpServers.svelte';
  * inside a ShadCN Dialog instead of a dedicated route. Section switching is
  * handled in-app via `onSectionChange` rather than URL navigation.
  */
-export { default as DialogSettingsChat } from './DialogSettingsChat.svelte';
+export { default as DialogSettingsChat } from "./DialogSettingsChat.svelte";
 
 /**
  * **DialogExportSettings** - Settings export dialog with sensitive data warning
@@ -64,7 +64,7 @@ export { default as DialogSettingsChat } from './DialogSettingsChat.svelte';
  * />
  * ```
  */
-export { default as DialogExportSettings } from './DialogExportSettings.svelte';
+export { default as DialogExportSettings } from "./DialogExportSettings.svelte";
 
 /**
  *
@@ -106,7 +106,7 @@ export { default as DialogExportSettings } from './DialogExportSettings.svelte';
  * />
  * ```
  */
-export { default as DialogConfirmation } from './DialogConfirmation.svelte';
+export { default as DialogConfirmation } from "./DialogConfirmation.svelte";
 
 /**
  * **DialogConfirmDownload** - Confirm a destructive download action
@@ -117,7 +117,7 @@ export { default as DialogConfirmation } from './DialogConfirmation.svelte';
  * default store removal; render one instance per surface keyed by the acted-on
  * repo:tag.
  */
-export { default as DialogConfirmDownload } from './DialogConfirmDownload.svelte';
+export { default as DialogConfirmDownload } from "./DialogConfirmDownload.svelte";
 
 /**
  * **DialogConversationRename** - Rename a conversation
@@ -149,7 +149,7 @@ export { default as DialogConfirmDownload } from './DialogConfirmDownload.svelte
  * />
  * ```
  */
-export { default as DialogConversationRename } from './DialogConversationRename.svelte';
+export { default as DialogConversationRename } from "./DialogConversationRename.svelte";
 
 /**
  *
@@ -187,7 +187,7 @@ export { default as DialogConversationRename } from './DialogConversationRename.
  * />
  * ```
  */
-export { default as DialogCodePreview } from './DialogCodePreview.svelte';
+export { default as DialogCodePreview } from "./DialogCodePreview.svelte";
 
 /**
  *
@@ -228,7 +228,7 @@ export { default as DialogCodePreview } from './DialogCodePreview.svelte';
  * />
  * ```
  */
-export { default as DialogChatAttachmentsPreview } from './DialogChatAttachmentsPreview.svelte';
+export { default as DialogChatAttachmentsPreview } from "./DialogChatAttachmentsPreview.svelte";
 
 /**
  *
@@ -271,7 +271,7 @@ export { default as DialogChatAttachmentsPreview } from './DialogChatAttachments
  * />
  * ```
  */
-export { default as DialogChatError } from './DialogChatError.svelte';
+export { default as DialogChatError } from "./DialogChatError.svelte";
 
 /**
  * **DialogEmptyFileAlert** - Empty file upload warning
@@ -299,7 +299,7 @@ export { default as DialogChatError } from './DialogChatError.svelte';
  * />
  * ```
  */
-export { default as DialogEmptyFileAlert } from './DialogEmptyFileAlert.svelte';
+export { default as DialogEmptyFileAlert } from "./DialogEmptyFileAlert.svelte";
 
 /**
  * **DialogFileUploadError** - File upload compatibility error
@@ -328,7 +328,7 @@ export { default as DialogEmptyFileAlert } from './DialogEmptyFileAlert.svelte';
  * />
  * ```
  */
-export { default as DialogFileUploadError } from './DialogFileUploadError.svelte';
+export { default as DialogFileUploadError } from "./DialogFileUploadError.svelte";
 
 /**
  * **DialogModelNotAvailable** - Model unavailable error
@@ -358,7 +358,7 @@ export { default as DialogFileUploadError } from './DialogFileUploadError.svelte
  * />
  * ```
  */
-export { default as DialogModelNotAvailable } from './DialogModelNotAvailable.svelte';
+export { default as DialogModelNotAvailable } from "./DialogModelNotAvailable.svelte";
 
 /**
  *
@@ -401,7 +401,7 @@ export { default as DialogModelNotAvailable } from './DialogModelNotAvailable.sv
  * />
  * ```
  */
-export { default as DialogConversationSelection } from './DialogConversationSelection.svelte';
+export { default as DialogConversationSelection } from "./DialogConversationSelection.svelte";
 
 /**
  *
@@ -412,7 +412,7 @@ export { default as DialogConversationSelection } from './DialogConversationSele
  */
 
 /** **DialogModelInformation** - model details a phone opens instead of the manager pane. */
-export { default as DialogModelInformation } from './DialogModelInformation.svelte';
+export { default as DialogModelInformation } from "./DialogModelInformation.svelte";
 
 /**
  * **DialogMcpResourcesBrowser** - MCP resources browser dialog
@@ -442,7 +442,7 @@ export { default as DialogModelInformation } from './DialogModelInformation.svel
  * />
  * ```
  */
-export { default as DialogMcpResourcesBrowser } from './DialogMcpResourcesBrowser.svelte';
+export { default as DialogMcpResourcesBrowser } from "./DialogMcpResourcesBrowser.svelte";
 
 /**
  * **DialogMcpResourcePreview** - MCP resource content preview
@@ -466,7 +466,7 @@ export { default as DialogMcpResourcesBrowser } from './DialogMcpResourcesBrowse
  * />
  * ```
  */
-export { default as DialogMcpResourcePreview } from './DialogMcpResourcePreview.svelte';
+export { default as DialogMcpResourcePreview } from "./DialogMcpResourcePreview.svelte";
 
 /**
  * **DialogMermaidPreview** - Full-screen Mermaid diagram preview with zoom and pan
@@ -498,7 +498,7 @@ export { default as DialogMcpResourcePreview } from './DialogMcpResourcePreview.
  * />
  * ```
  */
-export { default as DialogMermaidPreview } from './DialogMermaidPreview.svelte';
+export { default as DialogMermaidPreview } from "./DialogMermaidPreview.svelte";
 
 /** **DialogDiscoverModels** - shell for the Hugging Face model discovery view. */
-export { default as DialogDiscoverModels } from './DialogDiscoverModels.svelte';
+export { default as DialogDiscoverModels } from "./DialogDiscoverModels.svelte";

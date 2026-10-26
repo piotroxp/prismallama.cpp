@@ -21,33 +21,38 @@ llama-embedding.exe -m ./path/to/model --pooling mean --log-disable -p "Hello Wo
 The above command will output space-separated float values.
 
 ## extra parameters
+
 ### --embd-normalize $integer$
-| $integer$ | description         | formula |
-|-----------|---------------------|---------|
+
+| $integer$ | description         | formula                                              |
+| --------- | ------------------- | ---------------------------------------------------- |
 | $-1$      | none                |
-| $0$       | max absolute int16  | $\Large{{32760 * x_i} \over\max \lvert x_i\rvert}$
-| $1$       | taxicab             | $\Large{x_i \over\sum \lvert x_i\rvert}$
-| $2$       | euclidean (default) | $\Large{x_i \over\sqrt{\sum x_i^2}}$
-| $>2$      | p-norm              | $\Large{x_i \over\sqrt[p]{\sum \lvert x_i\rvert^p}}$
+| $0$       | max absolute int16  | $\Large{{32760 * x_i} \over\max \lvert x_i\rvert}$   |
+| $1$       | taxicab             | $\Large{x_i \over\sum \lvert x_i\rvert}$             |
+| $2$       | euclidean (default) | $\Large{x_i \over\sqrt{\sum x_i^2}}$                 |
+| $>2$      | p-norm              | $\Large{x_i \over\sqrt[p]{\sum \lvert x_i\rvert^p}}$ |
 
 ### --embd-output-format $'string'$
-| $'string'$ | description                  |  |
-|------------|------------------------------|--|
-| ''         | same as before               | (default)
-| 'array'    | single embeddings            | $[[x_1,...,x_n]]$
-|            | multiple embeddings          | $[[x_1,...,x_n],[x_1,...,x_n],...,[x_1,...,x_n]]$
+
+| $'string'$ | description                  |                                                   |
+| ---------- | ---------------------------- | ------------------------------------------------- |
+| ''         | same as before               | (default)                                         |
+| 'array'    | single embeddings            | $[[x_1,...,x_n]]$                                 |
+|            | multiple embeddings          | $[[x_1,...,x_n],[x_1,...,x_n],...,[x_1,...,x_n]]$ |
 | 'json'     | openai style                 |
 | 'json+'    | add cosine similarity matrix |
 | 'raw'      | plain text output            |
 
 ### --embd-separator $"string"$
-| $"string"$   | |
-|--------------|-|
-| "\n"         | (default)
-| "<#embSep#>" | for example
-| "<#sep#>"    | other example
+
+| $"string"$   |               |
+| ------------ | ------------- |
+| "\n"         | (default)     |
+| "<#embSep#>" | for example   |
+| "<#sep#>"    | other example |
 
 ## examples
+
 ### Unix-based systems (Linux, macOS, etc.):
 
 ```bash

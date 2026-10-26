@@ -3,6 +3,7 @@
 ## Tool Dependencies
 
 Native Windows 11 arm64 builds have the following tool dependencies:
+
 - MS Visual Studio 2026 (Community Edition or Pro)
   - MSVC arm64 standard and runtime libraries
   - UCRT and Driver Kit
@@ -16,7 +17,6 @@ Note: The rest of the **Windows** build process assumes that you're running nati
 ## Overview
 
 The document covers procedures for installing the latest GPU and NPU drivers, and OpenCL and Hexagon SDKs.
-
 
 In order to use Hexagon NPU on Snapdragon Windows devices the underlying HTP Ops libraries (e.g libggml-htp-v73.so)
 must be included in the .cat file digitally signed with a trusted certificate.
@@ -46,6 +46,7 @@ Or download the complete official version from
     https://softwarecenter.qualcomm.com/catalog/item/Adreno_OpenCL_SDK?version=2.3.2
 
 Unzip/untar the archive into
+
 ```
 c:\Qualcomm\OpenCL_SDK\2.3.2
 ```
@@ -61,6 +62,7 @@ Or download the complete official version from
     https://softwarecenter.qualcomm.com/catalog/item/Hexagon_SDK?version=6.7.0.0
 
 Unzip/untar the archive into
+
 ```
 c:\Qualcomm\Hexagon_SDK\6.7.0.0
 ```
@@ -84,6 +86,7 @@ After the automated installation and reboot please make sure that the Hexagon NP
 
 If the device is not available you can try installing all components (`qcnspmcdm8380`, `qcnspmcdm8380_ext`) manually.
 The components are extracted into
+
 ```
 c:\QCDrivers\qcnspmcdm...
 ```
@@ -96,33 +99,40 @@ Adreno GPU backend does not require test signatures.
 ### Enable testsigning
 
 Use `bcdedit` to enable test-signing
+
 ```
 > bcdedit /set TESTSIGNING ON
 ```
+
 (Secure Boot may need to be disabled for this to work)
 
 Make sure test-signing is enabled after reboot
+
 ```
 > bcdedit /enum
 ...
 testsigning             Yes
 ...
 ```
+
 For additional details see Microsoft guide at
 
-   https://learn.microsoft.com/en-us/windows-hardware/drivers/install/the-testsigning-boot-configuration-option
+https://learn.microsoft.com/en-us/windows-hardware/drivers/install/the-testsigning-boot-configuration-option
 
 ### Create personal certificate
 
 The tools required for this procedure are available as part of Windows SDK and Windows Driver Kit which should be
 installed as part of the MS Visual Studio.
 They are typically located at
+
 ```
 c:\Program Files (x86)\Windows Kits\10\bin\10.0.26100.0
 ```
+
 (replace 10.0.26100.0 with correct version).
 
 To create personal self-signed certificate run the following commands (either from cmd or power-shell):
+
 ```
 > cd c:\Users\MyUser
 > mkdir Certs
@@ -130,6 +140,7 @@ To create personal self-signed certificate run the following commands (either fr
 > makecert -r -pe -ss PrivateCertStore -n CN=GGML.HTP.v1 -eku 1.3.6.1.5.5.7.3.3 -sv ggml-htp-v1.pvk ggml-htp-v1.cer
 > pvk2pfx.exe -pvk ggml-htp-v1.pvk -spc ggml-htp-v1.cer -pfx ggml-htp-v1.pfx
 ```
+
 (replace `MyUser` with your username).
 
 Add this certificate to `Trusted Root Certification Authorities` and `Trusted Publishers` stores.
@@ -148,6 +159,7 @@ Please note that the same certificate can be used for signing any number of buil
 
 The overall Hexagon backend build procedure for Windows on Snapdragon is the same as for other platforms.
 However, additional settings are required for generating and signing HTP Ops libraries.
+
 ```
 > $env:OPENCL_SDK_ROOT="C:\Qualcomm\OpenCL_SDK\2.3.2"
 > $env:HEXAGON_SDK_ROOT="C:\Qualcomm\Hexagon_SDK\6.7.0.0"
@@ -161,6 +173,7 @@ However, additional settings are required for generating and signing HTP Ops lib
 ```
 
 Once the build is complete HTP ops libraries will be installed like this
+
 ```
 > dir pkg-wos/lib
 ...

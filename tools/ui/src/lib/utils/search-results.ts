@@ -1,4 +1,4 @@
-import type { SearchResult } from '$lib/types/search';
+import type { SearchResult } from "$lib/types/search";
 
 /**
  * Parsers for MCP web-search tool responses shaped like:
@@ -26,40 +26,40 @@ const LINE_BREAK_RE = /\r?\n/;
 // Sentinel the search-result wire format uses when a field is absent
 // (e.g. `Author: N/A`). Treated identically to a missing field so the
 // rendered card hides the row either way.
-const NOT_AVAILABLE_VALUE = 'N/A';
+const NOT_AVAILABLE_VALUE = "N/A";
 // Section header that announces the start of the multi-line Highlights
 // block. Everything from that line onward (until the next `---`
 // separator or end of chunk) is captured verbatim as highlight text
 // instead of being re-scanned for `Title:`/`URL:`/... field lines.
-const HIGHLIGHTS_SECTION_HEADER = 'Highlights:';
+const HIGHLIGHTS_SECTION_HEADER = "Highlights:";
 // Field name conventionally used by web-search tools (Exa etc.) as the
 // user-supplied query parameter. Extracted so future tool schemas that
 // adopt the same convention stay grep-compatible with this parser.
-const SEARCH_TOOL_QUERY_FIELD = 'query';
+const SEARCH_TOOL_QUERY_FIELD = "query";
 // URL schemes the favicon helper will resolve to a hosted favicon. Any
 // other scheme (e.g. data:, blob:) intentionally returns null so the UI
 // can fall back to a generic globe icon.
-const RESOLVABLE_URL_PROTOCOLS: readonly string[] = ['https:', 'http:'];
+const RESOLVABLE_URL_PROTOCOLS: readonly string[] = ["https:", "http:"];
 // Conventional favicon path served by virtually every web host.
 // Appended to the URL origin as a best-effort lookup target; ignore
 // 404s at render time.
-const FAVICON_PATH = '/favicon.ico';
+const FAVICON_PATH = "/favicon.ico";
 
 // Wire-format field names emitted by the search-result parser. String
 // values match the keys the chunk parser writes into the `fields` map
 // (and that callers read off `SearchResult`), so `FieldKey.TITLE` is a
 // drop-in for the literal `'title'`.
 enum FieldKey {
-	AUTHOR = 'author',
-	PUBLISHED = 'published',
-	TITLE = 'title',
-	URL = 'url'
+  AUTHOR = "author",
+  PUBLISHED = "published",
+  TITLE = "title",
+  URL = "url",
 }
 const FIELD_PREFIXES: ReadonlyArray<{ key: FieldKey; prefix: string }> = [
-	{ key: FieldKey.TITLE, prefix: 'Title:' },
-	{ key: FieldKey.URL, prefix: 'URL:' },
-	{ key: FieldKey.PUBLISHED, prefix: 'Published:' },
-	{ key: FieldKey.AUTHOR, prefix: 'Author:' }
+  { key: FieldKey.TITLE, prefix: "Title:" },
+  { key: FieldKey.URL, prefix: "URL:" },
+  { key: FieldKey.PUBLISHED, prefix: "Published:" },
+  { key: FieldKey.AUTHOR, prefix: "Author:" },
 ];
 
 /**
@@ -69,25 +69,25 @@ const FIELD_PREFIXES: ReadonlyArray<{ key: FieldKey; prefix: string }> = [
  * leading / consecutive separators are not lost.
  */
 function splitChunks(text: string): string[] {
-	const lines = text.split(LINE_BREAK_RE);
-	const chunks: string[] = [];
+  const lines = text.split(LINE_BREAK_RE);
+  const chunks: string[] = [];
 
-	let buffer: string[] = [];
+  let buffer: string[] = [];
 
-	for (const line of lines) {
-		if (SEPARATOR_LINE_RE.test(line)) {
-			if (buffer.length > 0) {
-				chunks.push(buffer.join('\n'));
-				buffer = [];
-			}
-		} else {
-			buffer.push(line);
-		}
-	}
+  for (const line of lines) {
+    if (SEPARATOR_LINE_RE.test(line)) {
+      if (buffer.length > 0) {
+        chunks.push(buffer.join("\n"));
+        buffer = [];
+      }
+    } else {
+      buffer.push(line);
+    }
+  }
 
-	if (buffer.length > 0) chunks.push(buffer.join('\n'));
+  if (buffer.length > 0) chunks.push(buffer.join("\n"));
 
-	return chunks;
+  return chunks;
 }
 
 /**
@@ -97,63 +97,63 @@ function splitChunks(text: string): string[] {
  * separator line).
  */
 function parseChunk(chunk: string): SearchResult | null {
-	const trimmed = chunk.trim();
+  const trimmed = chunk.trim();
 
-	if (!trimmed) return null;
+  if (!trimmed) return null;
 
-	const lines = chunk.split(LINE_BREAK_RE);
-	const fields: Record<FieldKey, string | undefined> = {
-		[FieldKey.AUTHOR]: undefined,
-		[FieldKey.PUBLISHED]: undefined,
-		[FieldKey.TITLE]: undefined,
-		[FieldKey.URL]: undefined
-	};
-	const highlightLines: string[] = [];
+  const lines = chunk.split(LINE_BREAK_RE);
+  const fields: Record<FieldKey, string | undefined> = {
+    [FieldKey.AUTHOR]: undefined,
+    [FieldKey.PUBLISHED]: undefined,
+    [FieldKey.TITLE]: undefined,
+    [FieldKey.URL]: undefined,
+  };
+  const highlightLines: string[] = [];
 
-	let inHighlights = false;
+  let inHighlights = false;
 
-	for (const line of lines) {
-		if (!inHighlights && line.trim() === HIGHLIGHTS_SECTION_HEADER) {
-			inHighlights = true;
+  for (const line of lines) {
+    if (!inHighlights && line.trim() === HIGHLIGHTS_SECTION_HEADER) {
+      inHighlights = true;
 
-			continue;
-		}
+      continue;
+    }
 
-		if (inHighlights) {
-			highlightLines.push(line);
+    if (inHighlights) {
+      highlightLines.push(line);
 
-			continue;
-		}
+      continue;
+    }
 
-		for (const { key, prefix } of FIELD_PREFIXES) {
-			if (!line.startsWith(prefix)) continue;
+    for (const { key, prefix } of FIELD_PREFIXES) {
+      if (!line.startsWith(prefix)) continue;
 
-			const value = line.slice(prefix.length).trim();
+      const value = line.slice(prefix.length).trim();
 
-			if (value && value !== NOT_AVAILABLE_VALUE) {
-				fields[key] = value;
-			}
+      if (value && value !== NOT_AVAILABLE_VALUE) {
+        fields[key] = value;
+      }
 
-			break;
-		}
-	}
+      break;
+    }
+  }
 
-	if (!fields[FieldKey.TITLE] || !fields[FieldKey.URL] || !URL_SCHEME_RE.test(fields[FieldKey.URL]))
-		return null;
+  if (!fields[FieldKey.TITLE] || !fields[FieldKey.URL] || !URL_SCHEME_RE.test(fields[FieldKey.URL]))
+    return null;
 
-	const highlights = highlightLines.join('\n').trim();
-	const result: SearchResult = {
-		title: fields[FieldKey.TITLE],
-		url: fields[FieldKey.URL]
-	};
+  const highlights = highlightLines.join("\n").trim();
+  const result: SearchResult = {
+    title: fields[FieldKey.TITLE],
+    url: fields[FieldKey.URL],
+  };
 
-	if (fields[FieldKey.PUBLISHED]) result.published = fields[FieldKey.PUBLISHED];
+  if (fields[FieldKey.PUBLISHED]) result.published = fields[FieldKey.PUBLISHED];
 
-	if (fields[FieldKey.AUTHOR]) result.author = fields[FieldKey.AUTHOR];
+  if (fields[FieldKey.AUTHOR]) result.author = fields[FieldKey.AUTHOR];
 
-	if (highlights) result.highlights = highlights;
+  if (highlights) result.highlights = highlights;
 
-	return result;
+  return result;
 }
 
 const EMPTY_SEARCH_RESULTS: SearchResult[] = [];
@@ -165,9 +165,9 @@ const EMPTY_SEARCH_RESULTS: SearchResult[] = [];
  * line-split parse for the megabyte tool results exec and file tools emit.
  */
 export function looksLikeSearchResult(text: string | undefined | null): boolean {
-	if (!text) return false;
+  if (!text) return false;
 
-	return text.includes('Title:') && text.includes('URL:');
+  return text.includes("Title:") && text.includes("URL:");
 }
 
 /** Bounded cache for extractSearchResults results. */
@@ -182,27 +182,27 @@ const searchResultsCache = new Map<string, SearchResult[]>();
  * tool result strings.
  */
 export function extractSearchResults(text: string | undefined | null): SearchResult[] {
-	if (!text || !looksLikeSearchResult(text)) return EMPTY_SEARCH_RESULTS;
+  if (!text || !looksLikeSearchResult(text)) return EMPTY_SEARCH_RESULTS;
 
-	const cached = searchResultsCache.get(text);
+  const cached = searchResultsCache.get(text);
 
-	if (cached) return cached;
+  if (cached) return cached;
 
-	const results: SearchResult[] = [];
+  const results: SearchResult[] = [];
 
-	for (const chunk of splitChunks(text)) {
-		const parsed = parseChunk(chunk);
+  for (const chunk of splitChunks(text)) {
+    const parsed = parseChunk(chunk);
 
-		if (parsed) results.push(parsed);
-	}
+    if (parsed) results.push(parsed);
+  }
 
-	if (searchResultsCache.size >= SEARCH_RESULTS_CACHE_MAX_SIZE) {
-		searchResultsCache.delete(searchResultsCache.keys().next().value!);
-	}
+  if (searchResultsCache.size >= SEARCH_RESULTS_CACHE_MAX_SIZE) {
+    searchResultsCache.delete(searchResultsCache.keys().next().value!);
+  }
 
-	searchResultsCache.set(text, results);
+  searchResultsCache.set(text, results);
 
-	return results;
+  return results;
 }
 
 /** Bounded cache for extractSearchQuery results. */
@@ -217,33 +217,33 @@ const searchQueryCache = new Map<string, string>();
  * on unchanged tool args strings.
  */
 export function extractSearchQuery(toolArgs: string | undefined | null): string {
-	if (!toolArgs) return '';
+  if (!toolArgs) return "";
 
-	const cached = searchQueryCache.get(toolArgs);
+  const cached = searchQueryCache.get(toolArgs);
 
-	if (cached !== undefined) return cached;
+  if (cached !== undefined) return cached;
 
-	let result = '';
+  let result = "";
 
-	try {
-		const parsed: unknown = JSON.parse(toolArgs);
+  try {
+    const parsed: unknown = JSON.parse(toolArgs);
 
-		if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-			const candidate = (parsed as Record<string, unknown>)[SEARCH_TOOL_QUERY_FIELD];
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      const candidate = (parsed as Record<string, unknown>)[SEARCH_TOOL_QUERY_FIELD];
 
-			if (typeof candidate === 'string') result = candidate.trim();
-		}
-	} catch {
-		result = '';
-	}
+      if (typeof candidate === "string") result = candidate.trim();
+    }
+  } catch {
+    result = "";
+  }
 
-	if (searchQueryCache.size >= SEARCH_QUERY_CACHE_MAX_SIZE) {
-		searchQueryCache.delete(searchQueryCache.keys().next().value!);
-	}
+  if (searchQueryCache.size >= SEARCH_QUERY_CACHE_MAX_SIZE) {
+    searchQueryCache.delete(searchQueryCache.keys().next().value!);
+  }
 
-	searchQueryCache.set(toolArgs, result);
+  searchQueryCache.set(toolArgs, result);
 
-	return result;
+  return result;
 }
 
 /**
@@ -253,15 +253,15 @@ export function extractSearchQuery(toolArgs: string | undefined | null): string 
  * scheme — callers should fall back to a generic globe icon.
  */
 export function faviconForUrl(url: string): string | null {
-	try {
-		const parsed = new URL(url);
+  try {
+    const parsed = new URL(url);
 
-		if (!RESOLVABLE_URL_PROTOCOLS.includes(parsed.protocol)) return null;
+    if (!RESOLVABLE_URL_PROTOCOLS.includes(parsed.protocol)) return null;
 
-		return `${parsed.protocol}//${parsed.host}${FAVICON_PATH}`;
-	} catch {
-		return null;
-	}
+    return `${parsed.protocol}//${parsed.host}${FAVICON_PATH}`;
+  } catch {
+    return null;
+  }
 }
 
 // Web-search MCP servers broadly follow the `web_search` token convention
@@ -271,7 +271,7 @@ export function faviconForUrl(url: string): string | null {
 // is a deliberate signal that the renderer is known to handle its output.
 // Continued maintenance note: when broadening this list, verify both the
 // tool schema and the response format against the supported spec above.
-export const SUPPORTED_WEB_SEARCH_TOOL_NAMES: readonly string[] = ['web_search_exa'];
+export const SUPPORTED_WEB_SEARCH_TOOL_NAMES: readonly string[] = ["web_search_exa"];
 
 /**
  * True when the tool's name is in the explicit allow-list of web-search
@@ -280,7 +280,7 @@ export const SUPPORTED_WEB_SEARCH_TOOL_NAMES: readonly string[] = ['web_search_e
  * tools that also happen to accept a `query` argument.
  */
 export function isWebSearchToolName(toolName: string | undefined | null): boolean {
-	if (!toolName) return false;
+  if (!toolName) return false;
 
-	return SUPPORTED_WEB_SEARCH_TOOL_NAMES.includes(toolName);
+  return SUPPORTED_WEB_SEARCH_TOOL_NAMES.includes(toolName);
 }

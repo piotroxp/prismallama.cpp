@@ -1,10 +1,10 @@
-import { nameOf } from '$lib/utils/model-names';
+import { nameOf } from "$lib/utils/model-names";
 
 /** One family of a model list, and the entries it covers. */
 export interface ModelFamilyGroup<T> {
-	entries: T[];
-	key: string;
-	label: string;
+  entries: T[];
+  key: string;
+  label: string;
 }
 
 /** Leading letters of a repo name, e.g. the `Qwen` of `Qwen3.8-27B`. */
@@ -17,31 +17,31 @@ const FAMILY_SEPARATORS = /[-_.]/;
  * `Qwen3.8-27B` both read as `Qwen`.
  */
 export function modelFamilyKey(repo: string): string {
-	const name = nameOf(repo);
-	const letters = name.match(FAMILY_LETTERS);
+  const name = nameOf(repo);
+  const letters = name.match(FAMILY_LETTERS);
 
-	return letters ? letters[0] : name.split(FAMILY_SEPARATORS)[0] || name;
+  return letters ? letters[0] : name.split(FAMILY_SEPARATORS)[0] || name;
 }
 
 /** Fold entries into families, so `Qwen` collects its sizes and variants. */
 export function groupModelFamilies<T>(
-	entries: T[],
-	modelOf: (entry: T) => string
+  entries: T[],
+  modelOf: (entry: T) => string,
 ): ModelFamilyGroup<T>[] {
-	const families = new Map<string, ModelFamilyGroup<T>>();
+  const families = new Map<string, ModelFamilyGroup<T>>();
 
-	for (const entry of entries) {
-		const key = modelFamilyKey(modelOf(entry));
-		const family = families.get(key);
+  for (const entry of entries) {
+    const key = modelFamilyKey(modelOf(entry));
+    const family = families.get(key);
 
-		if (family) {
-			family.entries.push(entry);
+    if (family) {
+      family.entries.push(entry);
 
-			continue;
-		}
+      continue;
+    }
 
-		families.set(key, { entries: [entry], key, label: key });
-	}
+    families.set(key, { entries: [entry], key, label: key });
+  }
 
-	return Array.from(families.values());
+  return Array.from(families.values());
 }

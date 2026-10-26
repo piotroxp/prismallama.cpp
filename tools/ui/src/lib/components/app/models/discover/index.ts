@@ -10,7 +10,7 @@
  */
 
 /** The whole view: sidebar list on the left, detail pane on the right. */
-export { default as ModelsDiscover } from './ModelsDiscover.svelte';
+export { default as ModelsDiscover } from "./ModelsDiscover.svelte";
 
-export * from './ModelsDiscoverList';
-export * from './ModelsDiscoverDetails';
+export * from "./ModelsDiscoverList";
+export * from "./ModelsDiscoverDetails";

@@ -1,5 +1,9 @@
 {
-  "extraPaths": ["gguf-py", "examples/model-conversion/scripts", "examples/model-conversion/scripts/utils"],
+  "extraPaths": [
+    "gguf-py",
+    "examples/model-conversion/scripts",
+    "examples/model-conversion/scripts/utils"
+  ],
   "pythonVersion": "3.9",
   "pythonPlatform": "All",
   "reportUnusedImport": "warning",
@@ -11,12 +15,12 @@
     {
       // TODO: make this version override work correctly
       "root": "gguf-py",
-      "pythonVersion": "3.8",
+      "pythonVersion": "3.8"
     },
     {
       // uses match expressions in steps.py
       "root": "tools/server/tests",
-      "pythonVersion": "3.10",
-    },
-  ],
- }
+      "pythonVersion": "3.10"
+    }
+  ]
+}

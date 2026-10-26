@@ -1,12 +1,12 @@
-import { IMAGE } from '$lib/constants';
-import { MimeTypeImage } from '$lib/enums';
+import { IMAGE } from "$lib/constants";
+import { MimeTypeImage } from "$lib/enums";
 
 // heic requires a relatively large decoder, in order to reduce primary bundle size
 // we lazily load this decoder from a CDN when needed, and cache it for future conversions
-const HEIC_TO_CDN_URL = 'https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/heic-to.js';
+const HEIC_TO_CDN_URL = "https://cdn.jsdelivr.net/npm/heic-to@1.5.2/dist/heic-to.js";
 
 interface HeicToModule {
-	heicTo(args: { blob: Blob; type: string; quality?: number }): Promise<Blob>;
+  heicTo(args: { blob: Blob; type: string; quality?: number }): Promise<Blob>;
 }
 
 let modulePromise: Promise<HeicToModule> | null = null;
@@ -16,11 +16,11 @@ let modulePromise: Promise<HeicToModule> | null = null;
  * @returns Promise resolving to the heic-to module
  */
 function getHeicTo(): Promise<HeicToModule> {
-	if (!modulePromise) {
-		modulePromise = import(/* @vite-ignore */ HEIC_TO_CDN_URL) as Promise<HeicToModule>;
-	}
+  if (!modulePromise) {
+    modulePromise = import(/* @vite-ignore */ HEIC_TO_CDN_URL) as Promise<HeicToModule>;
+  }
 
-	return modulePromise;
+  return modulePromise;
 }
 
 /**
@@ -29,20 +29,20 @@ function getHeicTo(): Promise<HeicToModule> {
  * @returns Promise resolving to JPEG data URL
  */
 export async function heicFileToJpegDataURL(file: File | Blob): Promise<string> {
-	const { heicTo } = await getHeicTo();
-	const jpegBlob = await heicTo({
-		blob: file,
-		quality: IMAGE.HEIC_JPEG_QUALITY,
-		type: MimeTypeImage.JPEG
-	});
+  const { heicTo } = await getHeicTo();
+  const jpegBlob = await heicTo({
+    blob: file,
+    quality: IMAGE.HEIC_JPEG_QUALITY,
+    type: MimeTypeImage.JPEG,
+  });
 
-	return new Promise((resolve, reject) => {
-		const reader = new FileReader();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
 
-		reader.onload = () => resolve(reader.result as string);
-		reader.onerror = () => reject(reader.error);
-		reader.readAsDataURL(jpegBlob);
-	});
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(jpegBlob);
+  });
 }
 
 /**
@@ -51,7 +51,7 @@ export async function heicFileToJpegDataURL(file: File | Blob): Promise<string> 
  * @returns True if the MIME type is image/heic or image/heif
  */
 export function isHeicMimeType(mimeType: string): boolean {
-	const normalized = mimeType.trim().toLowerCase();
+  const normalized = mimeType.trim().toLowerCase();
 
-	return normalized === MimeTypeImage.HEIC || normalized === MimeTypeImage.HEIF;
+  return normalized === MimeTypeImage.HEIC || normalized === MimeTypeImage.HEIF;
 }

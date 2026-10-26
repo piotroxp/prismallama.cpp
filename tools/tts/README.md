@@ -15,6 +15,7 @@ llama-tts -hf ggml-org/Qwen3-TTS-12Hz-1.7B-Base-GGUF -p "Hello world" --output o
 Note: it's highly recommended to always provide a speaker reference voice (via `--tts-speaker-file`); otherwise, the model's performance may be degraded.
 
 Common params:
+
 - Sampling params such as `--top-k`, `--top-p`, `--temp`, etc.
 - `-n <number_of_frames>` limits the output length, e.g. `-n 500`. Note that how many milliseconds each frame represents varies by model
 - Core inference params such as `-ngl`, `-b`, `-ub`, etc.
@@ -22,6 +23,7 @@ Common params:
 ## Qwen3-TTS
 
 Available params:
+
 - `--tts-lang` can be `zh`, `en`, `de`, `it`, `pt`, `es`, `ja`, `ko`, `fr`, `ru` (default: `en`)
 - `--tts-speaker-file` should point to a speaker reference audio file (wav, mp3)
 
@@ -38,6 +40,7 @@ llama-tts -hf ggml-org/Qwen3-TTS-12Hz-1.7B-Base-GGUF \
 ## Pocket TTS
 
 Available params:
+
 - `--tts-speaker-file` should point to a speaker reference audio file (wav, mp3). It is required, the model produces almost no audio without it
 - Note: `lang` is not used, the language is a property of the weights
 
@@ -63,6 +66,7 @@ python convert_hf_to_gguf.py path/to/pocket-tts/languages/english --mmproj --out
 ## Soprano
 
 Available params:
+
 - `--tts-speaker-file` is not supported; the model uses a fixed voice
 - Note: `lang` is not used. Supply normalized English text
 

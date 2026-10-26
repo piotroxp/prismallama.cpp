@@ -1,14 +1,14 @@
 # Security Policy
 
- - [**Reporting a vulnerability**](#reporting-a-vulnerability)
- - [**Requirements**](#requirements)
- - [**Covered Topics**](#covered-topics)
- - [**Using llama.cpp securely**](#using-llamacpp-securely)
-   - [Untrusted models](#untrusted-models)
-   - [Untrusted inputs](#untrusted-inputs)
-   - [Data privacy](#data-privacy)
-   - [Untrusted environments or networks](#untrusted-environments-or-networks)
-   - [Multi-Tenant environments](#multi-tenant-environments)
+- [**Reporting a vulnerability**](#reporting-a-vulnerability)
+- [**Requirements**](#requirements)
+- [**Covered Topics**](#covered-topics)
+- [**Using llama.cpp securely**](#using-llamacpp-securely)
+  - [Untrusted models](#untrusted-models)
+  - [Untrusted inputs](#untrusted-inputs)
+  - [Data privacy](#data-privacy)
+  - [Untrusted environments or networks](#untrusted-environments-or-networks)
+  - [Multi-Tenant environments](#multi-tenant-environments)
 
 ## Reporting a vulnerability
 
@@ -46,10 +46,10 @@ Only vulnerabilities that fall within these parts of the project are considered 
 - `ggml/**/*`
 - `gguf-py/**/*`
 - `tools/server/*`, **excluding** the following topics:
-    - Web UI
-    - Features marked as experimental
-    - Features not recommended for use in untrusted environments (e.g., router, MCP)
-    - Bugs that can lead to Denial-of-Service attack
+  - Web UI
+  - Features marked as experimental
+  - Features not recommended for use in untrusted environments (e.g., router, MCP)
+  - Bugs that can lead to Denial-of-Service attack
 
 Note that none of the topics under [Using llama.cpp securely](#using-llamacpp-securely) are considered vulnerabilities in LLaMA C++.
 
@@ -60,9 +60,10 @@ For vulnerabilities that fall within the `vendor` directory, please report them 
 ## Using llama.cpp securely
 
 ### Untrusted models
+
 Be careful when running untrusted models. This classification includes models created by unknown developers or utilizing data obtained from unknown sources.
 
-*Always execute untrusted models within a secure, isolated environment such as a sandbox* (e.g., containers, virtual machines). This helps protect your system from potentially malicious code.
+_Always execute untrusted models within a secure, isolated environment such as a sandbox_ (e.g., containers, virtual machines). This helps protect your system from potentially malicious code.
 
 > [!NOTE]
 > The trustworthiness of a model is not binary. You must always determine the proper level of caution depending on the specific model and how it matches your use case and risk tolerance.
@@ -73,14 +74,14 @@ Some models accept various input formats (text, images, audio, etc.). The librar
 
 For maximum security when handling untrusted inputs, you may need to employ the following:
 
-* Sandboxing: Isolate the environment where the inference happens.
-* Pre-analysis: Check how the model performs by default when exposed to prompt injection (e.g. using [fuzzing for prompt injection](https://github.com/FonduAI/awesome-prompt-injection?tab=readme-ov-file#tools)). This will give you leads on how hard you will have to work on the next topics.
-* Updates: Keep both LLaMA C++ and your libraries updated with the latest security patches.
-* Input Sanitation: Before feeding data to the model, sanitize inputs rigorously. This involves techniques such as:
-    * Validation: Enforce strict rules on allowed characters and data types.
-    * Filtering: Remove potentially malicious scripts or code fragments.
-    * Encoding: Convert special characters into safe representations.
-    * Verification: Run tooling that identifies potential script injections (e.g. [models that detect prompt injection attempts](https://python.langchain.com/docs/guides/safety/hugging_face_prompt_injection)).
+- Sandboxing: Isolate the environment where the inference happens.
+- Pre-analysis: Check how the model performs by default when exposed to prompt injection (e.g. using [fuzzing for prompt injection](https://github.com/FonduAI/awesome-prompt-injection?tab=readme-ov-file#tools)). This will give you leads on how hard you will have to work on the next topics.
+- Updates: Keep both LLaMA C++ and your libraries updated with the latest security patches.
+- Input Sanitation: Before feeding data to the model, sanitize inputs rigorously. This involves techniques such as:
+  - Validation: Enforce strict rules on allowed characters and data types.
+  - Filtering: Remove potentially malicious scripts or code fragments.
+  - Encoding: Convert special characters into safe representations.
+  - Verification: Run tooling that identifies potential script injections (e.g. [models that detect prompt injection attempts](https://python.langchain.com/docs/guides/safety/hugging_face_prompt_injection)).
 
 ### Data privacy
 
@@ -89,9 +90,10 @@ To protect sensitive data from potential leaks or unauthorized access, it is cru
 ### Untrusted environments or networks
 
 If you can't run your models in a secure and isolated environment or if it must be exposed to an untrusted network, make sure to take the following security precautions:
-* Do not use the RPC backend, [ggml-rpc-server](https://github.com/ggml-org/llama.cpp/tree/master/tools/rpc) and [llama-server](https://github.com/ggml-org/llama.cpp/tree/master/tools/server) functionality (see https://github.com/ggml-org/llama.cpp/pull/13061).
-* Confirm the hash of any downloaded artifact (e.g. pre-trained model weights) matches a known-good value.
-* Encrypt your data if sending it over the network.
+
+- Do not use the RPC backend, [ggml-rpc-server](https://github.com/ggml-org/llama.cpp/tree/master/tools/rpc) and [llama-server](https://github.com/ggml-org/llama.cpp/tree/master/tools/server) functionality (see https://github.com/ggml-org/llama.cpp/pull/13061).
+- Confirm the hash of any downloaded artifact (e.g. pre-trained model weights) matches a known-good value.
+- Encrypt your data if sending it over the network.
 
 ### Multi-Tenant environments
 

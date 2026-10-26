@@ -1,21 +1,21 @@
-import { page } from '$app/state';
-import { AttachmentAction } from '$lib/enums';
+import { page } from "$app/state";
+import { AttachmentAction } from "$lib/enums";
 
 export interface AttachmentModalityFlags {
-	hasVisionModality: boolean;
-	hasAudioModality: boolean;
-	hasVideoModality: boolean;
+  hasVisionModality: boolean;
+  hasAudioModality: boolean;
+  hasVideoModality: boolean;
 }
 
 export interface AttachmentActionCallbacks {
-	onFileUpload?: () => void;
-	onSystemPromptClick?: () => void;
+  onFileUpload?: () => void;
+  onSystemPromptClick?: () => void;
 }
 
 export interface UseAttachmentMenuReturn {
-	readonly callbacks: Record<string, () => void>;
-	isItemEnabled(enabledWhen: string | undefined): boolean;
-	getSystemMessageTooltip(): string;
+  readonly callbacks: Record<string, () => void>;
+  isItemEnabled(enabledWhen: string | undefined): boolean;
+  getSystemMessageTooltip(): string;
 }
 
 /**
@@ -30,41 +30,41 @@ export interface UseAttachmentMenuReturn {
  * @param close      - Function that dismisses the hosting UI element (dropdown / sheet).
  */
 export function useAttachmentMenu(
-	getFlags: () => AttachmentModalityFlags,
-	getCallbacks: () => AttachmentActionCallbacks,
-	close: () => void
+  getFlags: () => AttachmentModalityFlags,
+  getCallbacks: () => AttachmentActionCallbacks,
+  close: () => void,
 ): UseAttachmentMenuReturn {
-	const modalityFlags = $derived(getFlags());
-	const callbacks = $derived.by(() => {
-		const cbs = getCallbacks();
-		const wrap = (fn?: () => void) => () => {
-			close();
-			fn?.();
-		};
+  const modalityFlags = $derived(getFlags());
+  const callbacks = $derived.by(() => {
+    const cbs = getCallbacks();
+    const wrap = (fn?: () => void) => () => {
+      close();
+      fn?.();
+    };
 
-		return {
-			[AttachmentAction.FILE_UPLOAD]: wrap(cbs.onFileUpload),
-			[AttachmentAction.SYSTEM_PROMPT_CLICK]: wrap(cbs.onSystemPromptClick)
-		};
-	});
+    return {
+      [AttachmentAction.FILE_UPLOAD]: wrap(cbs.onFileUpload),
+      [AttachmentAction.SYSTEM_PROMPT_CLICK]: wrap(cbs.onSystemPromptClick),
+    };
+  });
 
-	function isItemEnabled(enabledWhen: string | undefined): boolean {
-		if (!enabledWhen || enabledWhen === 'always') return true;
+  function isItemEnabled(enabledWhen: string | undefined): boolean {
+    if (!enabledWhen || enabledWhen === "always") return true;
 
-		return !!modalityFlags[enabledWhen as keyof AttachmentModalityFlags];
-	}
+    return !!modalityFlags[enabledWhen as keyof AttachmentModalityFlags];
+  }
 
-	function getSystemMessageTooltip(): string {
-		return !page.params.id
-			? 'Add custom system message for a new conversation'
-			: 'Inject custom system message at the beginning of the conversation';
-	}
+  function getSystemMessageTooltip(): string {
+    return !page.params.id
+      ? "Add custom system message for a new conversation"
+      : "Inject custom system message at the beginning of the conversation";
+  }
 
-	return {
-		get callbacks() {
-			return callbacks;
-		},
-		getSystemMessageTooltip,
-		isItemEnabled
-	};
+  return {
+    get callbacks() {
+      return callbacks;
+    },
+    getSystemMessageTooltip,
+    isItemEnabled,
+  };
 }

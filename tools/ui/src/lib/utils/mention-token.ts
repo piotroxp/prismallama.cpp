@@ -1,19 +1,19 @@
 // An `@` starts a mention only when preceded by start-of-string or one of
 // these; identifier chars are not delimiters, so a mid-word `@` does not.
 const TOKEN_BOUNDARY_CHARS = new Set([
-	' ',
-	'\t',
-	'\n',
-	'\r',
-	'(',
-	')',
-	'[',
-	']',
-	',',
-	';',
-	':',
-	'"',
-	"'"
+  " ",
+  "\t",
+  "\n",
+  "\r",
+  "(",
+  ")",
+  "[",
+  "]",
+  ",",
+  ";",
+  ":",
+  '"',
+  "'",
 ]);
 
 /**
@@ -21,42 +21,42 @@ const TOKEN_BOUNDARY_CHARS = new Set([
  * the query covers the whole `@...` token regardless of caret position.
  */
 export function findMentionToken(
-	value: string,
-	cursor: number
+  value: string,
+  cursor: number,
 ): { start: number; end: number; query: string } | null {
-	if (cursor <= 0 || cursor > value.length) return null;
+  if (cursor <= 0 || cursor > value.length) return null;
 
-	let atIndex = -1;
+  let atIndex = -1;
 
-	for (let i = cursor - 1; i >= 0; i--) {
-		const ch = value[i];
+  for (let i = cursor - 1; i >= 0; i--) {
+    const ch = value[i];
 
-		if (ch === '@') {
-			const prev = i > 0 ? value[i - 1] : '';
+    if (ch === "@") {
+      const prev = i > 0 ? value[i - 1] : "";
 
-			if (i === 0 || TOKEN_BOUNDARY_CHARS.has(prev)) {
-				atIndex = i;
-			}
+      if (i === 0 || TOKEN_BOUNDARY_CHARS.has(prev)) {
+        atIndex = i;
+      }
 
-			break;
-		}
+      break;
+    }
 
-		if (TOKEN_BOUNDARY_CHARS.has(ch)) break;
-	}
+    if (TOKEN_BOUNDARY_CHARS.has(ch)) break;
+  }
 
-	if (atIndex === -1) return null;
+  if (atIndex === -1) return null;
 
-	let end = atIndex + 1;
+  let end = atIndex + 1;
 
-	while (end < value.length && !TOKEN_BOUNDARY_CHARS.has(value[end])) {
-		end++;
-	}
+  while (end < value.length && !TOKEN_BOUNDARY_CHARS.has(value[end])) {
+    end++;
+  }
 
-	return {
-		end,
-		query: value.slice(atIndex + 1, end),
-		start: atIndex
-	};
+  return {
+    end,
+    query: value.slice(atIndex + 1, end),
+    start: atIndex,
+  };
 }
 
 /**
@@ -65,17 +65,17 @@ export function findMentionToken(
  * picker does not silently re-open on in-token edits.
  */
 export interface MentionDismissSnapshot {
-	start: number;
-	query: string;
+  start: number;
+  query: string;
 }
 
 export function takeMentionDismissSnapshot(
-	value: string,
-	cursor: number
+  value: string,
+  cursor: number,
 ): MentionDismissSnapshot | null {
-	const token = findMentionToken(value, cursor);
+  const token = findMentionToken(value, cursor);
 
-	if (!token) return null;
+  if (!token) return null;
 
-	return { query: token.query, start: token.start };
+  return { query: token.query, start: token.start };
 }

@@ -24,35 +24,35 @@
  */
 
 import {
-	decodeFileLinkPath,
-	fileMentionLinkRe,
-	getMentionBadgeIconPaths,
-	getMentionBadgeLabel
-} from './mention-badge';
+  CODE_TOKEN_ATTR,
+  MENTION_BADGE_CLASSNAME,
+  MENTION_BADGE_DATA_ATTRS,
+  MENTION_BADGE_ICON_CLASSNAME,
+  MENTION_BADGE_SVG_ATTRIBUTES,
+  SETTINGS_KEYS,
+} from "$lib/constants";
+import { BooleanString, ChatFormInputRichTokenKind } from "$lib/enums";
+import { settingsStore } from "$lib/stores/settings/index.svelte";
+import { toolsStore } from "$lib/stores/tools.svelte";
+import type { ChatFormInputRichToken } from "$lib/types/chat-form-input-rich";
 import {
-	CODE_TOKEN_ATTR,
-	MENTION_BADGE_CLASSNAME,
-	MENTION_BADGE_DATA_ATTRS,
-	MENTION_BADGE_ICON_CLASSNAME,
-	MENTION_BADGE_SVG_ATTRIBUTES,
-	SETTINGS_KEYS
-} from '$lib/constants';
-import { BooleanString, ChatFormInputRichTokenKind } from '$lib/enums';
-import { settingsStore } from '$lib/stores/settings/index.svelte';
-import { toolsStore } from '$lib/stores/tools.svelte';
-import type { ChatFormInputRichToken } from '$lib/types/chat-form-input-rich';
+  decodeFileLinkPath,
+  fileMentionLinkRe,
+  getMentionBadgeIconPaths,
+  getMentionBadgeLabel,
+} from "./mention-badge";
 
 // Block wrappers browsers insert for newlines; each folds back into a
 // single `\n` during serialization.
-const BLOCK_TAG_NAMES = new Set(['DIV', 'P']);
+const BLOCK_TAG_NAMES = new Set(["DIV", "P"]);
 // `file://` is required so plain URLs stay as text; `)` terminates only
 // when not followed by whitespace or `[` (adjacent badges keep working).
-const MENTION_BADGE_RE = fileMentionLinkRe('g');
+const MENTION_BADGE_RE = fileMentionLinkRe("g");
 
 function badgeSourceLength(name: string, path: string): number {
-	if (!name || !path) return 0;
+  if (!name || !path) return 0;
 
-	return `[${name}](file://${path})`.length;
+  return `[${name}](file://${path})`.length;
 }
 
 /**
@@ -71,9 +71,9 @@ const CODE_SPAN_RE = /(```[\s\S]*?```)|(`[^`\n]+`)/g;
  * textarea to the chat-form-input-rich renderer.
  */
 export function containsCodeSpan(value: string): boolean {
-	CODE_SPAN_RE.lastIndex = 0;
+  CODE_SPAN_RE.lastIndex = 0;
 
-	return CODE_SPAN_RE.test(value);
+  return CODE_SPAN_RE.test(value);
 }
 
 const CODE_FENCE_RE = /```/g;
@@ -87,19 +87,19 @@ const CODE_FENCE_RE = /```/g;
  * submitting the message.
  */
 export function isOffsetInCodeBlock(source: string, offset: number): boolean {
-	let inside = false;
+  let inside = false;
 
-	CODE_FENCE_RE.lastIndex = 0;
+  CODE_FENCE_RE.lastIndex = 0;
 
-	let match: RegExpExecArray | null;
+  let match: RegExpExecArray | null;
 
-	while ((match = CODE_FENCE_RE.exec(source)) !== null) {
-		if (match.index + match[0].length > offset) break;
+  while ((match = CODE_FENCE_RE.exec(source)) !== null) {
+    if (match.index + match[0].length > offset) break;
 
-		inside = !inside;
-	}
+    inside = !inside;
+  }
 
-	return inside;
+  return inside;
 }
 
 /**
@@ -111,68 +111,68 @@ export function isOffsetInCodeBlock(source: string, offset: number): boolean {
  * stays in a plain text token so the round trip is byte-exact.
  */
 export function tokenizeContent(input: string): ChatFormInputRichToken[] {
-	const tokens: ChatFormInputRichToken[] = [];
+  const tokens: ChatFormInputRichToken[] = [];
 
-	let cursor = 0;
+  let cursor = 0;
 
-	CODE_SPAN_RE.lastIndex = 0;
+  CODE_SPAN_RE.lastIndex = 0;
 
-	let match: RegExpExecArray | null;
+  let match: RegExpExecArray | null;
 
-	while ((match = CODE_SPAN_RE.exec(input)) !== null) {
-		const start = match.index;
+  while ((match = CODE_SPAN_RE.exec(input)) !== null) {
+    const start = match.index;
 
-		if (start > cursor) {
-			pushTextAndBadgeTokens(input.slice(cursor, start), tokens);
-		}
+    if (start > cursor) {
+      pushTextAndBadgeTokens(input.slice(cursor, start), tokens);
+    }
 
-		tokens.push(
-			match[1] !== undefined
-				? { kind: ChatFormInputRichTokenKind.CODE_BLOCK, text: match[1] }
-				: { kind: ChatFormInputRichTokenKind.CODE_INLINE, text: match[2] }
-		);
-		cursor = start + match[0].length;
-	}
+    tokens.push(
+      match[1] !== undefined
+        ? { kind: ChatFormInputRichTokenKind.CODE_BLOCK, text: match[1] }
+        : { kind: ChatFormInputRichTokenKind.CODE_INLINE, text: match[2] },
+    );
+    cursor = start + match[0].length;
+  }
 
-	if (cursor < input.length) {
-		pushTextAndBadgeTokens(input.slice(cursor), tokens);
-	}
+  if (cursor < input.length) {
+    pushTextAndBadgeTokens(input.slice(cursor), tokens);
+  }
 
-	return tokens;
+  return tokens;
 }
 
 /**
  * Tokenize a code-free segment into text and badge tokens.
  */
 function pushTextAndBadgeTokens(input: string, tokens: ChatFormInputRichToken[]) {
-	let cursor = 0;
+  let cursor = 0;
 
-	MENTION_BADGE_RE.lastIndex = 0;
+  MENTION_BADGE_RE.lastIndex = 0;
 
-	let match: RegExpExecArray | null;
+  let match: RegExpExecArray | null;
 
-	while ((match = MENTION_BADGE_RE.exec(input)) !== null) {
-		const [whole, name, path] = match;
-		const start = match.index;
+  while ((match = MENTION_BADGE_RE.exec(input)) !== null) {
+    const [whole, name, path] = match;
+    const start = match.index;
 
-		if (start > cursor) {
-			tokens.push({ kind: ChatFormInputRichTokenKind.TEXT, text: input.slice(cursor, start) });
-		}
+    if (start > cursor) {
+      tokens.push({ kind: ChatFormInputRichTokenKind.TEXT, text: input.slice(cursor, start) });
+    }
 
-		tokens.push({ kind: ChatFormInputRichTokenKind.BADGE, name, path });
-		cursor = start + whole.length;
-	}
+    tokens.push({ kind: ChatFormInputRichTokenKind.BADGE, name, path });
+    cursor = start + whole.length;
+  }
 
-	if (cursor < input.length) {
-		tokens.push({ kind: ChatFormInputRichTokenKind.TEXT, text: input.slice(cursor) });
-	}
+  if (cursor < input.length) {
+    tokens.push({ kind: ChatFormInputRichTokenKind.TEXT, text: input.slice(cursor) });
+  }
 }
 
 function isCodeBlockElement(node: Node | null): node is HTMLElement {
-	return (
-		node instanceof HTMLElement &&
-		node.getAttribute(CODE_TOKEN_ATTR) === ChatFormInputRichTokenKind.CODE_BLOCK
-	);
+  return (
+    node instanceof HTMLElement &&
+    node.getAttribute(CODE_TOKEN_ATTR) === ChatFormInputRichTokenKind.CODE_BLOCK
+  );
 }
 
 /**
@@ -186,102 +186,102 @@ function isCodeBlockElement(node: Node | null): node is HTMLElement {
  * a newline.
  */
 export function serializeContent(root: HTMLElement): string {
-	let out = '';
-	let pendingBlockBoundary = false;
+  let out = "";
+  let pendingBlockBoundary = false;
 
-	const walk = (parent: Node) => {
-		let first = true; // no source-contributing sibling seen yet
+  const walk = (parent: Node) => {
+    let first = true; // no source-contributing sibling seen yet
 
-		for (const child of Array.from(parent.childNodes)) {
-			if (child.nodeType === Node.TEXT_NODE) {
-				const text = child.textContent ?? '';
+    for (const child of Array.from(parent.childNodes)) {
+      if (child.nodeType === Node.TEXT_NODE) {
+        const text = child.textContent ?? "";
 
-				if (text.length > 0) {
-					if (pendingBlockBoundary) {
-						out += '\n';
-						pendingBlockBoundary = false;
-					}
+        if (text.length > 0) {
+          if (pendingBlockBoundary) {
+            out += "\n";
+            pendingBlockBoundary = false;
+          }
 
-					out += text;
-					first = false;
-				}
+          out += text;
+          first = false;
+        }
 
-				continue;
-			}
+        continue;
+      }
 
-			if (child.nodeType !== Node.ELEMENT_NODE) continue;
+      if (child.nodeType !== Node.ELEMENT_NODE) continue;
 
-			const el = child as HTMLElement;
+      const el = child as HTMLElement;
 
-			if (el.getAttribute(MENTION_BADGE_DATA_ATTRS.BADGE) === BooleanString.TRUE) {
-				const name = el.getAttribute(MENTION_BADGE_DATA_ATTRS.NAME) ?? '';
-				const path = el.getAttribute(MENTION_BADGE_DATA_ATTRS.PATH) ?? '';
+      if (el.getAttribute(MENTION_BADGE_DATA_ATTRS.BADGE) === BooleanString.TRUE) {
+        const name = el.getAttribute(MENTION_BADGE_DATA_ATTRS.NAME) ?? "";
+        const path = el.getAttribute(MENTION_BADGE_DATA_ATTRS.PATH) ?? "";
 
-				if (name && path) {
-					if (pendingBlockBoundary) {
-						out += '\n';
-						pendingBlockBoundary = false;
-					}
+        if (name && path) {
+          if (pendingBlockBoundary) {
+            out += "\n";
+            pendingBlockBoundary = false;
+          }
 
-					out += `[${name}](file://${path})`;
-					first = false;
-				}
+          out += `[${name}](file://${path})`;
+          first = false;
+        }
 
-				continue;
-			}
+        continue;
+      }
 
-			const codeToken = el.getAttribute(CODE_TOKEN_ATTR);
+      const codeToken = el.getAttribute(CODE_TOKEN_ATTR);
 
-			if (codeToken !== null) {
-				const isBlock = codeToken === ChatFormInputRichTokenKind.CODE_BLOCK;
+      if (codeToken !== null) {
+        const isBlock = codeToken === ChatFormInputRichTokenKind.CODE_BLOCK;
 
-				if (isBlock && (pendingBlockBoundary || !first)) out += '\n';
+        if (isBlock && (pendingBlockBoundary || !first)) out += "\n";
 
-				pendingBlockBoundary = false;
-				walk(el);
-				first = false;
+        pendingBlockBoundary = false;
+        walk(el);
+        first = false;
 
-				if (isBlock) pendingBlockBoundary = true;
+        if (isBlock) pendingBlockBoundary = true;
 
-				continue;
-			}
+        continue;
+      }
 
-			if (el.tagName === 'BR') {
-				const isHatch =
-					isCodeBlockElement(el.previousSibling) || isCodeBlockElement(el.nextSibling);
+      if (el.tagName === "BR") {
+        const isHatch =
+          isCodeBlockElement(el.previousSibling) || isCodeBlockElement(el.nextSibling);
 
-				if (!isHatch && el.nextSibling) {
-					if (pendingBlockBoundary) {
-						out += '\n';
-						pendingBlockBoundary = false;
-					}
+        if (!isHatch && el.nextSibling) {
+          if (pendingBlockBoundary) {
+            out += "\n";
+            pendingBlockBoundary = false;
+          }
 
-					out += '\n';
-					first = false;
-				}
+          out += "\n";
+          first = false;
+        }
 
-				continue;
-			}
+        continue;
+      }
 
-			if (BLOCK_TAG_NAMES.has(el.tagName)) {
-				if (pendingBlockBoundary || !first) out += '\n';
+      if (BLOCK_TAG_NAMES.has(el.tagName)) {
+        if (pendingBlockBoundary || !first) out += "\n";
 
-				pendingBlockBoundary = false;
-				walk(el);
-				first = false;
+        pendingBlockBoundary = false;
+        walk(el);
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			walk(el);
+      walk(el);
 
-			if (pendingBlockBoundary) first = false;
-		}
-	};
+      if (pendingBlockBoundary) first = false;
+    }
+  };
 
-	walk(root);
+  walk(root);
 
-	return out;
+  return out;
 }
 
 /**
@@ -293,57 +293,57 @@ export function serializeContent(root: HTMLElement): string {
  * completed or broken) and the DOM needs a rebuild to restyle.
  */
 export function domMatchesTokens(root: HTMLElement, tokens: ChatFormInputRichToken[]): boolean {
-	const expected = tokens.filter((token) => token.kind !== ChatFormInputRichTokenKind.TEXT);
+  const expected = tokens.filter((token) => token.kind !== ChatFormInputRichTokenKind.TEXT);
 
-	let index = 0;
+  let index = 0;
 
-	const walk = (parent: Node): boolean => {
-		for (const child of Array.from(parent.childNodes)) {
-			if (child.nodeType !== Node.ELEMENT_NODE) continue;
+  const walk = (parent: Node): boolean => {
+    for (const child of Array.from(parent.childNodes)) {
+      if (child.nodeType !== Node.ELEMENT_NODE) continue;
 
-			const el = child as HTMLElement;
-			const isBadge = el.getAttribute(MENTION_BADGE_DATA_ATTRS.BADGE) === BooleanString.TRUE;
-			const isCode = el.getAttribute(CODE_TOKEN_ATTR) !== null;
+      const el = child as HTMLElement;
+      const isBadge = el.getAttribute(MENTION_BADGE_DATA_ATTRS.BADGE) === BooleanString.TRUE;
+      const isCode = el.getAttribute(CODE_TOKEN_ATTR) !== null;
 
-			if (!isBadge && !isCode) {
-				if (!walk(el)) return false;
+      if (!isBadge && !isCode) {
+        if (!walk(el)) return false;
 
-				continue;
-			}
+        continue;
+      }
 
-			const token = expected[index++];
+      const token = expected[index++];
 
-			if (!token) return false;
+      if (!token) return false;
 
-			if (isBadge) {
-				if (token.kind !== ChatFormInputRichTokenKind.BADGE) return false;
+      if (isBadge) {
+        if (token.kind !== ChatFormInputRichTokenKind.BADGE) return false;
 
-				if (token.name !== (el.getAttribute(MENTION_BADGE_DATA_ATTRS.NAME) ?? '')) return false;
+        if (token.name !== (el.getAttribute(MENTION_BADGE_DATA_ATTRS.NAME) ?? "")) return false;
 
-				if (token.path !== (el.getAttribute(MENTION_BADGE_DATA_ATTRS.PATH) ?? '')) return false;
+        if (token.path !== (el.getAttribute(MENTION_BADGE_DATA_ATTRS.PATH) ?? "")) return false;
 
-				continue;
-			}
+        continue;
+      }
 
-			const codeKind: ChatFormInputRichTokenKind =
-				el.getAttribute(CODE_TOKEN_ATTR) === ChatFormInputRichTokenKind.CODE_BLOCK
-					? ChatFormInputRichTokenKind.CODE_BLOCK
-					: ChatFormInputRichTokenKind.CODE_INLINE;
+      const codeKind: ChatFormInputRichTokenKind =
+        el.getAttribute(CODE_TOKEN_ATTR) === ChatFormInputRichTokenKind.CODE_BLOCK
+          ? ChatFormInputRichTokenKind.CODE_BLOCK
+          : ChatFormInputRichTokenKind.CODE_INLINE;
 
-			if (token.kind !== codeKind) return false;
+      if (token.kind !== codeKind) return false;
 
-			if (
-				token.kind === ChatFormInputRichTokenKind.CODE_INLINE ||
-				token.kind === ChatFormInputRichTokenKind.CODE_BLOCK
-			) {
-				if (token.text !== (el.textContent ?? '')) return false;
-			}
-		}
+      if (
+        token.kind === ChatFormInputRichTokenKind.CODE_INLINE ||
+        token.kind === ChatFormInputRichTokenKind.CODE_BLOCK
+      ) {
+        if (token.text !== (el.textContent ?? "")) return false;
+      }
+    }
 
-		return true;
-	};
+    return true;
+  };
 
-	return walk(root) && index === expected.length;
+  return walk(root) && index === expected.length;
 }
 
 /**
@@ -355,175 +355,175 @@ export function domMatchesTokens(root: HTMLElement, tokens: ChatFormInputRichTok
  * once the caret is past them.
  */
 export function rangeToTextOffset(root: HTMLElement, range: Range | null): number {
-	if (!range) return serializeContent(root).length;
+  if (!range) return serializeContent(root).length;
 
-	// A point is at/before the caret iff it falls inside [root start, caret].
-	const pre = range.cloneRange();
+  // A point is at/before the caret iff it falls inside [root start, caret].
+  const pre = range.cloneRange();
 
-	pre.selectNodeContents(root);
-	pre.setEnd(range.endContainer, range.endOffset);
-	const atOrBeforeCaret = (node: Node, offset: number) => pre.comparePoint(node, offset) !== 1;
+  pre.selectNodeContents(root);
+  pre.setEnd(range.endContainer, range.endOffset);
+  const atOrBeforeCaret = (node: Node, offset: number) => pre.comparePoint(node, offset) !== 1;
 
-	let total = 0;
-	let done = false;
-	// DOM position of a code block's synthesized after-boundary, set
-	// when walking past a block and consumed by the next contributing
-	// sibling (counts one `\n` once the caret is past it).
-	let pendingPoint: { node: Node; index: number } | null = null;
+  let total = 0;
+  let done = false;
+  // DOM position of a code block's synthesized after-boundary, set
+  // when walking past a block and consumed by the next contributing
+  // sibling (counts one `\n` once the caret is past it).
+  let pendingPoint: { node: Node; index: number } | null = null;
 
-	const walk = (parent: Node) => {
-		let first = true;
+  const walk = (parent: Node) => {
+    let first = true;
 
-		for (const child of Array.from(parent.childNodes)) {
-			if (done) return;
+    for (const child of Array.from(parent.childNodes)) {
+      if (done) return;
 
-			if (child.nodeType === Node.TEXT_NODE) {
-				const text = child.textContent ?? '';
+      if (child.nodeType === Node.TEXT_NODE) {
+        const text = child.textContent ?? "";
 
-				if (text.length === 0) continue;
+        if (text.length === 0) continue;
 
-				if (pendingPoint) {
-					const { index, node } = pendingPoint;
+        if (pendingPoint) {
+          const { index, node } = pendingPoint;
 
-					pendingPoint = null;
+          pendingPoint = null;
 
-					if (!atOrBeforeCaret(node, index)) {
-						done = true;
+          if (!atOrBeforeCaret(node, index)) {
+            done = true;
 
-						return;
-					}
+            return;
+          }
 
-					total += 1;
-				}
+          total += 1;
+        }
 
-				if (!atOrBeforeCaret(child, 0)) {
-					done = true;
+        if (!atOrBeforeCaret(child, 0)) {
+          done = true;
 
-					return;
-				}
+          return;
+        }
 
-				if (range.endContainer === child) {
-					total += range.endOffset;
-					done = true;
+        if (range.endContainer === child) {
+          total += range.endOffset;
+          done = true;
 
-					return;
-				}
+          return;
+        }
 
-				total += text.length;
-				first = false;
+        total += text.length;
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			if (child.nodeType !== Node.ELEMENT_NODE) continue;
+      if (child.nodeType !== Node.ELEMENT_NODE) continue;
 
-			const el = child as HTMLElement;
-			const parentNode = el.parentNode as Node;
-			const elIndex = Array.prototype.indexOf.call(parentNode.childNodes, el);
+      const el = child as HTMLElement;
+      const parentNode = el.parentNode as Node;
+      const elIndex = Array.prototype.indexOf.call(parentNode.childNodes, el);
 
-			if (pendingPoint) {
-				const { index, node } = pendingPoint;
+      if (pendingPoint) {
+        const { index, node } = pendingPoint;
 
-				pendingPoint = null;
+        pendingPoint = null;
 
-				if (!atOrBeforeCaret(node, index)) {
-					done = true;
+        if (!atOrBeforeCaret(node, index)) {
+          done = true;
 
-					return;
-				}
+          return;
+        }
 
-				total += 1;
-			}
+        total += 1;
+      }
 
-			if (el.getAttribute(MENTION_BADGE_DATA_ATTRS.BADGE) === BooleanString.TRUE) {
-				const len = badgeSourceLength(
-					el.getAttribute(MENTION_BADGE_DATA_ATTRS.NAME) ?? '',
-					el.getAttribute(MENTION_BADGE_DATA_ATTRS.PATH) ?? ''
-				);
+      if (el.getAttribute(MENTION_BADGE_DATA_ATTRS.BADGE) === BooleanString.TRUE) {
+        const len = badgeSourceLength(
+          el.getAttribute(MENTION_BADGE_DATA_ATTRS.NAME) ?? "",
+          el.getAttribute(MENTION_BADGE_DATA_ATTRS.PATH) ?? "",
+        );
 
-				if (len === 0) continue;
+        if (len === 0) continue;
 
-				if (!atOrBeforeCaret(parentNode, elIndex + 1)) {
-					done = true;
+        if (!atOrBeforeCaret(parentNode, elIndex + 1)) {
+          done = true;
 
-					return;
-				}
+          return;
+        }
 
-				total += len;
-				first = false;
+        total += len;
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			const codeToken = el.getAttribute(CODE_TOKEN_ATTR);
+      const codeToken = el.getAttribute(CODE_TOKEN_ATTR);
 
-			if (codeToken !== null) {
-				const isBlock = codeToken === ChatFormInputRichTokenKind.CODE_BLOCK;
+      if (codeToken !== null) {
+        const isBlock = codeToken === ChatFormInputRichTokenKind.CODE_BLOCK;
 
-				if (isBlock && !first) {
-					if (!atOrBeforeCaret(el, 0)) {
-						done = true;
+        if (isBlock && !first) {
+          if (!atOrBeforeCaret(el, 0)) {
+            done = true;
 
-						return;
-					}
+            return;
+          }
 
-					total += 1;
-				}
+          total += 1;
+        }
 
-				walk(el);
-				first = false;
+        walk(el);
+        first = false;
 
-				if (isBlock) pendingPoint = { index: elIndex + 1, node: parentNode };
+        if (isBlock) pendingPoint = { index: elIndex + 1, node: parentNode };
 
-				continue;
-			}
+        continue;
+      }
 
-			if (el.tagName === 'BR') {
-				const isHatch =
-					isCodeBlockElement(el.previousSibling) || isCodeBlockElement(el.nextSibling);
+      if (el.tagName === "BR") {
+        const isHatch =
+          isCodeBlockElement(el.previousSibling) || isCodeBlockElement(el.nextSibling);
 
-				if (isHatch || !el.nextSibling) continue;
+        if (isHatch || !el.nextSibling) continue;
 
-				if (!atOrBeforeCaret(parentNode, elIndex + 1)) {
-					done = true;
+        if (!atOrBeforeCaret(parentNode, elIndex + 1)) {
+          done = true;
 
-					return;
-				}
+          return;
+        }
 
-				total += 1;
-				first = false;
+        total += 1;
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			if (BLOCK_TAG_NAMES.has(el.tagName)) {
-				if (!first) {
-					if (!atOrBeforeCaret(el, 0)) {
-						done = true;
+      if (BLOCK_TAG_NAMES.has(el.tagName)) {
+        if (!first) {
+          if (!atOrBeforeCaret(el, 0)) {
+            done = true;
 
-						return;
-					}
+            return;
+          }
 
-					total += 1;
-				}
+          total += 1;
+        }
 
-				walk(el);
-				first = false;
+        walk(el);
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			const before = total;
+      const before = total;
 
-			walk(el);
+      walk(el);
 
-			if (total > before) first = false;
-		}
-	};
+      if (total > before) first = false;
+    }
+  };
 
-	walk(root);
+  walk(root);
 
-	return total;
+  return total;
 }
 
 /**
@@ -534,109 +534,109 @@ export function rangeToTextOffset(root: HTMLElement, range: Range | null): numbe
  * `$lib/constants`.
  */
 export function buildFragment(tokens: ChatFormInputRichToken[]): DocumentFragment {
-	const fragment = document.createDocumentFragment();
+  const fragment = document.createDocumentFragment();
 
-	for (let index = 0; index < tokens.length; index++) {
-		const token = tokens[index];
+  for (let index = 0; index < tokens.length; index++) {
+    const token = tokens[index];
 
-		if (token.kind === ChatFormInputRichTokenKind.TEXT) {
-			let text = token.text;
+    if (token.kind === ChatFormInputRichTokenKind.TEXT) {
+      let text = token.text;
 
-			// The separator \n at a fenced-block boundary is synthesized
-			// at serialization time; keeping it in the DOM would render a
-			// phantom empty line next to the block.
-			if (
-				tokens[index - 1]?.kind === ChatFormInputRichTokenKind.CODE_BLOCK &&
-				text.startsWith('\n')
-			) {
-				text = text.slice(1);
-			}
+      // The separator \n at a fenced-block boundary is synthesized
+      // at serialization time; keeping it in the DOM would render a
+      // phantom empty line next to the block.
+      if (
+        tokens[index - 1]?.kind === ChatFormInputRichTokenKind.CODE_BLOCK &&
+        text.startsWith("\n")
+      ) {
+        text = text.slice(1);
+      }
 
-			if (
-				tokens[index + 1]?.kind === ChatFormInputRichTokenKind.CODE_BLOCK &&
-				text.endsWith('\n')
-			) {
-				text = text.slice(0, -1);
-			}
+      if (
+        tokens[index + 1]?.kind === ChatFormInputRichTokenKind.CODE_BLOCK &&
+        text.endsWith("\n")
+      ) {
+        text = text.slice(0, -1);
+      }
 
-			if (text.length === 0) continue;
+      if (text.length === 0) continue;
 
-			fragment.appendChild(document.createTextNode(text));
+      fragment.appendChild(document.createTextNode(text));
 
-			continue;
-		}
+      continue;
+    }
 
-		if (
-			token.kind === ChatFormInputRichTokenKind.CODE_INLINE ||
-			token.kind === ChatFormInputRichTokenKind.CODE_BLOCK
-		) {
-			const code = document.createElement('code');
+    if (
+      token.kind === ChatFormInputRichTokenKind.CODE_INLINE ||
+      token.kind === ChatFormInputRichTokenKind.CODE_BLOCK
+    ) {
+      const code = document.createElement("code");
 
-			code.setAttribute(CODE_TOKEN_ATTR, token.kind);
-			code.textContent = token.text;
-			fragment.appendChild(code);
+      code.setAttribute(CODE_TOKEN_ATTR, token.kind);
+      code.textContent = token.text;
+      fragment.appendChild(code);
 
-			continue;
-		}
+      continue;
+    }
 
-		// A leading badge gets an empty text node prepended: without a real
-		// text position at the buffer start, the spot before the badge is
-		// unreachable via keyboard (ArrowLeft/Home).
-		if (!fragment.lastChild) {
-			fragment.appendChild(document.createTextNode(''));
-		}
+    // A leading badge gets an empty text node prepended: without a real
+    // text position at the buffer start, the spot before the badge is
+    // unreachable via keyboard (ArrowLeft/Home).
+    if (!fragment.lastChild) {
+      fragment.appendChild(document.createTextNode(""));
+    }
 
-		const badge = document.createElement('span');
+    const badge = document.createElement("span");
 
-		badge.setAttribute(MENTION_BADGE_DATA_ATTRS.BADGE, BooleanString.TRUE);
-		badge.setAttribute(MENTION_BADGE_DATA_ATTRS.NAME, token.name);
-		badge.setAttribute(MENTION_BADGE_DATA_ATTRS.PATH, token.path);
-		badge.title = decodeFileLinkPath(token.path);
-		badge.className = MENTION_BADGE_CLASSNAME;
-		badge.contentEditable = 'false';
+    badge.setAttribute(MENTION_BADGE_DATA_ATTRS.BADGE, BooleanString.TRUE);
+    badge.setAttribute(MENTION_BADGE_DATA_ATTRS.NAME, token.name);
+    badge.setAttribute(MENTION_BADGE_DATA_ATTRS.PATH, token.path);
+    badge.title = decodeFileLinkPath(token.path);
+    badge.className = MENTION_BADGE_CLASSNAME;
+    badge.contentEditable = "false";
 
-		const svg = document.createElementNS(MENTION_BADGE_SVG_ATTRIBUTES['xmlns'], 'svg');
+    const svg = document.createElementNS(MENTION_BADGE_SVG_ATTRIBUTES["xmlns"], "svg");
 
-		for (const [attr, value] of Object.entries(MENTION_BADGE_SVG_ATTRIBUTES)) {
-			svg.setAttribute(attr, value);
-		}
-		for (const cls of MENTION_BADGE_ICON_CLASSNAME.split(/\s+/).filter(Boolean)) {
-			svg.classList.add(cls);
-		}
+    for (const [attr, value] of Object.entries(MENTION_BADGE_SVG_ATTRIBUTES)) {
+      svg.setAttribute(attr, value);
+    }
+    for (const cls of MENTION_BADGE_ICON_CLASSNAME.split(/\s+/).filter(Boolean)) {
+      svg.classList.add(cls);
+    }
 
-		for (const d of getMentionBadgeIconPaths(token.path)) {
-			const path = document.createElementNS(MENTION_BADGE_SVG_ATTRIBUTES['xmlns'], 'path');
+    for (const d of getMentionBadgeIconPaths(token.path)) {
+      const path = document.createElementNS(MENTION_BADGE_SVG_ATTRIBUTES["xmlns"], "path");
 
-			path.setAttribute('d', d);
-			svg.appendChild(path);
-		}
+      path.setAttribute("d", d);
+      svg.appendChild(path);
+    }
 
-		const label = document.createElement('span');
+    const label = document.createElement("span");
 
-		label.classList.add('shrink-0', 'truncate');
-		label.textContent = getMentionBadgeLabel(
-			token.name,
-			decodeFileLinkPath(token.path),
-			settingsStore.getConfig(SETTINGS_KEYS.SHOW_FULL_PATH_IN_MENTIONS),
-			toolsStore.serverHome
-		);
+    label.classList.add("shrink-0", "truncate");
+    label.textContent = getMentionBadgeLabel(
+      token.name,
+      decodeFileLinkPath(token.path),
+      settingsStore.getConfig(SETTINGS_KEYS.SHOW_FULL_PATH_IN_MENTIONS),
+      toolsStore.serverHome,
+    );
 
-		badge.appendChild(svg);
-		badge.appendChild(label);
-		fragment.appendChild(badge);
-	}
+    badge.appendChild(svg);
+    badge.appendChild(label);
+    fragment.appendChild(badge);
+  }
 
-	return fragment;
+  return fragment;
 }
 
 // A sibling provides a reachable caret line when it is an element
 // (badge, another block, an existing hatch) or a non-empty text node.
 function hasLineBeside(node: Node | null): boolean {
-	if (!node) return false;
+  if (!node) return false;
 
-	if (node.nodeType === Node.ELEMENT_NODE) return true;
+  if (node.nodeType === Node.ELEMENT_NODE) return true;
 
-	return (node.textContent ?? '') !== '';
+  return (node.textContent ?? "") !== "";
 }
 
 /**
@@ -653,40 +653,40 @@ function hasLineBeside(node: Node | null): boolean {
  * `<br>` in an empty root is left untouched.
  */
 export function syncCodeBlockHatches(root: HTMLElement) {
-	for (const child of Array.from(root.childNodes)) {
-		if (child.nodeName !== 'BR') continue;
+  for (const child of Array.from(root.childNodes)) {
+    if (child.nodeName !== "BR") continue;
 
-		const isPlaceholder = root.childNodes.length === 1;
-		const isLeadingHatch = !child.previousSibling && isCodeBlockElement(child.nextSibling);
-		const isTrailingHatch = !child.nextSibling && isCodeBlockElement(child.previousSibling);
+    const isPlaceholder = root.childNodes.length === 1;
+    const isLeadingHatch = !child.previousSibling && isCodeBlockElement(child.nextSibling);
+    const isTrailingHatch = !child.nextSibling && isCodeBlockElement(child.previousSibling);
 
-		// A hatch goes stale once real content takes over its line:
-		// content before a leading hatch, content after a trailing one,
-		// or a text node after the block already providing the line.
-		// A `<br>` with no code block around is a real newline (browser
-		// Shift+Enter shape) and stays.
-		let prevElement = child.previousSibling;
+    // A hatch goes stale once real content takes over its line:
+    // content before a leading hatch, content after a trailing one,
+    // or a text node after the block already providing the line.
+    // A `<br>` with no code block around is a real newline (browser
+    // Shift+Enter shape) and stays.
+    let prevElement = child.previousSibling;
 
-		while (prevElement && prevElement.nodeType !== Node.ELEMENT_NODE) {
-			prevElement = prevElement.previousSibling;
-		}
-		const nearBlock =
-			isCodeBlockElement(child.nextSibling) ||
-			isCodeBlockElement(child.previousSibling) ||
-			isCodeBlockElement(prevElement);
+    while (prevElement && prevElement.nodeType !== Node.ELEMENT_NODE) {
+      prevElement = prevElement.previousSibling;
+    }
+    const nearBlock =
+      isCodeBlockElement(child.nextSibling) ||
+      isCodeBlockElement(child.previousSibling) ||
+      isCodeBlockElement(prevElement);
 
-		if (!isPlaceholder && !isLeadingHatch && !isTrailingHatch && nearBlock) {
-			child.remove();
-		}
-	}
+    if (!isPlaceholder && !isLeadingHatch && !isTrailingHatch && nearBlock) {
+      child.remove();
+    }
+  }
 
-	for (const child of Array.from(root.childNodes)) {
-		if (!isCodeBlockElement(child)) continue;
+  for (const child of Array.from(root.childNodes)) {
+    if (!isCodeBlockElement(child)) continue;
 
-		if (!hasLineBeside(child.nextSibling)) {
-			child.after(document.createElement('br'));
-		}
-	}
+    if (!hasLineBeside(child.nextSibling)) {
+      child.after(document.createElement("br"));
+    }
+  }
 }
 
 /**
@@ -703,30 +703,30 @@ export function syncCodeBlockHatches(root: HTMLElement) {
  * the DOM changed.
  */
 export function stripBlockBoundaryLineBreaks(root: HTMLElement): boolean {
-	let changed = false;
+  let changed = false;
 
-	for (const child of Array.from(root.childNodes)) {
-		if (child.nodeType !== Node.TEXT_NODE) continue;
+  for (const child of Array.from(root.childNodes)) {
+    if (child.nodeType !== Node.TEXT_NODE) continue;
 
-		if (!isCodeBlockElement(child.previousSibling)) continue;
+    if (!isCodeBlockElement(child.previousSibling)) continue;
 
-		let text = child.textContent ?? '';
+    let text = child.textContent ?? "";
 
-		if (!/^\n{2,}$/.test(text)) continue;
+    if (!/^\n{2,}$/.test(text)) continue;
 
-		text = text.slice(1);
+    text = text.slice(1);
 
-		const atBufferEnd = !child.nextSibling || child.nextSibling.nodeName === 'BR';
+    const atBufferEnd = !child.nextSibling || child.nextSibling.nodeName === "BR";
 
-		if (atBufferEnd) {
-			text = text.slice(0, -1);
-		}
+    if (atBufferEnd) {
+      text = text.slice(0, -1);
+    }
 
-		child.textContent = text;
-		changed = true;
-	}
+    child.textContent = text;
+    changed = true;
+  }
 
-	return changed;
+  return changed;
 }
 
 const WORD_CHAR_RE = /[\p{L}\p{N}_]/u;
@@ -738,76 +738,76 @@ const WORD_CHAR_RE = /[\p{L}\p{N}_]/u;
  * exactly one word.
  */
 export function badgeAwareWordJump(
-	source: string,
-	offset: number,
-	direction: 'forward' | 'backward'
+  source: string,
+  offset: number,
+  direction: "forward" | "backward",
 ): number | null {
-	let masked = '';
+  let masked = "";
 
-	const badgeSpans: Array<[number, number]> = [];
+  const badgeSpans: Array<[number, number]> = [];
 
-	for (const token of tokenizeContent(source)) {
-		const len =
-			token.kind === ChatFormInputRichTokenKind.BADGE
-				? badgeSourceLength(token.name, token.path)
-				: token.text.length;
+  for (const token of tokenizeContent(source)) {
+    const len =
+      token.kind === ChatFormInputRichTokenKind.BADGE
+        ? badgeSourceLength(token.name, token.path)
+        : token.text.length;
 
-		if (token.kind === ChatFormInputRichTokenKind.BADGE)
-			badgeSpans.push([masked.length, masked.length + len]);
+    if (token.kind === ChatFormInputRichTokenKind.BADGE)
+      badgeSpans.push([masked.length, masked.length + len]);
 
-		masked += token.kind === ChatFormInputRichTokenKind.BADGE ? 'a'.repeat(len) : token.text;
-	}
+    masked += token.kind === ChatFormInputRichTokenKind.BADGE ? "a".repeat(len) : token.text;
+  }
 
-	if (badgeSpans.length === 0) return null;
+  if (badgeSpans.length === 0) return null;
 
-	const isWord = (index: number) => WORD_CHAR_RE.test(masked[index]);
-	const spanStartingAt = (index: number) => badgeSpans.find(([start]) => start === index);
-	const spanEndingAt = (index: number) => badgeSpans.find(([, end]) => end === index);
-	const n = masked.length;
+  const isWord = (index: number) => WORD_CHAR_RE.test(masked[index]);
+  const spanStartingAt = (index: number) => badgeSpans.find(([start]) => start === index);
+  const spanEndingAt = (index: number) => badgeSpans.find(([, end]) => end === index);
+  const n = masked.length;
 
-	let i = offset;
+  let i = offset;
 
-	if (direction === 'forward') {
-		// Entering a badge completes the word phase at the badge's end edge.
-		if (!(i < n && isWord(i))) {
-			while (i < n && !isWord(i)) i++;
-		}
+  if (direction === "forward") {
+    // Entering a badge completes the word phase at the badge's end edge.
+    if (!(i < n && isWord(i))) {
+      while (i < n && !isWord(i)) i++;
+    }
 
-		while (i < n && isWord(i)) {
-			const span = spanStartingAt(i);
+    while (i < n && isWord(i)) {
+      const span = spanStartingAt(i);
 
-			if (span) {
-				i = span[1];
+      if (span) {
+        i = span[1];
 
-				break;
-			}
+        break;
+      }
 
-			i++;
-		}
-	} else {
-		if (!(i > 0 && isWord(i - 1))) {
-			while (i > 0 && !isWord(i - 1)) i--;
-		}
+      i++;
+    }
+  } else {
+    if (!(i > 0 && isWord(i - 1))) {
+      while (i > 0 && !isWord(i - 1)) i--;
+    }
 
-		while (i > 0 && isWord(i - 1)) {
-			const span = spanEndingAt(i);
+    while (i > 0 && isWord(i - 1)) {
+      const span = spanEndingAt(i);
 
-			if (span) {
-				i = span[0];
+      if (span) {
+        i = span[0];
 
-				break;
-			}
+        break;
+      }
 
-			i--;
-		}
-	}
+      i--;
+    }
+  }
 
-	if (i === offset) return null;
+  if (i === offset) return null;
 
-	const lo = Math.min(offset, i);
-	const hi = Math.max(offset, i);
+  const lo = Math.min(offset, i);
+  const hi = Math.max(offset, i);
 
-	return badgeSpans.some(([start, end]) => start < hi && end > lo) ? i : null;
+  return badgeSpans.some(([start, end]) => start < hi && end > lo) ? i : null;
 }
 
 /**
@@ -816,11 +816,11 @@ export function badgeAwareWordJump(
  * the host snaps the caret to the buffer start manually.
  */
 export function leadingBadgeEdgeOffset(source: string, caret: number): number | null {
-	const [first] = tokenizeContent(source);
+  const [first] = tokenizeContent(source);
 
-	if (!first || first.kind !== ChatFormInputRichTokenKind.BADGE) return null;
+  if (!first || first.kind !== ChatFormInputRichTokenKind.BADGE) return null;
 
-	return caret === badgeSourceLength(first.name, first.path) ? 0 : null;
+  return caret === badgeSourceLength(first.name, first.path) ? 0 : null;
 }
 
 /**
@@ -834,241 +834,241 @@ export function leadingBadgeEdgeOffset(source: string, caret: number): number | 
  * `serializeContent`.
  */
 export function textOffsetToRange(root: HTMLElement, offset: number): Range {
-	const range = document.createRange();
+  const range = document.createRange();
 
-	let remaining = offset;
-	let landed = false;
-	let pendingBlockBoundary = false;
+  let remaining = offset;
+  let landed = false;
+  let pendingBlockBoundary = false;
 
-	const land = (node: Node, nodeOffset: number) => {
-		range.setStart(node, nodeOffset);
-		range.setEnd(node, nodeOffset);
-		landed = true;
-	};
-	const walk = (parent: Node) => {
-		let first = true;
+  const land = (node: Node, nodeOffset: number) => {
+    range.setStart(node, nodeOffset);
+    range.setEnd(node, nodeOffset);
+    landed = true;
+  };
+  const walk = (parent: Node) => {
+    let first = true;
 
-		for (const child of Array.from(parent.childNodes)) {
-			if (landed) return;
+    for (const child of Array.from(parent.childNodes)) {
+      if (landed) return;
 
-			if (child.nodeType === Node.TEXT_NODE) {
-				const text = child.textContent ?? '';
+      if (child.nodeType === Node.TEXT_NODE) {
+        const text = child.textContent ?? "";
 
-				if (text.length === 0) continue;
+        if (text.length === 0) continue;
 
-				if (pendingBlockBoundary) {
-					// The synthesized separator maps to the near edge of the
-					// content that follows the block.
-					pendingBlockBoundary = false;
+        if (pendingBlockBoundary) {
+          // The synthesized separator maps to the near edge of the
+          // content that follows the block.
+          pendingBlockBoundary = false;
 
-					if (remaining === 0) {
-						land(child, 0);
+          if (remaining === 0) {
+            land(child, 0);
 
-						return;
-					}
+            return;
+          }
 
-					remaining -= 1;
-				}
+          remaining -= 1;
+        }
 
-				if (remaining <= text.length) {
-					land(child, remaining);
+        if (remaining <= text.length) {
+          land(child, remaining);
 
-					return;
-				}
+          return;
+        }
 
-				remaining -= text.length;
-				first = false;
+        remaining -= text.length;
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			if (child.nodeType !== Node.ELEMENT_NODE) continue;
+      if (child.nodeType !== Node.ELEMENT_NODE) continue;
 
-			const el = child as HTMLElement;
+      const el = child as HTMLElement;
 
-			if (el.getAttribute(MENTION_BADGE_DATA_ATTRS.BADGE) === BooleanString.TRUE) {
-				const len = badgeSourceLength(
-					el.getAttribute(MENTION_BADGE_DATA_ATTRS.NAME) ?? '',
-					el.getAttribute(MENTION_BADGE_DATA_ATTRS.PATH) ?? ''
-				);
+      if (el.getAttribute(MENTION_BADGE_DATA_ATTRS.BADGE) === BooleanString.TRUE) {
+        const len = badgeSourceLength(
+          el.getAttribute(MENTION_BADGE_DATA_ATTRS.NAME) ?? "",
+          el.getAttribute(MENTION_BADGE_DATA_ATTRS.PATH) ?? "",
+        );
 
-				if (len === 0) continue;
+        if (len === 0) continue;
 
-				if (pendingBlockBoundary) {
-					pendingBlockBoundary = false;
+        if (pendingBlockBoundary) {
+          pendingBlockBoundary = false;
 
-					if (remaining === 0) {
-						range.setStartBefore(el);
-						range.setEndBefore(el);
-						landed = true;
+          if (remaining === 0) {
+            range.setStartBefore(el);
+            range.setEndBefore(el);
+            landed = true;
 
-						return;
-					}
+            return;
+          }
 
-					remaining -= 1;
-				}
+          remaining -= 1;
+        }
 
-				if (remaining <= len) {
-					if (remaining === 0) {
-						range.setStartBefore(el);
-						range.setEndBefore(el);
-					} else {
-						range.setStartAfter(el);
-						range.setEndAfter(el);
-					}
+        if (remaining <= len) {
+          if (remaining === 0) {
+            range.setStartBefore(el);
+            range.setEndBefore(el);
+          } else {
+            range.setStartAfter(el);
+            range.setEndAfter(el);
+          }
 
-					landed = true;
+          landed = true;
 
-					return;
-				}
+          return;
+        }
 
-				remaining -= len;
-				first = false;
+        remaining -= len;
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			const codeToken = el.getAttribute(CODE_TOKEN_ATTR);
+      const codeToken = el.getAttribute(CODE_TOKEN_ATTR);
 
-			if (codeToken !== null) {
-				const isBlock = codeToken === ChatFormInputRichTokenKind.CODE_BLOCK;
+      if (codeToken !== null) {
+        const isBlock = codeToken === ChatFormInputRichTokenKind.CODE_BLOCK;
 
-				if (isBlock && (pendingBlockBoundary || !first)) {
-					pendingBlockBoundary = false;
+        if (isBlock && (pendingBlockBoundary || !first)) {
+          pendingBlockBoundary = false;
 
-					if (remaining === 0) {
-						range.setStartBefore(el);
-						range.setEndBefore(el);
-						landed = true;
+          if (remaining === 0) {
+            range.setStartBefore(el);
+            range.setEndBefore(el);
+            landed = true;
 
-						return;
-					}
+            return;
+          }
 
-					remaining -= 1;
-				}
+          remaining -= 1;
+        }
 
-				const len = (el.textContent ?? '').length;
+        const len = (el.textContent ?? "").length;
 
-				if (remaining === 0) {
-					range.setStartBefore(el);
-					range.setEndBefore(el);
-					landed = true;
+        if (remaining === 0) {
+          range.setStartBefore(el);
+          range.setEndBefore(el);
+          landed = true;
 
-					return;
-				}
+          return;
+        }
 
-				if (remaining === len) {
-					range.setStartAfter(el);
-					range.setEndAfter(el);
-					landed = true;
+        if (remaining === len) {
+          range.setStartAfter(el);
+          range.setEndAfter(el);
+          landed = true;
 
-					return;
-				}
+          return;
+        }
 
-				if (remaining < len) {
-					walk(el);
+        if (remaining < len) {
+          walk(el);
 
-					return;
-				}
+          return;
+        }
 
-				remaining -= len;
+        remaining -= len;
 
-				if (isBlock) remaining -= 1;
+        if (isBlock) remaining -= 1;
 
-				first = false;
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			if (el.tagName === 'BR') {
-				const isHatch =
-					isCodeBlockElement(el.previousSibling) || isCodeBlockElement(el.nextSibling);
+      if (el.tagName === "BR") {
+        const isHatch =
+          isCodeBlockElement(el.previousSibling) || isCodeBlockElement(el.nextSibling);
 
-				if (isHatch) {
-					// Escape hatch: no source length; offset 0 lands before it
-					// so text typed there takes its place.
-					if (remaining === 0) {
-						range.setStartBefore(el);
-						range.setEndBefore(el);
-						landed = true;
-					}
+        if (isHatch) {
+          // Escape hatch: no source length; offset 0 lands before it
+          // so text typed there takes its place.
+          if (remaining === 0) {
+            range.setStartBefore(el);
+            range.setEndBefore(el);
+            landed = true;
+          }
 
-					continue;
-				}
+          continue;
+        }
 
-				if (!el.nextSibling) continue;
+        if (!el.nextSibling) continue;
 
-				if (pendingBlockBoundary) {
-					pendingBlockBoundary = false;
+        if (pendingBlockBoundary) {
+          pendingBlockBoundary = false;
 
-					if (remaining === 0) {
-						range.setStartBefore(el);
-						range.setEndBefore(el);
-						landed = true;
+          if (remaining === 0) {
+            range.setStartBefore(el);
+            range.setEndBefore(el);
+            landed = true;
 
-						return;
-					}
+            return;
+          }
 
-					remaining -= 1;
-				}
+          remaining -= 1;
+        }
 
-				if (remaining === 0) {
-					range.setStartBefore(el);
-					range.setEndBefore(el);
-					landed = true;
+        if (remaining === 0) {
+          range.setStartBefore(el);
+          range.setEndBefore(el);
+          landed = true;
 
-					return;
-				}
+          return;
+        }
 
-				remaining -= 1;
-				first = false;
+        remaining -= 1;
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			if (BLOCK_TAG_NAMES.has(el.tagName)) {
-				if (pendingBlockBoundary || !first) {
-					pendingBlockBoundary = false;
+      if (BLOCK_TAG_NAMES.has(el.tagName)) {
+        if (pendingBlockBoundary || !first) {
+          pendingBlockBoundary = false;
 
-					if (remaining === 0) {
-						// The boundary newline belongs to the previous line.
-						range.setStartBefore(el);
-						range.setEndBefore(el);
-						landed = true;
+          if (remaining === 0) {
+            // The boundary newline belongs to the previous line.
+            range.setStartBefore(el);
+            range.setEndBefore(el);
+            landed = true;
 
-						return;
-					}
+            return;
+          }
 
-					remaining -= 1;
-				}
+          remaining -= 1;
+        }
 
-				walk(el);
-				first = false;
+        walk(el);
+        first = false;
 
-				continue;
-			}
+        continue;
+      }
 
-			const before = remaining;
+      const before = remaining;
 
-			walk(el);
+      walk(el);
 
-			if (remaining < before) first = false;
-		}
-	};
+      if (remaining < before) first = false;
+    }
+  };
 
-	walk(root);
+  walk(root);
 
-	if (!landed) {
-		const last = root.lastChild;
+  if (!landed) {
+    const last = root.lastChild;
 
-		if (last && last.nodeName === 'BR') {
-			range.setStartBefore(last);
-			range.setEndBefore(last);
-		} else {
-			range.selectNodeContents(root);
-			range.collapse(false);
-		}
-	}
+    if (last && last.nodeName === "BR") {
+      range.setStartBefore(last);
+      range.setEndBefore(last);
+    } else {
+      range.selectNodeContents(root);
+      range.collapse(false);
+    }
+  }
 
-	return range;
+  return range;
 }

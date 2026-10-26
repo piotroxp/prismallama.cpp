@@ -1,6 +1,6 @@
-import { getAuthHeaders, getJsonHeaders } from './api-headers';
-import { base } from '$app/paths';
-import { API_ABSOLUTE_URL_PROTOCOLS, ERROR_MESSAGES, HTTP_CODE_TO_STRING } from '$lib/constants';
+import { base } from "$app/paths";
+import { API_ABSOLUTE_URL_PROTOCOLS, ERROR_MESSAGES, HTTP_CODE_TO_STRING } from "$lib/constants";
+import { getAuthHeaders, getJsonHeaders } from "./api-headers";
 
 /**
  * API Fetch Utilities
@@ -17,25 +17,25 @@ import { API_ABSOLUTE_URL_PROTOCOLS, ERROR_MESSAGES, HTTP_CODE_TO_STRING } from 
  * genuine failure.
  */
 export class ApiError extends Error {
-	status: number;
+  status: number;
 
-	constructor(message: string, status: number) {
-		super(message);
-		this.name = 'ApiError';
-		this.status = status;
-	}
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
 }
 
-export interface ApiFetchOptions extends Omit<RequestInit, 'headers'> {
-	/**
-	 * Use auth-only headers (no Content-Type).
-	 * Default: false (uses JSON headers with Content-Type: application/json)
-	 */
-	authOnly?: boolean;
-	/**
-	 * Additional headers to merge with default headers.
-	 */
-	headers?: Record<string, string>;
+export interface ApiFetchOptions extends Omit<RequestInit, "headers"> {
+  /**
+   * Use auth-only headers (no Content-Type).
+   * Default: false (uses JSON headers with Content-Type: application/json)
+   */
+  authOnly?: boolean;
+  /**
+   * Additional headers to merge with default headers.
+   */
+  headers?: Record<string, string>;
 }
 
 /**
@@ -59,30 +59,30 @@ export interface ApiFetchOptions extends Omit<RequestInit, 'headers'> {
  * ```
  */
 export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
-	const { authOnly = false, headers: customHeaders, ...fetchOptions } = options;
-	const baseHeaders = authOnly ? getAuthHeaders() : getJsonHeaders();
-	const headers = { ...baseHeaders, ...customHeaders };
-	// absolute URLs with an allowed protocol pass through untouched; relative paths get the base prefix
-	const url = API_ABSOLUTE_URL_PROTOCOLS.some((p) => path.startsWith(p)) ? path : `${base}${path}`;
+  const { authOnly = false, headers: customHeaders, ...fetchOptions } = options;
+  const baseHeaders = authOnly ? getAuthHeaders() : getJsonHeaders();
+  const headers = { ...baseHeaders, ...customHeaders };
+  // absolute URLs with an allowed protocol pass through untouched; relative paths get the base prefix
+  const url = API_ABSOLUTE_URL_PROTOCOLS.some((p) => path.startsWith(p)) ? path : `${base}${path}`;
 
-	let response;
+  let response;
 
-	try {
-		response = await fetch(url, {
-			...fetchOptions,
-			headers
-		});
-	} catch (e) {
-		throw new Error(beautifyNetworkError(e));
-	}
+  try {
+    response = await fetch(url, {
+      ...fetchOptions,
+      headers,
+    });
+  } catch (e) {
+    throw new Error(beautifyNetworkError(e));
+  }
 
-	if (!response.ok) {
-		const errorMessage = await parseErrorMessage(response);
+  if (!response.ok) {
+    const errorMessage = await parseErrorMessage(response);
 
-		throw new ApiError(errorMessage, response.status);
-	}
+    throw new ApiError(errorMessage, response.status);
+  }
 
-	return response.json() as Promise<T>;
+  return response.json() as Promise<T>;
 }
 
 /**
@@ -102,19 +102,19 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
  * ```
  */
 export async function apiFetchWithParams<T>(
-	basePath: string,
-	params: Record<string, string>,
-	options: ApiFetchOptions = {}
+  basePath: string,
+  params: Record<string, string>,
+  options: ApiFetchOptions = {},
 ): Promise<T> {
-	const url = new URL(basePath, window.location.href);
+  const url = new URL(basePath, window.location.href);
 
-	for (const [key, value] of Object.entries(params)) {
-		if (value !== undefined && value !== null) {
-			url.searchParams.set(key, value);
-		}
-	}
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null) {
+      url.searchParams.set(key, value);
+    }
+  }
 
-	return apiFetch<T>(url.toString(), options);
+  return apiFetch<T>(url.toString(), options);
 }
 
 /**
@@ -126,15 +126,15 @@ export async function apiFetchWithParams<T>(
  * @returns Parsed JSON response
  */
 export async function apiPost<T, B = unknown>(
-	path: string,
-	body: B,
-	options: ApiFetchOptions = {}
+  path: string,
+  body: B,
+  options: ApiFetchOptions = {},
 ): Promise<T> {
-	return apiFetch<T>(path, {
-		body: JSON.stringify(body),
-		method: 'POST',
-		...options
-	});
+  return apiFetch<T>(path, {
+    body: JSON.stringify(body),
+    method: "POST",
+    ...options,
+  });
 }
 
 /**
@@ -146,29 +146,29 @@ export async function apiPost<T, B = unknown>(
  * @returns Parsed JSON response
  */
 export async function apiDelete<T>(
-	path: string,
-	params?: Record<string, string>,
-	options: ApiFetchOptions = {}
+  path: string,
+  params?: Record<string, string>,
+  options: ApiFetchOptions = {},
 ): Promise<T> {
-	// the query is appended to the path so `apiFetch` applies its base-path prefix;
-	// `apiFetchWithParams` resolves an absolute URL and would bypass it
-	let query = '';
+  // the query is appended to the path so `apiFetch` applies its base-path prefix;
+  // `apiFetchWithParams` resolves an absolute URL and would bypass it
+  let query = "";
 
-	if (params) {
-		const search = new URLSearchParams();
+  if (params) {
+    const search = new URLSearchParams();
 
-		for (const [key, value] of Object.entries(params)) {
-			if (value !== undefined && value !== null) {
-				search.set(key, value);
-			}
-		}
+    for (const [key, value] of Object.entries(params)) {
+      if (value !== undefined && value !== null) {
+        search.set(key, value);
+      }
+    }
 
-		const qs = search.toString();
+    const qs = search.toString();
 
-		if (qs) query = `?${qs}`;
-	}
+    if (qs) query = `?${qs}`;
+  }
 
-	return apiFetch<T>(`${path}${query}`, { ...options, method: 'DELETE' });
+  return apiFetch<T>(`${path}${query}`, { ...options, method: "DELETE" });
 }
 
 /**
@@ -176,31 +176,31 @@ export async function apiDelete<T>(
  * Tries to extract error message from JSON body, falls back to status text.
  */
 async function parseErrorMessage(response: Response): Promise<string> {
-	try {
-		const errorData = await response.json();
+  try {
+    const errorData = await response.json();
 
-		if (errorData?.error?.message) {
-			return errorData.error.message;
-		}
+    if (errorData?.error?.message) {
+      return errorData.error.message;
+    }
 
-		if (errorData?.error && typeof errorData.error === 'string') {
-			return errorData.error;
-		}
+    if (errorData?.error && typeof errorData.error === "string") {
+      return errorData.error;
+    }
 
-		if (errorData?.message) {
-			return errorData.message;
-		}
-	} catch {
-		// JSON parsing failed, use status text
-	}
+    if (errorData?.message) {
+      return errorData.message;
+    }
+  } catch {
+    // JSON parsing failed, use status text
+  }
 
-	const httpErrorStr = HTTP_CODE_TO_STRING[response.status];
+  const httpErrorStr = HTTP_CODE_TO_STRING[response.status];
 
-	if (httpErrorStr) {
-		return httpErrorStr;
-	}
+  if (httpErrorStr) {
+    return httpErrorStr;
+  }
 
-	return `${ERROR_MESSAGES.HTTP.GENERIC}: ${response.status} ${response.statusText}`;
+  return `${ERROR_MESSAGES.HTTP.GENERIC}: ${response.status} ${response.statusText}`;
 }
 
 /**
@@ -209,25 +209,25 @@ async function parseErrorMessage(response: Response): Promise<string> {
  * @returns Error in an human-readable format
  */
 function beautifyNetworkError(throwable: unknown): string {
-	let message;
+  let message;
 
-	if (throwable instanceof Error) {
-		message = throwable.message;
+  if (throwable instanceof Error) {
+    message = throwable.message;
 
-		if (throwable.name === 'TypeError' && message.includes('fetch')) {
-			return ERROR_MESSAGES.NETWORK.UNREACHABLE;
-		}
-	} else {
-		message = String(throwable);
-	}
+    if (throwable.name === "TypeError" && message.includes("fetch")) {
+      return ERROR_MESSAGES.NETWORK.UNREACHABLE;
+    }
+  } else {
+    message = String(throwable);
+  }
 
-	if (message.includes('ECONNREFUSED')) {
-		return ERROR_MESSAGES.NETWORK.REFUSED;
-	} else if (message.includes('ENOTFOUND')) {
-		return ERROR_MESSAGES.NETWORK.NXDOMAIN;
-	} else if (message.includes('ETIMEDOUT')) {
-		return ERROR_MESSAGES.NETWORK.TIMEOUT;
-	}
+  if (message.includes("ECONNREFUSED")) {
+    return ERROR_MESSAGES.NETWORK.REFUSED;
+  } else if (message.includes("ENOTFOUND")) {
+    return ERROR_MESSAGES.NETWORK.NXDOMAIN;
+  } else if (message.includes("ETIMEDOUT")) {
+    return ERROR_MESSAGES.NETWORK.TIMEOUT;
+  }
 
-	return `${ERROR_MESSAGES.NETWORK.GENERIC} (${message})`;
+  return `${ERROR_MESSAGES.NETWORK.GENERIC} (${message})`;
 }

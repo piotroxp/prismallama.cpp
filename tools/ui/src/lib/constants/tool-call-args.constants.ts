@@ -6,13 +6,13 @@
  * Field aliases the file tools accept for the path argument. Tool contracts
  * drifted over time: some models emit `file_path` / `filePath`.
  */
-export const TOOL_ARG_PATH_KEYS: readonly string[] = ['path', 'file_path', 'filePath'];
+export const TOOL_ARG_PATH_KEYS: readonly string[] = ["path", "file_path", "filePath"];
 
 /** Opening character of a JSON object; only an object root can carry fields. */
-export const JSON_OBJECT_OPEN = '{';
+export const JSON_OBJECT_OPEN = "{";
 
 /** Opening character of a JSON array; successful sandbox output is one. */
-export const JSON_ARRAY_OPEN = '[';
+export const JSON_ARRAY_OPEN = "[";
 
 /**
  * Matches `"<key>": "<value>"` in a JSON args blob ( whitespace between

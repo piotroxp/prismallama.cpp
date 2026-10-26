@@ -1,19 +1,20 @@
 # Install pre-built version of llama.cpp
 
-| Install via | Windows | Mac  | Linux |
-|-------------|---------|------|-------|
-| conda-forge | ✅      | ✅   | ✅   |
-| Winget      | ✅      |      |      |
-| Homebrew    |         | ✅   | ✅   |
-| MacPorts    |         | ✅   |      |
-| Nix         |         | ✅   | ✅   |
+| Install via | Windows | Mac | Linux |
+| ----------- | ------- | --- | ----- |
+| conda-forge | ✅      | ✅  | ✅    |
+| Winget      | ✅      |     |       |
+| Homebrew    |         | ✅  | ✅    |
+| MacPorts    |         | ✅  |       |
+| Nix         |         | ✅  | ✅    |
 
 ## conda-forge (Windows, Mac and Linux)
 
 conda-forge provides builds for:
- - CUDA (Windows and Linux)
- - Vulkan (Windows and Linux)
- - Apple Metal (macOS)
+
+- CUDA (Windows and Linux)
+- Vulkan (Windows and Linux)
+- Apple Metal (macOS)
 
 ```sh
 conda install -c conda-forge llama.cpp

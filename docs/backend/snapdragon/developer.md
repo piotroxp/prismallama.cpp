@@ -4,12 +4,12 @@
 
 The Hexagon backend consists of two parts:
 
-  - `libggml-hexagon`
-    This is the regular CPU-side GGML backend library, either shared or statically linked.
+- `libggml-hexagon`
+  This is the regular CPU-side GGML backend library, either shared or statically linked.
 
-  - `libggml-htp-vNN`
-    This is the NPU-side (HTP stands for Hexagon Tensor Processor) shared library that contains the Op dispatcher and kernels.
-    The correct library is selected automatically at runtime based on the HW version.
+- `libggml-htp-vNN`
+  This is the NPU-side (HTP stands for Hexagon Tensor Processor) shared library that contains the Op dispatcher and kernels.
+  The correct library is selected automatically at runtime based on the HW version.
 
 Here is an example of the build artifacts:
 
@@ -37,6 +37,7 @@ In llama.cpp/GGML, each Hexagon session is mapped to a single GGML backend devic
 `GGML_HEXAGON_DEVICES`, or `HTP0`, `HTP1` in legacy mode).
 
 To support running models larger than 3.5GB on a single device, the Hexagon backend dynamically maps and unmaps buffers:
+
 - Buffers are allocated in shared DDR (RPCMEM) and mapped through FastRPC file descriptors. Non-pinned buffers use delayed
   mappings (`FASTRPC_MAP_FD_DELAYED` or `FASTRPC_MAP_FD_DELAYED_EXTENDED`).
 - Pinned buffers (such as KV cache and active compute buffers) remain mapped throughout execution.
@@ -52,19 +53,22 @@ tensor-splitting, or row-splitting modes. For user-facing execution modes and ex
 
 Weight tensors in the Hexagon backend are repacked from flat row-major GGML layouts into 2D tiles in memory.
 Tiling groups 2D matrix blocks contiguously:
+
 - Eliminates strided row reads when fetching 2D tiles into VTCM via DMA.
 - Matches native HVX vector width (128 bytes) and HMX systolic array dimensions (32x32).
 - Repacking happens on the host during model load (`set_tensor()`) or via runtime repacking (`rt-repack`).
-Implementation: [`htp-repack.cpp`](../../../ggml/src/ggml-hexagon/htp-repack.cpp).
+  Implementation: [`htp-repack.cpp`](../../../ggml/src/ggml-hexagon/htp-repack.cpp).
 
 ### Tile Dimensions and Grid Layout
 
 Each tile represents a submatrix of `N_rows = 32` rows and `K_cols` columns:
+
 - Standard types (`Q4_0`, `Q4_1`, `Q8_0`, `IQ4_NL`, `MXFP4`, and K-quants): `K_cols = 32` (`HTP_TENSOR_TILE_N_COLS = 32`).
 - `Q2_0`: `K_cols = 64` (`HTP_TENSOR_TILE_K_Q2_0 = 64`).
 - `Q1_0`: `K_cols = 128` (`HTP_TENSOR_TILE_K_Q1_0 = 128`).
 
 For a weight matrix of logical shape `[ne0, ne1]` (where `ne0 = K`, `ne1 = N`):
+
 - `n_k_tiles   = ne0 / K_cols`
 - `n_col_tiles = (ne1 + 31) / 32`
 - Tile index for column-tile `kt` and row-tile `ct`: `tile_idx = ct * n_k_tiles + kt`
@@ -282,7 +286,7 @@ Writing high-performance operators for Hexagon requires following specific guide
 - These pointers are architectural invariants during kernel execution and host-side graph preparation.
 - Do not turn an invariant violation into an unsupported operation or missed fusion.
   Checks such as `if (!octx || !octx->ctx)` clutter the code, obscure intent, and hide upstream errors.
-- **Distinction**: `octx->src[N]` pointers *can* be NULL by design and must be checked when optional.
+- **Distinction**: `octx->src[N]` pointers _can_ be NULL by design and must be checked when optional.
   Examples include attention masks, optional bias or weights in fused kernels, and frequency factors.
 
 ### `supports_op` Independence from Buffer and Repack State
@@ -401,6 +405,7 @@ if (nrows == 0) {
 ### Element-Partitioned Operators
 
 For flat element-wise operations that write directly to DDR:
+
 - Partition total linear elements N = ne0 * ne1 * ne2 * ne3 in 128-byte cache line chunks (`elems_per_line = (elem_size == 4) ? 32 : 64`).
 - Requires strict 1D contiguity:
   [`htp_tensor_is_contiguous(dst, elem_size)`](../../../ggml/src/ggml-hexagon/htp/htp-tensor.h#L65)

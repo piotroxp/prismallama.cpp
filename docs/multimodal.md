@@ -1,6 +1,7 @@
 # Multimodal
 
 llama.cpp supports multimodal input via `libmtmd`. Currently, there are 2 tools support this feature:
+
 - [llama-cli](../tools/cli/README.md)
 - [llama-server](../tools/server/README.md) via OpenAI-compatible `/chat/completions` API
 - [llama-mtmd-cli](../tools/mtmd/README.md), for testing and development
@@ -10,8 +11,8 @@ Currently, we support **image**, **audio** and **video** input.
 To enable it, you can use one of the 2 methods below:
 
 - Use `-hf` option with a supported model (see a list of pre-quantized model below)
-    - To load a model using `-hf` while disabling multimodal, use `--no-mmproj`
-    - To load a model using `-hf` while using a custom mmproj file, use `--mmproj local_file.gguf`
+  - To load a model using `-hf` while disabling multimodal, use `--no-mmproj`
+  - To load a model using `-hf` while using a custom mmproj file, use `--mmproj local_file.gguf`
 - Use `-m model.gguf` option with `--mmproj file.gguf` to specify text and multimodal projector respectively
 
 By default, multimodal projector will be offloaded to GPU. To disable this, add `--no-mmproj-offload`
@@ -35,6 +36,7 @@ llama-server -hf ggml-org/gemma-3-4b-it-GGUF --no-mmproj-offload
 > [!IMPORTANT]
 >
 > OCR models are trained with specific prompt and input structure, please refer to these discussions for more info:
+>
 > - PaddleOCR-VL: https://github.com/ggml-org/llama.cpp/pull/18825
 > - GLM-OCR: https://github.com/ggml-org/llama.cpp/pull/19677
 > - Deepseek-OCR: https://github.com/ggml-org/llama.cpp/pull/17400

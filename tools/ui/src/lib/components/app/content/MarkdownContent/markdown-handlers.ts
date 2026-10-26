@@ -4,34 +4,34 @@
  */
 
 import {
-	CODE_BLOCK_CLASS,
-	MARKDOWN_DATA_ATTRS,
-	MERMAID_BLOCK_CLASS,
-	MERMAID_SYNTAX_ATTR,
-	MERMAID_WRAPPER_CLASS
-} from '$lib/constants';
-import { BooleanString } from '$lib/enums';
-import { copyCodeToClipboard, copyToClipboard } from '$lib/utils';
+  CODE_BLOCK_CLASS,
+  MARKDOWN_DATA_ATTRS,
+  MERMAID_BLOCK_CLASS,
+  MERMAID_SYNTAX_ATTR,
+  MERMAID_WRAPPER_CLASS,
+} from "$lib/constants";
+import { BooleanString } from "$lib/enums";
+import { copyCodeToClipboard, copyToClipboard } from "$lib/utils";
 
 export interface PreviewState {
-	previewDialogOpen: boolean;
-	previewCode: string;
-	previewLanguage: string;
-	setPreviewDialogOpen: (open: boolean) => void;
-	setPreviewCode: (code: string) => void;
-	setPreviewLanguage: (lang: string) => void;
+  previewDialogOpen: boolean;
+  previewCode: string;
+  previewLanguage: string;
+  setPreviewDialogOpen: (open: boolean) => void;
+  setPreviewCode: (code: string) => void;
+  setPreviewLanguage: (lang: string) => void;
 }
 
 export interface MermaidPreviewState {
-	mermaidPreviewOpen: boolean;
-	mermaidPreviewSvgHtml: string;
-	setMermaidPreviewOpen: (open: boolean) => void;
-	setMermaidPreviewSvgHtml: (html: string) => void;
+  mermaidPreviewOpen: boolean;
+  mermaidPreviewSvgHtml: string;
+  setMermaidPreviewOpen: (open: boolean) => void;
+  setMermaidPreviewSvgHtml: (html: string) => void;
 }
 
 export interface RenderedBlocksState {
-	renderedBlocks: Array<{ id: string; html: string; contentHash?: string }>;
-	setRenderedBlocks: (blocks: Array<{ id: string; html: string; contentHash?: string }>) => void;
+  renderedBlocks: Array<{ id: string; html: string; contentHash?: string }>;
+  setRenderedBlocks: (blocks: Array<{ id: string; html: string; contentHash?: string }>) => void;
 }
 
 /**
@@ -39,30 +39,30 @@ export interface RenderedBlocksState {
  * Copies the code content to clipboard.
  */
 export function createHandleCopyClick() {
-	return async function handleCopyClick(event: Event) {
-		event.preventDefault();
-		event.stopPropagation();
+  return async function handleCopyClick(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
 
-		const target = event.currentTarget as HTMLButtonElement | null;
+    const target = event.currentTarget as HTMLButtonElement | null;
 
-		if (!target) return;
+    if (!target) return;
 
-		const wrapper = target.closest(`.${CODE_BLOCK_CLASS.WRAPPER}`);
+    const wrapper = target.closest(`.${CODE_BLOCK_CLASS.WRAPPER}`);
 
-		if (!wrapper) return;
+    if (!wrapper) return;
 
-		const codeElement = wrapper.querySelector<HTMLElement>(`code[${MARKDOWN_DATA_ATTRS.CODE_ID}]`);
+    const codeElement = wrapper.querySelector<HTMLElement>(`code[${MARKDOWN_DATA_ATTRS.CODE_ID}]`);
 
-		if (!codeElement) return;
+    if (!codeElement) return;
 
-		const rawCode = codeElement.textContent ?? '';
+    const rawCode = codeElement.textContent ?? "";
 
-		try {
-			await copyCodeToClipboard(rawCode);
-		} catch (error) {
-			console.error('Failed to copy code:', error);
-		}
-	};
+    try {
+      await copyCodeToClipboard(rawCode);
+    } catch (error) {
+      console.error("Failed to copy code:", error);
+    }
+  };
 }
 
 /**
@@ -70,14 +70,14 @@ export function createHandleCopyClick() {
  * Clears preview content when dialog is closed.
  */
 export function createHandlePreviewDialogOpenChange(previewState: PreviewState) {
-	return function handlePreviewDialogOpenChange(open: boolean) {
-		previewState.setPreviewDialogOpen(open);
+  return function handlePreviewDialogOpenChange(open: boolean) {
+    previewState.setPreviewDialogOpen(open);
 
-		if (!open) {
-			previewState.setPreviewCode('');
-			previewState.setPreviewLanguage('text');
-		}
-	};
+    if (!open) {
+      previewState.setPreviewCode("");
+      previewState.setPreviewLanguage("text");
+    }
+  };
 }
 
 /**
@@ -85,30 +85,30 @@ export function createHandlePreviewDialogOpenChange(previewState: PreviewState) 
  * Opens a preview dialog with the rendered HTML content.
  */
 export function createHandlePreviewClick(previewState: PreviewState) {
-	return async function handlePreviewClick(event: Event) {
-		event.preventDefault();
-		event.stopPropagation();
+  return async function handlePreviewClick(event: Event) {
+    event.preventDefault();
+    event.stopPropagation();
 
-		const target = event.currentTarget as HTMLButtonElement | null;
+    const target = event.currentTarget as HTMLButtonElement | null;
 
-		if (!target) return;
+    if (!target) return;
 
-		const wrapper = target.closest(`.${CODE_BLOCK_CLASS.WRAPPER}`);
+    const wrapper = target.closest(`.${CODE_BLOCK_CLASS.WRAPPER}`);
 
-		if (!wrapper) return;
+    if (!wrapper) return;
 
-		const codeElement = wrapper.querySelector<HTMLElement>(`code[${MARKDOWN_DATA_ATTRS.CODE_ID}]`);
+    const codeElement = wrapper.querySelector<HTMLElement>(`code[${MARKDOWN_DATA_ATTRS.CODE_ID}]`);
 
-		if (!codeElement) return;
+    if (!codeElement) return;
 
-		const rawCode = codeElement.textContent ?? '';
-		const languageLabel = wrapper.querySelector<HTMLElement>(`.${CODE_BLOCK_CLASS.LANGUAGE}`);
-		const language = languageLabel?.textContent?.trim() || 'text';
+    const rawCode = codeElement.textContent ?? "";
+    const languageLabel = wrapper.querySelector<HTMLElement>(`.${CODE_BLOCK_CLASS.LANGUAGE}`);
+    const language = languageLabel?.textContent?.trim() || "text";
 
-		previewState.setPreviewCode(rawCode);
-		previewState.setPreviewLanguage(language);
-		previewState.setPreviewDialogOpen(true);
-	};
+    previewState.setPreviewCode(rawCode);
+    previewState.setPreviewLanguage(language);
+    previewState.setPreviewDialogOpen(true);
+  };
 }
 
 /**
@@ -116,63 +116,63 @@ export function createHandlePreviewClick(previewState: PreviewState) {
  * Handles copy, preview, and diagram click events via event delegation.
  */
 export function createHandleMermaidClick(mermaidState: MermaidPreviewState) {
-	return async function handleMermaidClick(event: MouseEvent) {
-		const target = event.target as HTMLElement;
-		// Check if clicking on copy or preview button in mermaid block
-		const copyBtn = target.closest(`.${MERMAID_WRAPPER_CLASS} .${CODE_BLOCK_CLASS.COPY_BTN}`);
-		const previewBtn = target.closest(`.${MERMAID_WRAPPER_CLASS} .${CODE_BLOCK_CLASS.PREVIEW_BTN}`);
+  return async function handleMermaidClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    // Check if clicking on copy or preview button in mermaid block
+    const copyBtn = target.closest(`.${MERMAID_WRAPPER_CLASS} .${CODE_BLOCK_CLASS.COPY_BTN}`);
+    const previewBtn = target.closest(`.${MERMAID_WRAPPER_CLASS} .${CODE_BLOCK_CLASS.PREVIEW_BTN}`);
 
-		if (copyBtn || previewBtn) {
-			const wrapper = target.closest(`.${MERMAID_WRAPPER_CLASS}`);
+    if (copyBtn || previewBtn) {
+      const wrapper = target.closest(`.${MERMAID_WRAPPER_CLASS}`);
 
-			if (!wrapper) return;
+      if (!wrapper) return;
 
-			const preElement = wrapper.querySelector<HTMLElement>(
-				`pre.${MERMAID_BLOCK_CLASS}[${MERMAID_SYNTAX_ATTR}]`
-			);
+      const preElement = wrapper.querySelector<HTMLElement>(
+        `pre.${MERMAID_BLOCK_CLASS}[${MERMAID_SYNTAX_ATTR}]`,
+      );
 
-			if (!preElement) return;
+      if (!preElement) return;
 
-			const mermaidSyntax = preElement.getAttribute(MERMAID_SYNTAX_ATTR) ?? '';
+      const mermaidSyntax = preElement.getAttribute(MERMAID_SYNTAX_ATTR) ?? "";
 
-			if (copyBtn) {
-				event.preventDefault();
-				event.stopPropagation();
-				try {
-					await copyToClipboard(mermaidSyntax);
-				} catch (error) {
-					console.error('Failed to copy mermaid syntax:', error);
-				}
+      if (copyBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        try {
+          await copyToClipboard(mermaidSyntax);
+        } catch (error) {
+          console.error("Failed to copy mermaid syntax:", error);
+        }
 
-				return;
-			}
+        return;
+      }
 
-			if (previewBtn) {
-				event.preventDefault();
-				event.stopPropagation();
-				const svg = preElement.querySelector('svg');
+      if (previewBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        const svg = preElement.querySelector("svg");
 
-				if (!svg) return;
+        if (!svg) return;
 
-				mermaidState.setMermaidPreviewSvgHtml(svg.outerHTML);
-				mermaidState.setMermaidPreviewOpen(true);
+        mermaidState.setMermaidPreviewSvgHtml(svg.outerHTML);
+        mermaidState.setMermaidPreviewOpen(true);
 
-				return;
-			}
-		}
+        return;
+      }
+    }
 
-		// Otherwise, open preview when clicking on the mermaid diagram itself
-		const mermaidEl = target.closest(`.${MERMAID_BLOCK_CLASS}`);
+    // Otherwise, open preview when clicking on the mermaid diagram itself
+    const mermaidEl = target.closest(`.${MERMAID_BLOCK_CLASS}`);
 
-		if (!mermaidEl) return;
+    if (!mermaidEl) return;
 
-		const svg = mermaidEl.querySelector('svg');
+    const svg = mermaidEl.querySelector("svg");
 
-		if (!svg) return;
+    if (!svg) return;
 
-		mermaidState.setMermaidPreviewSvgHtml(svg.outerHTML);
-		mermaidState.setMermaidPreviewOpen(true);
-	};
+    mermaidState.setMermaidPreviewSvgHtml(svg.outerHTML);
+    mermaidState.setMermaidPreviewOpen(true);
+  };
 }
 
 /**
@@ -180,13 +180,13 @@ export function createHandleMermaidClick(mermaidState: MermaidPreviewState) {
  * Cleans up SVG content when dialog is closed.
  */
 export function createHandleMermaidPreviewOpenChange(mermaidState: MermaidPreviewState) {
-	return function handleMermaidPreviewOpenChange(open: boolean) {
-		mermaidState.setMermaidPreviewOpen(open);
+  return function handleMermaidPreviewOpenChange(open: boolean) {
+    mermaidState.setMermaidPreviewOpen(open);
 
-		if (!open) {
-			mermaidState.setMermaidPreviewSvgHtml('');
-		}
-	};
+    if (!open) {
+      mermaidState.setMermaidPreviewSvgHtml("");
+    }
+  };
 }
 
 /**
@@ -194,54 +194,54 @@ export function createHandleMermaidPreviewOpenChange(mermaidState: MermaidPrevie
  * Shows fallback UI for broken images.
  */
 export function createHandleImageError(
-	renderedBlocksState: RenderedBlocksState,
-	IMAGE_NOT_ERROR_BOUND_SELECTOR: string,
-	errorBoundAttr: string,
-	booleanString: BooleanString
+  renderedBlocksState: RenderedBlocksState,
+  IMAGE_NOT_ERROR_BOUND_SELECTOR: string,
+  errorBoundAttr: string,
+  booleanString: BooleanString,
 ) {
-	return async function handleImageError(event: Event) {
-		const img = event.target as HTMLImageElement;
+  return async function handleImageError(event: Event) {
+    const img = event.target as HTMLImageElement;
 
-		if (!img) return;
+    if (!img) return;
 
-		const blockId = img
-			.closest(`[${MARKDOWN_DATA_ATTRS.BLOCK_ID}]`)
-			?.getAttribute(MARKDOWN_DATA_ATTRS.BLOCK_ID);
+    const blockId = img
+      .closest(`[${MARKDOWN_DATA_ATTRS.BLOCK_ID}]`)
+      ?.getAttribute(MARKDOWN_DATA_ATTRS.BLOCK_ID);
 
-		if (!blockId) return;
+    if (!blockId) return;
 
-		const block = renderedBlocksState.renderedBlocks.find((b) => b.id === blockId);
+    const block = renderedBlocksState.renderedBlocks.find((b) => b.id === blockId);
 
-		if (!block) return;
+    if (!block) return;
 
-		// Skip if already handled
-		if (img.getAttribute(errorBoundAttr) === booleanString) return;
+    // Skip if already handled
+    if (img.getAttribute(errorBoundAttr) === booleanString) return;
 
-		img.setAttribute(errorBoundAttr, booleanString);
+    img.setAttribute(errorBoundAttr, booleanString);
 
-		// Get the fallback HTML and replace the image
-		const fallbackHtml = `<div class="image-error-placeholder" ${MARKDOWN_DATA_ATTRS.ORIGINAL_SRC}="${img.src}">
+    // Get the fallback HTML and replace the image
+    const fallbackHtml = `<div class="image-error-placeholder" ${MARKDOWN_DATA_ATTRS.ORIGINAL_SRC}="${img.src}">
 			<span class="image-error-icon">⚠️</span>
 			<span class="image-error-text">Failed to load image</span>
 		</div>`;
-		// Replace the img element with fallback in the block's HTML
-		const newHtml = block.html.replace(/img[^>]*src=["']([^"']*)[^>]*>/g, (match, src) => {
-			if (src === img.src) {
-				return fallbackHtml.replace(
-					`${MARKDOWN_DATA_ATTRS.ORIGINAL_SRC}=""`,
-					`${MARKDOWN_DATA_ATTRS.ORIGINAL_SRC}="${src}"`
-				);
-			}
+    // Replace the img element with fallback in the block's HTML
+    const newHtml = block.html.replace(/img[^>]*src=["']([^"']*)[^>]*>/g, (match, src) => {
+      if (src === img.src) {
+        return fallbackHtml.replace(
+          `${MARKDOWN_DATA_ATTRS.ORIGINAL_SRC}=""`,
+          `${MARKDOWN_DATA_ATTRS.ORIGINAL_SRC}="${src}"`,
+        );
+      }
 
-			return match;
-		});
-		// Update the block
-		const newBlocks = renderedBlocksState.renderedBlocks.map((b) =>
-			b.id === blockId ? { ...b, html: newHtml } : b
-		);
+      return match;
+    });
+    // Update the block
+    const newBlocks = renderedBlocksState.renderedBlocks.map((b) =>
+      b.id === blockId ? { ...b, html: newHtml } : b,
+    );
 
-		renderedBlocksState.setRenderedBlocks(newBlocks);
-	};
+    renderedBlocksState.setRenderedBlocks(newBlocks);
+  };
 }
 
 /**
@@ -249,37 +249,37 @@ export function createHandleImageError(
  * Binds click handlers to copy and preview buttons within code blocks.
  */
 export function createSetupCodeBlockActions(
-	handleCopyClick: (event: Event) => void,
-	handlePreviewClick: (event: Event) => void
+  handleCopyClick: (event: Event) => void,
+  handlePreviewClick: (event: Event) => void,
 ) {
-	return function setupCodeBlockActions(containerRef: HTMLElement | null) {
-		if (!containerRef) return;
+  return function setupCodeBlockActions(containerRef: HTMLElement | null) {
+    if (!containerRef) return;
 
-		const wrappers = containerRef.querySelectorAll<HTMLElement>(`.${CODE_BLOCK_CLASS.WRAPPER}`);
+    const wrappers = containerRef.querySelectorAll<HTMLElement>(`.${CODE_BLOCK_CLASS.WRAPPER}`);
 
-		for (const wrapper of wrappers) {
-			const copyButton = wrapper.querySelector<HTMLButtonElement>(`.${CODE_BLOCK_CLASS.COPY_BTN}`);
-			const previewButton = wrapper.querySelector<HTMLButtonElement>(
-				`.${CODE_BLOCK_CLASS.PREVIEW_BTN}`
-			);
+    for (const wrapper of wrappers) {
+      const copyButton = wrapper.querySelector<HTMLButtonElement>(`.${CODE_BLOCK_CLASS.COPY_BTN}`);
+      const previewButton = wrapper.querySelector<HTMLButtonElement>(
+        `.${CODE_BLOCK_CLASS.PREVIEW_BTN}`,
+      );
 
-			if (
-				copyButton &&
-				copyButton.getAttribute(MARKDOWN_DATA_ATTRS.LISTENER_BOUND) !== BooleanString.TRUE
-			) {
-				copyButton.setAttribute(MARKDOWN_DATA_ATTRS.LISTENER_BOUND, BooleanString.TRUE);
-				copyButton.addEventListener('click', handleCopyClick);
-			}
+      if (
+        copyButton &&
+        copyButton.getAttribute(MARKDOWN_DATA_ATTRS.LISTENER_BOUND) !== BooleanString.TRUE
+      ) {
+        copyButton.setAttribute(MARKDOWN_DATA_ATTRS.LISTENER_BOUND, BooleanString.TRUE);
+        copyButton.addEventListener("click", handleCopyClick);
+      }
 
-			if (
-				previewButton &&
-				previewButton.getAttribute(MARKDOWN_DATA_ATTRS.LISTENER_BOUND) !== BooleanString.TRUE
-			) {
-				previewButton.setAttribute(MARKDOWN_DATA_ATTRS.LISTENER_BOUND, BooleanString.TRUE);
-				previewButton.addEventListener('click', handlePreviewClick);
-			}
-		}
-	};
+      if (
+        previewButton &&
+        previewButton.getAttribute(MARKDOWN_DATA_ATTRS.LISTENER_BOUND) !== BooleanString.TRUE
+      ) {
+        previewButton.setAttribute(MARKDOWN_DATA_ATTRS.LISTENER_BOUND, BooleanString.TRUE);
+        previewButton.addEventListener("click", handlePreviewClick);
+      }
+    }
+  };
 }
 
 /**
@@ -287,19 +287,19 @@ export function createSetupCodeBlockActions(
  * Attaches error handlers to images to show fallback UI when loading fails.
  */
 export function createSetupImageErrorHandlers(
-	handleImageError: (event: Event) => void,
-	IMAGE_NOT_ERROR_BOUND_SELECTOR: string,
-	errorBoundAttr: string,
-	booleanString: BooleanString
+  handleImageError: (event: Event) => void,
+  IMAGE_NOT_ERROR_BOUND_SELECTOR: string,
+  errorBoundAttr: string,
+  booleanString: BooleanString,
 ) {
-	return function setupImageErrorHandlers(containerRef: HTMLElement | null) {
-		if (!containerRef) return;
+  return function setupImageErrorHandlers(containerRef: HTMLElement | null) {
+    if (!containerRef) return;
 
-		const images = containerRef.querySelectorAll<HTMLImageElement>(IMAGE_NOT_ERROR_BOUND_SELECTOR);
+    const images = containerRef.querySelectorAll<HTMLImageElement>(IMAGE_NOT_ERROR_BOUND_SELECTOR);
 
-		for (const img of images) {
-			img.setAttribute(errorBoundAttr, booleanString);
-			img.addEventListener('error', handleImageError);
-		}
-	};
+    for (const img of images) {
+      img.setAttribute(errorBoundAttr, booleanString);
+      img.addEventListener("error", handleImageError);
+    }
+  };
 }

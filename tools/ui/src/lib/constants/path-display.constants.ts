@@ -7,16 +7,16 @@
  * `[file:///abs/path](display)` payload back out on the UI side.
  */
 
-import { UrlProtocol } from '$lib/enums';
+import { UrlProtocol } from "$lib/enums";
 
-export const CWD_CHANGED_PREFIX = 'Set working directory to ';
-export const CWD_CLEARED_TEXT = 'Working directory cleared';
+export const CWD_CHANGED_PREFIX = "Set working directory to ";
+export const CWD_CLEARED_TEXT = "Working directory cleared";
 
 /** Trailing separator that marks a path as a directory. */
-export const DIRECTORY_PATH_SUFFIX = '/';
+export const DIRECTORY_PATH_SUFFIX = "/";
 
-export const HOME_TILDE = '~';
-export const HOME_TILDE_PREFIX = '~/'; // tilde plus path separator
+export const HOME_TILDE = "~";
+export const HOME_TILDE_PREFIX = "~/"; // tilde plus path separator
 
 /** Scheme prefix of the file link embedded in a synthetic cwd message. */
 export const FILE_URI_PREFIX = `${UrlProtocol.FILE}//`;

@@ -7,10 +7,10 @@
  *
  */
 
-export { default as ModelsDiscoverList } from './ModelsDiscoverList.svelte';
-export { default as ModelsDiscoverListSearch } from './ModelsDiscoverListSearch.svelte';
+export { default as ModelsDiscoverList } from "./ModelsDiscoverList.svelte";
+export { default as ModelsDiscoverListSearch } from "./ModelsDiscoverListSearch.svelte";
 
 /** One model entry; also the row of a tracked download, with its own controls. */
-export { default as ModelsDiscoverListItem } from './ModelsDiscoverListItem.svelte';
+export { default as ModelsDiscoverListItem } from "./ModelsDiscoverListItem.svelte";
 
-export { default as ModelsDiscoverListItemSkeleton } from './ModelsDiscoverListItemSkeleton.svelte';
+export { default as ModelsDiscoverListItemSkeleton } from "./ModelsDiscoverListItemSkeleton.svelte";

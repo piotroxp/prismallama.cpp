@@ -7,18 +7,18 @@
 
 // API endpoints
 
-export const HF_BASE_URL = 'https://huggingface.co';
+export const HF_BASE_URL = "https://huggingface.co";
 export const HF_API_MODELS_URL = `${HF_BASE_URL}/api/models`;
 export const HF_AVATARS_URL = `${HF_BASE_URL}/api/avatars`;
 
 // Query params
 
-export const HF_FULL_DETAIL_PARAM = 'full=true';
-export const HF_RECURSIVE_TREE_PARAM = 'recursive=true';
+export const HF_FULL_DETAIL_PARAM = "full=true";
+export const HF_RECURSIVE_TREE_PARAM = "recursive=true";
 /** Search filter that restricts results to repos containing GGUF files. */
-export const HF_GGUF_FILTER = 'gguf';
+export const HF_GGUF_FILTER = "gguf";
 /** Repeatable `expand` query param selecting fields on the list endpoint. */
-export const HF_EXPAND_PARAM = 'expand';
+export const HF_EXPAND_PARAM = "expand";
 /**
  * Fields the model list endpoint omits by default but the discover list rows
  * render: `gguf` (chat template, context length, param count) drives the
@@ -26,30 +26,30 @@ export const HF_EXPAND_PARAM = 'expand';
  * draft-sidecar badges. Without them those parts of a row stay empty.
  */
 export const HF_MODEL_LIST_EXPAND: readonly string[] = [
-	'author',
-	'downloads',
-	'gguf',
-	'lastModified',
-	'likes',
-	'pipeline_tag',
-	'siblings',
-	// `base_model:` tags, so search rows can show the base org's avatar as the
-	// main avatar with the quant org as the corner badge, like catalog rows.
-	'tags'
+  "author",
+  "downloads",
+  "gguf",
+  "lastModified",
+  "likes",
+  "pipeline_tag",
+  "siblings",
+  // `base_model:` tags, so search rows can show the base org's avatar as the
+  // main avatar with the quant org as the corner badge, like catalog rows.
+  "tags",
 ];
 
 // Repo file conventions
 
-export const HF_MAIN_BRANCH = 'main';
-export const HF_README_FILENAME = 'README.md';
-export const HF_RAW_PATH = 'raw';
-export const HF_TREE_PATH = 'tree';
+export const HF_MAIN_BRANCH = "main";
+export const HF_README_FILENAME = "README.md";
+export const HF_RAW_PATH = "raw";
+export const HF_TREE_PATH = "tree";
 
 // Pagination
 
 export const HF_LINK_NEXT_REGEX = /<([^>]+)>;\s*rel="next"/;
 /** `Link` response header carrying the next page URL for cursor pagination. */
-export const HF_LINK_HEADER = 'Link';
+export const HF_LINK_HEADER = "Link";
 
 // Fetch retry
 
@@ -77,13 +77,13 @@ export const HF_SHARD_PAD_WIDTH = 5;
 // Quantization tokens
 
 /** `UD-` (Unsloth Dynamic) custom quantization prefix, e.g. `UD-Q4_K_XL`. */
-export const HF_UD_QUANT_PREFIX = 'UD';
+export const HF_UD_QUANT_PREFIX = "UD";
 export const HF_UD_QUANT_PREFIX_REGEX = /^UD-/i;
 /**
  * Segment marking an Unsloth `shared-` draft head that borrows the target
  * model's embedding/output weights, e.g. `...-shared-Q4_K_M.gguf`.
  */
-export const HF_SHARED_DRAFT_TOKEN = 'shared';
+export const HF_SHARED_DRAFT_TOKEN = "shared";
 /**
  * Extracts the leading precision digits from a quant token, e.g.
  * `Q4_K_XL` -> 4, `IQ2_XXS` -> 2, `TQ1_0` -> 1, `BF16` -> 16.
@@ -94,16 +94,16 @@ export const HF_QUANT_PRECISION_REGEX = /^(?:I?Q|TQ|BF|F|MXFP)?(\d+)/i;
 
 /** Matches the `base_model:` tag (plain or `quantized:`), capturing the repo id. */
 export const HF_BASE_MODEL_TAG_REGEX = /^base_model:(?:quantized:)?(.+)$/;
-export const HF_LICENSE_TAG_PREFIX = 'license:';
-export const HF_GATED_TAG = 'gated';
-export const HF_GGUF_TAG = 'gguf';
-export const HF_SAFETENSORS_TAG = 'safetensors';
+export const HF_LICENSE_TAG_PREFIX = "license:";
+export const HF_GATED_TAG = "gated";
+export const HF_GGUF_TAG = "gguf";
+export const HF_SAFETENSORS_TAG = "safetensors";
 
 /** Hub tag marking decision models, which answer with probabilities, not text. */
-export const HF_DECISION_MODEL_TAG = 'decision-model';
+export const HF_DECISION_MODEL_TAG = "decision-model";
 
 /** `pipeline_tag` that also marks a decision model, with or without the hub tag. */
-export const HF_DECISION_PIPELINE_TAG = 'text-classification';
+export const HF_DECISION_PIPELINE_TAG = "text-classification";
 
 // Pipeline tasks (logic use only - matching `pipeline_tag` values against tags)
 
@@ -113,53 +113,53 @@ export const HF_DECISION_PIPELINE_TAG = 'text-classification';
  * `image-to-video`) lights up each modality it belongs to.
  */
 export const HF_MODALITY_PIPELINE_TAGS: Readonly<
-	Record<'audio' | 'video' | 'vision', readonly string[]>
+  Record<"audio" | "video" | "vision", readonly string[]>
 > = {
-	audio: [
-		'audio-classification',
-		'audio-to-audio',
-		'automatic-speech-recognition',
-		'text-to-speech',
-		'voice-activity-detection'
-	],
-	video: ['text-to-video', 'image-to-video', 'video-to-video'],
-	vision: ['image-text-to-text', 'image-to-text', 'text-to-image', 'image-to-video']
+  audio: [
+    "audio-classification",
+    "audio-to-audio",
+    "automatic-speech-recognition",
+    "text-to-speech",
+    "voice-activity-detection",
+  ],
+  video: ["text-to-video", "image-to-video", "video-to-video"],
+  vision: ["image-text-to-text", "image-to-text", "text-to-image", "image-to-video"],
 };
 
 /** Filename token marking an mmproj sidecar sibling (unlocks vision / audio). */
-export const HF_MMPROJ_FILENAME_TOKEN = 'mmproj';
+export const HF_MMPROJ_FILENAME_TOKEN = "mmproj";
 
 export const HF_TASK_TAGS: readonly string[] = [
-	'audio-classification',
-	'audio-to-audio',
-	'automatic-speech-recognition',
-	'conversational',
-	'depth-estimation',
-	'feature-extraction',
-	'fill-mask',
-	'image-classification',
-	'image-feature-extraction',
-	'image-segmentation',
-	'image-text-to-text',
-	'image-to-text',
-	'image-to-video',
-	'object-detection',
-	'question-answering',
-	'reinforcement-learning',
-	'robotics',
-	'sentence-similarity',
-	'summarization',
-	'text2text-generation',
-	'text-classification',
-	'text-generation',
-	'text-to-image',
-	'text-to-speech',
-	'text-to-video',
-	'token-classification',
-	'translation',
-	'video-to-video',
-	'voice-activity-detection',
-	'zero-shot-classification'
+  "audio-classification",
+  "audio-to-audio",
+  "automatic-speech-recognition",
+  "conversational",
+  "depth-estimation",
+  "feature-extraction",
+  "fill-mask",
+  "image-classification",
+  "image-feature-extraction",
+  "image-segmentation",
+  "image-text-to-text",
+  "image-to-text",
+  "image-to-video",
+  "object-detection",
+  "question-answering",
+  "reinforcement-learning",
+  "robotics",
+  "sentence-similarity",
+  "summarization",
+  "text2text-generation",
+  "text-classification",
+  "text-generation",
+  "text-to-image",
+  "text-to-speech",
+  "text-to-video",
+  "token-classification",
+  "translation",
+  "video-to-video",
+  "voice-activity-detection",
+  "zero-shot-classification",
 ];
 
 // Formatting
@@ -181,22 +181,22 @@ export const HF_SIZE_STRING_REGEX = /^\s*([\d.]+)\s*([a-z]+)\s*$/i;
  * the llama.app catalog `size` strings, whose suffix is lowercase.
  */
 export const HF_SIZE_SUFFIX_BYTES: Readonly<Record<string, number>> = {
-	b: BYTE,
-	g: GIGABYTE,
-	k: KILOBYTE,
-	m: MEGABYTE,
-	t: TERABYTE
+  b: BYTE,
+  g: GIGABYTE,
+  k: KILOBYTE,
+  m: MEGABYTE,
+  t: TERABYTE,
 };
 
-export const BYTE_LABEL = 'B';
-export const KILOBYTE_LABEL = 'KB';
-export const MEGABYTE_LABEL = 'MB';
-export const GIGABYTE_LABEL = 'GB';
+export const BYTE_LABEL = "B";
+export const KILOBYTE_LABEL = "KB";
+export const MEGABYTE_LABEL = "MB";
+export const GIGABYTE_LABEL = "GB";
 
 /** Count suffixes for compact number formatting, e.g. `1.5K`, `2.0M`. */
-export const KILO_LABEL = 'K';
-export const MEGA_LABEL = 'M';
-export const GIGA_LABEL = 'B';
+export const KILO_LABEL = "K";
+export const MEGA_LABEL = "M";
+export const GIGA_LABEL = "B";
 
 // Relative time
 
@@ -206,12 +206,12 @@ export const DAYS_PER_WEEK = 7;
 export const DAYS_PER_MONTH = 30;
 export const DAYS_PER_YEAR = 365;
 
-export const TODAY_LABEL = 'Today';
-export const YESTERDAY_LABEL = 'Yesterday';
-export const DAYS_AGO_LABEL = 'days ago';
-export const WEEKS_AGO_LABEL = 'weeks ago';
-export const MONTHS_AGO_LABEL = 'months ago';
-export const YEARS_AGO_LABEL = 'years ago';
+export const TODAY_LABEL = "Today";
+export const YESTERDAY_LABEL = "Yesterday";
+export const DAYS_AGO_LABEL = "days ago";
+export const WEEKS_AGO_LABEL = "weeks ago";
+export const MONTHS_AGO_LABEL = "months ago";
+export const YEARS_AGO_LABEL = "years ago";
 
 // Cache paths
 
@@ -222,7 +222,7 @@ export const YEARS_AGO_LABEL = 'years ago';
  */
 export const HF_CACHE_PATH_REGEX = /models--(.+?)\/snapshots\/[^/]+\/(.+)$/;
 /** Separator between org and name segments in an HF cache directory name. */
-export const HF_CACHE_DIR_SEPARATOR = '--';
+export const HF_CACHE_DIR_SEPARATOR = "--";
 
 // README
 

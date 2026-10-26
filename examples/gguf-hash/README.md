@@ -1,4 +1,3 @@
-
 # llama-gguf-hash
 
 CLI to hash GGUF files to detect difference on a per model and per tensor level.
@@ -13,7 +12,7 @@ CLI to hash GGUF files to detect difference on a per model and per tensor level.
 - `--all`: use all hash
 - `--no-layer`: exclude per layer hash
 - `--uuid`: generate UUIDv5 ID
-- `-c`, `--check <manifest>`:  verify against a manifest
+- `-c`, `--check <manifest>`: verify against a manifest
 
 ## About
 
@@ -29,21 +28,24 @@ then the per tensor hash can be used to narrow down the specific tensor layer
 that has inconsistencies.
 
 For Maintainers:
+
 - Detection of tensor inconsistency during development and automated tests
-    - This is served by xxh64 which is fast
-    - This is also served by having per tensor layer to assist in narrowing down
-      the location of the faulty tensor layer
-    - This is also served by sha1 which is much slower but more widely supported
+  - This is served by xxh64 which is fast
+  - This is also served by having per tensor layer to assist in narrowing down
+    the location of the faulty tensor layer
+  - This is also served by sha1 which is much slower but more widely supported
 
 For Model Creators:
+
 - Optional consistent UUID generation based on model tensor content
-    - This is served by UUIDv5 which is useful for databases keys
-        - llama.cpp UUIDv5 Namespace: `ef001206-dadc-5f6d-a15f-3359e577d4e5`
-            - Made via UUIDv5 URL namespace of `en.wikipedia.org/wiki/Llama.cpp`
+  - This is served by UUIDv5 which is useful for databases keys
+    - llama.cpp UUIDv5 Namespace: `ef001206-dadc-5f6d-a15f-3359e577d4e5`
+      - Made via UUIDv5 URL namespace of `en.wikipedia.org/wiki/Llama.cpp`
 
 For Model Users:
+
 - Assurance of tensor layer integrity even if metadata was updated
-    - This is served by sha256 which is still considered very secure as of 2024
+  - This is served by sha256 which is still considered very secure as of 2024
 
 ### Design Note
 
@@ -195,7 +197,6 @@ sha256    7dd641b32f59b60dbd4b5420c4b0f6321ccf48f58f6ae201a3dbc4a58a27c6e4  test
 
 Verification results for test.gguf.manifest - Success
 ```
-
 
 ## Crypto/Hash Libraries Used
 

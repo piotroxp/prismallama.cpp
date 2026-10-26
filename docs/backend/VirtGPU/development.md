@@ -197,6 +197,7 @@ podman run $PODMAN_CACHE_ARGS -it --rm --device /dev/dri localhost/llama-cpp.vir
 ```
 
 Expected output (performance may vary):
+
 ```
 | model                          |       size |     params | backend    | ngl |          test |                  t/s |
 | ------------------------------ | ---------: | ---------: | ---------- | --: | ------------: | -------------------: |
@@ -211,6 +212,7 @@ Expected output (performance may vary):
 ⚠️ **Warning**: Setting `DYLD_LIBRARY_PATH` from SSH doesn't work on macOS. Here is a workaround:
 
 **Workaround 1: Replace system library**
+
 ```bash
 VIRGL_BUILD_DIR=$HOME/remoting/virglrenderer/build  # ⚠️ adapt to your system
 BREW_VIRGL_DIR=/opt/homebrew/Cellar/virglrenderer/0.10.4d/lib

@@ -3,9 +3,9 @@
  * Ensures only compatible file types are processed based on model capabilities
  */
 
-import { FileTypeCategory } from '$lib/enums';
-import type { ModalityCapabilities } from '$lib/types';
-import { getFileTypeCategory } from '$lib/utils';
+import { FileTypeCategory } from "$lib/enums";
+import type { ModalityCapabilities } from "$lib/types";
+import { getFileTypeCategory } from "$lib/utils";
 
 /**
  * Check if a file type is supported by the given modalities
@@ -15,44 +15,44 @@ import { getFileTypeCategory } from '$lib/utils';
  * @returns true if the file type is supported
  */
 export function isFileTypeSupportedByModel(
-	filename: string,
-	mimeType: string | undefined,
-	capabilities: ModalityCapabilities
+  filename: string,
+  mimeType: string | undefined,
+  capabilities: ModalityCapabilities,
 ): boolean {
-	const category = mimeType ? getFileTypeCategory(mimeType) : null;
+  const category = mimeType ? getFileTypeCategory(mimeType) : null;
 
-	// If we can't determine the category from MIME type, fall back to general support check
-	if (!category) {
-		// For unknown types, only allow if they might be text files
-		// This is a conservative approach for edge cases
-		return true; // Let the existing isFileTypeSupported handle this
-	}
+  // If we can't determine the category from MIME type, fall back to general support check
+  if (!category) {
+    // For unknown types, only allow if they might be text files
+    // This is a conservative approach for edge cases
+    return true; // Let the existing isFileTypeSupported handle this
+  }
 
-	switch (category) {
-		case FileTypeCategory.TEXT:
-			// Text files are always supported
-			return true;
+  switch (category) {
+    case FileTypeCategory.TEXT:
+      // Text files are always supported
+      return true;
 
-		case FileTypeCategory.PDF:
-			// PDFs are always supported (will be processed as text for non-vision models)
-			return true;
+    case FileTypeCategory.PDF:
+      // PDFs are always supported (will be processed as text for non-vision models)
+      return true;
 
-		case FileTypeCategory.IMAGE:
-			// Images require vision support
-			return capabilities.hasVision;
+    case FileTypeCategory.IMAGE:
+      // Images require vision support
+      return capabilities.hasVision;
 
-		case FileTypeCategory.AUDIO:
-			// Audio files require audio support
-			return capabilities.hasAudio;
+    case FileTypeCategory.AUDIO:
+      // Audio files require audio support
+      return capabilities.hasAudio;
 
-		case FileTypeCategory.VIDEO:
-			// Video files require video support
-			return capabilities.hasVideo;
+    case FileTypeCategory.VIDEO:
+      // Video files require video support
+      return capabilities.hasVideo;
 
-		default:
-			// Unknown categories - be conservative and allow
-			return true;
-	}
+    default:
+      // Unknown categories - be conservative and allow
+      return true;
+  }
 }
 
 /**
@@ -62,69 +62,69 @@ export function isFileTypeSupportedByModel(
  * @returns Object with supportedFiles and unsupportedFiles arrays
  */
 export function filterFilesByModalities(
-	files: File[],
-	capabilities: ModalityCapabilities
+  files: File[],
+  capabilities: ModalityCapabilities,
 ): {
-	supportedFiles: File[];
-	unsupportedFiles: File[];
-	modalityReasons: Record<string, string>;
+  supportedFiles: File[];
+  unsupportedFiles: File[];
+  modalityReasons: Record<string, string>;
 } {
-	const supportedFiles: File[] = [];
-	const unsupportedFiles: File[] = [];
-	const modalityReasons: Record<string, string> = {};
-	const { hasAudio, hasVideo, hasVision } = capabilities;
+  const supportedFiles: File[] = [];
+  const unsupportedFiles: File[] = [];
+  const modalityReasons: Record<string, string> = {};
+  const { hasAudio, hasVideo, hasVision } = capabilities;
 
-	for (const file of files) {
-		const category = getFileTypeCategory(file.type);
+  for (const file of files) {
+    const category = getFileTypeCategory(file.type);
 
-		let isSupported = true;
-		let reason = '';
+    let isSupported = true;
+    let reason = "";
 
-		switch (category) {
-			case FileTypeCategory.IMAGE:
-				if (!hasVision) {
-					isSupported = false;
-					reason = 'Images require a vision-capable model';
-				}
+    switch (category) {
+      case FileTypeCategory.IMAGE:
+        if (!hasVision) {
+          isSupported = false;
+          reason = "Images require a vision-capable model";
+        }
 
-				break;
+        break;
 
-			case FileTypeCategory.AUDIO:
-				if (!hasAudio) {
-					isSupported = false;
-					reason = 'Audio files require an audio-capable model';
-				}
+      case FileTypeCategory.AUDIO:
+        if (!hasAudio) {
+          isSupported = false;
+          reason = "Audio files require an audio-capable model";
+        }
 
-				break;
+        break;
 
-			case FileTypeCategory.VIDEO:
-				if (!hasVideo) {
-					isSupported = false;
-					reason = 'Video files require a video-capable model';
-				}
+      case FileTypeCategory.VIDEO:
+        if (!hasVideo) {
+          isSupported = false;
+          reason = "Video files require a video-capable model";
+        }
 
-				break;
+        break;
 
-			case FileTypeCategory.TEXT:
-			case FileTypeCategory.PDF:
-				// Always supported
-				break;
+      case FileTypeCategory.TEXT:
+      case FileTypeCategory.PDF:
+        // Always supported
+        break;
 
-			default:
-				// For unknown types, check if it's a generally supported file type
-				// This handles edge cases and maintains backward compatibility
-				break;
-		}
+      default:
+        // For unknown types, check if it's a generally supported file type
+        // This handles edge cases and maintains backward compatibility
+        break;
+    }
 
-		if (isSupported) {
-			supportedFiles.push(file);
-		} else {
-			unsupportedFiles.push(file);
-			modalityReasons[file.name] = reason;
-		}
-	}
+    if (isSupported) {
+      supportedFiles.push(file);
+    } else {
+      unsupportedFiles.push(file);
+      modalityReasons[file.name] = reason;
+    }
+  }
 
-	return { modalityReasons, supportedFiles, unsupportedFiles };
+  return { modalityReasons, supportedFiles, unsupportedFiles };
 }
 
 /**
@@ -135,37 +135,37 @@ export function filterFilesByModalities(
  * @returns Formatted error message
  */
 export function generateModalityErrorMessage(
-	unsupportedFiles: File[],
-	modalityReasons: Record<string, string>,
-	capabilities: ModalityCapabilities
+  unsupportedFiles: File[],
+  modalityReasons: Record<string, string>,
+  capabilities: ModalityCapabilities,
 ): string {
-	if (unsupportedFiles.length === 0) return '';
+  if (unsupportedFiles.length === 0) return "";
 
-	const { hasAudio, hasVideo, hasVision } = capabilities;
+  const { hasAudio, hasVideo, hasVision } = capabilities;
 
-	let message = '';
+  let message = "";
 
-	if (unsupportedFiles.length === 1) {
-		const file = unsupportedFiles[0];
-		const reason = modalityReasons[file.name];
+  if (unsupportedFiles.length === 1) {
+    const file = unsupportedFiles[0];
+    const reason = modalityReasons[file.name];
 
-		message = `The file "${file.name}" cannot be uploaded: ${reason}.`;
-	} else {
-		const fileNames = unsupportedFiles.map((f) => f.name).join(', ');
+    message = `The file "${file.name}" cannot be uploaded: ${reason}.`;
+  } else {
+    const fileNames = unsupportedFiles.map((f) => f.name).join(", ");
 
-		message = `The following files cannot be uploaded: ${fileNames}.`;
-	}
+    message = `The following files cannot be uploaded: ${fileNames}.`;
+  }
 
-	// Add helpful information about what is supported
-	const supportedTypes: string[] = ['text files', 'PDFs'];
+  // Add helpful information about what is supported
+  const supportedTypes: string[] = ["text files", "PDFs"];
 
-	if (hasVision) supportedTypes.push('images');
+  if (hasVision) supportedTypes.push("images");
 
-	if (hasAudio) supportedTypes.push('audio files');
+  if (hasAudio) supportedTypes.push("audio files");
 
-	if (hasVideo) supportedTypes.push('video files');
+  if (hasVideo) supportedTypes.push("video files");
 
-	message += ` This model supports: ${supportedTypes.join(', ')}.`;
+  message += ` This model supports: ${supportedTypes.join(", ")}.`;
 
-	return message;
+  return message;
 }

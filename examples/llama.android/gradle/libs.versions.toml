@@ -45,9 +45,9 @@ junit = { group = "junit", name = "junit", version.ref = "junit" }
 
 [bundles]
 androidx = [
-    "androidx-activity",
-    "androidx-appcompat",
-    "androidx-constraintlayout",
-    "androidx-core-ktx",
-    "androidx-datastore-preferences",
+  "androidx-activity",
+  "androidx-appcompat",
+  "androidx-constraintlayout",
+  "androidx-core-ktx",
+  "androidx-datastore-preferences",
 ]

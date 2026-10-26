@@ -18,46 +18,46 @@
  */
 
 // CHAT / MESSAGING
-export { chatStore } from './chat/index.svelte';
+export { chatStore } from "./chat/index.svelte";
 
-export { draftMessagesStore } from './chat/drafts.svelte';
+export { draftMessagesStore } from "./chat/drafts.svelte";
 
 // CONVERSATION TABS
-export { tabsStore } from './tabs.svelte';
+export { tabsStore } from "./tabs.svelte";
 
 // CONTEXT STATS (active conversation context window usage)
-export { contextStatsStore } from './chat/context-stats.svelte';
+export { contextStatsStore } from "./chat/context-stats.svelte";
 
 // AGENTIC (multi-turn tool orchestration)
-export { agenticStore } from './agentic/index.svelte';
+export { agenticStore } from "./agentic/index.svelte";
 
 // CONVERSATIONS
-export { conversationsStore } from './conversations/index.svelte';
+export { conversationsStore } from "./conversations/index.svelte";
 
 // MCP
-export { mcpStore } from './mcp/index.svelte';
+export { mcpStore } from "./mcp/index.svelte";
 
 // MODELS
-export { modelsStore } from './models/index.svelte';
+export { modelsStore } from "./models/index.svelte";
 
 // MODELS DISCOVER (HuggingFace browse state for the discover dialog)
-export { modelsDiscoverStore } from './models-discover/index.svelte';
+export { modelsDiscoverStore } from "./models-discover/index.svelte";
 
 // SERVER
-export { serverStore } from './server.svelte';
+export { serverStore } from "./server.svelte";
 
 // UI / LAYOUT
-export { uiStore } from './ui.svelte';
+export { uiStore } from "./ui.svelte";
 
 // SETTINGS / UI PREFERENCES
-export { settingsStore } from './settings/index.svelte';
+export { settingsStore } from "./settings/index.svelte";
 
-export { permissionsStore } from './permissions.svelte';
+export { permissionsStore } from "./permissions.svelte";
 
 // TOOLS
-export { toolsStore } from './tools.svelte';
+export { toolsStore } from "./tools.svelte";
 
 // ENVIRONMENT / META
-export { versionStore } from './version.svelte';
+export { versionStore } from "./version.svelte";
 
-export { deviceStore } from './device.svelte';
+export { deviceStore } from "./device.svelte";

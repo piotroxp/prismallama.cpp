@@ -5,13 +5,13 @@
 // them here lets each parser stay focused on its own format quirks.
 
 import {
-	FILE_PATH_SEPARATOR_REGEX,
-	TOOL_ARG_PATH_KEYS,
-	TOOL_ARG_STRING_FIELD_PATTERN_TEMPLATE
-} from '$lib/constants';
-import { BuiltInTool } from '$lib/enums';
-import type { AgenticSection } from '$lib/types/agentic';
-import { parsePartialJsonArgs } from '$lib/utils/parse-partial-json-args';
+  FILE_PATH_SEPARATOR_REGEX,
+  TOOL_ARG_PATH_KEYS,
+  TOOL_ARG_STRING_FIELD_PATTERN_TEMPLATE,
+} from "$lib/constants";
+import { BuiltInTool } from "$lib/enums";
+import type { AgenticSection } from "$lib/types/agentic";
+import { parsePartialJsonArgs } from "$lib/utils/parse-partial-json-args";
 
 /**
  * Strict (final-state) JSON parser for a tool-args blob. Mirrors the
@@ -20,17 +20,17 @@ import { parsePartialJsonArgs } from '$lib/utils/parse-partial-json-args';
  * `null` so callers don't have to guard against surprise shapes.
  */
 function parseFinalToolArgs(blob: string): Record<string, unknown> | null {
-	try {
-		const parsed: unknown = JSON.parse(blob);
+  try {
+    const parsed: unknown = JSON.parse(blob);
 
-		if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-			return parsed as Record<string, unknown>;
-		}
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
 
-		return null;
-	} catch {
-		return null;
-	}
+    return null;
+  } catch {
+    return null;
+  }
 }
 
 // Compiled per key on first use; the key set is tiny and fixed.
@@ -45,31 +45,31 @@ const toolArgStringRegexes = new Map<string, RegExp>();
  * or its value is not a string; callers fall back to the full parse.
  */
 export function extractToolArgString(
-	toolArgs: string,
-	keys: readonly string[]
+  toolArgs: string,
+  keys: readonly string[],
 ): string | undefined {
-	for (const key of keys) {
-		let pattern = toolArgStringRegexes.get(key);
+  for (const key of keys) {
+    let pattern = toolArgStringRegexes.get(key);
 
-		if (!pattern) {
-			pattern = new RegExp(TOOL_ARG_STRING_FIELD_PATTERN_TEMPLATE.replace('{key}', key));
-			toolArgStringRegexes.set(key, pattern);
-		}
+    if (!pattern) {
+      pattern = new RegExp(TOOL_ARG_STRING_FIELD_PATTERN_TEMPLATE.replace("{key}", key));
+      toolArgStringRegexes.set(key, pattern);
+    }
 
-		const match = pattern.exec(toolArgs);
+    const match = pattern.exec(toolArgs);
 
-		if (!match) continue;
+    if (!match) continue;
 
-		try {
-			const value: unknown = JSON.parse(`"${match[1]}"`);
+    try {
+      const value: unknown = JSON.parse(`"${match[1]}"`);
 
-			if (typeof value === 'string') return value;
-		} catch {
-			// fall through to the next key; the full parse is the fallback
-		}
-	}
+      if (typeof value === "string") return value;
+    } catch {
+      // fall through to the next key; the full parse is the fallback
+    }
+  }
 
-	return undefined;
+  return undefined;
 }
 
 /**
@@ -77,9 +77,9 @@ export function extractToolArgString(
  * the call carries no path; the title then shows the tool label alone.
  */
 export function fileNameFromPath(filePath: string | undefined): string | undefined {
-	if (!filePath) return undefined;
+  if (!filePath) return undefined;
 
-	return filePath.split(FILE_PATH_SEPARATOR_REGEX).pop() || filePath;
+  return filePath.split(FILE_PATH_SEPARATOR_REGEX).pop() || filePath;
 }
 
 /**
@@ -89,15 +89,15 @@ export function fileNameFromPath(filePath: string | undefined): string | undefin
  * still render whatever else the call streamed.
  */
 export function extractToolArgPath(args?: Record<string, unknown> | null): string | undefined {
-	if (!args) return undefined;
+  if (!args) return undefined;
 
-	for (const key of TOOL_ARG_PATH_KEYS) {
-		const value = args[key];
+  for (const key of TOOL_ARG_PATH_KEYS) {
+    const value = args[key];
 
-		if (typeof value === 'string' && value) return value;
-	}
+    if (typeof value === "string" && value) return value;
+  }
 
-	return undefined;
+  return undefined;
 }
 
 /**
@@ -112,13 +112,13 @@ export function extractToolArgPath(args?: Record<string, unknown> | null): strin
  * as each token lands (read_file, edit_file, write_file).
  */
 export function parseToolArgs(
-	expected: BuiltInTool,
-	section: AgenticSection,
-	options: { partial?: boolean } = {}
+  expected: BuiltInTool,
+  section: AgenticSection,
+  options: { partial?: boolean } = {},
 ): Record<string, unknown> | null {
-	if (section.toolName !== expected || !section.toolArgs) return null;
+  if (section.toolName !== expected || !section.toolArgs) return null;
 
-	return options.partial
-		? parsePartialJsonArgs(section.toolArgs)
-		: parseFinalToolArgs(section.toolArgs);
+  return options.partial
+    ? parsePartialJsonArgs(section.toolArgs)
+    : parseFinalToolArgs(section.toolArgs);
 }

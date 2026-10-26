@@ -2,11 +2,12 @@
 
 The GGML-VirtGPU backend enables GGML applications to run machine
 learning computations on host hardware while the application itself
-runs inside a virtual machine.  It uses host-guest shared memory to
+runs inside a virtual machine. It uses host-guest shared memory to
 efficiently share data buffers between the two sides.
 
 This backend relies on the virtio-gpu, and VirglRenderer API Remoting
 (APIR) component. The backend is split into two libraries:
+
 - a GGML implementation (the "remoting frontend"), running in the
   guest and interacting with the virtgpu device
 - a VirglRenderer APIR compatible library (the "remoting backend"),
@@ -15,13 +16,12 @@ This backend relies on the virtio-gpu, and VirglRenderer API Remoting
 
 ## OS support
 
-| OS       | Status            | Backend     | CI testing  | Notes
-| -------- | ----------------- | ----------- | ----------- | -----
-| MacOS 14 | Supported         | ggml-metal  | X           | Working when compiled on MacOS 14
-| MacOS 15 | Supported         | ggml-metal  | X           | Working when compiled on MacOS 14 or MacOS 15
+| OS       | Status            | Backend     | CI testing  | Notes                                         |
+| -------- | ----------------- | ----------- | ----------- | --------------------------------------------- |
+| MacOS 14 | Supported         | ggml-metal  | X           | Working when compiled on MacOS 14             |
+| MacOS 15 | Supported         | ggml-metal  | X           | Working when compiled on MacOS 14 or MacOS 15 |
 | MacOS 26 | Not tested        |             |             |
-| Linux    | Under development | ggml-vulkan | not working | Working locally, CI running into deadlocks
-
+| Linux    | Under development | ggml-vulkan | not working | Working locally, CI running into deadlocks    |
 
 ## Architecture Overview
 
@@ -106,26 +106,31 @@ Commands and data are serialized using a custom binary protocol with:
 ## Supported Operations
 
 ### Device Operations
+
 - Device enumeration and capability queries
 - Memory information (total/free)
 - Backend type detection
 
 ### Buffer Operations
+
 - Buffer allocation and deallocation
 - Tensor data transfer (host ↔ guest)
 - Memory copying and clearing
 
 ### Computation Operations
+
 - Graph execution forwarding
 
 ## Build Requirements
 
 ### Guest-side Dependencies
+
 - `libdrm` for DRM/virtio-gpu communication
 - C++20 compatible compiler
 - CMake 3.14+
 
 ### Host-side Dependencies
+
 - virglrenderer with APIR support (pending upstream review)
 - Target backend libraries (libggml-metal, libggml-vulkan, etc.)
 
@@ -158,17 +163,17 @@ Commands and data are serialized using a custom binary protocol with:
 
 * This work is pending upstream changes in the VirglRenderer
   project.
-  * The backend can be tested with Virglrenderer compiled from source
-  using this PR:
-  https://gitlab.freedesktop.org/virgl/virglrenderer/-/merge_requests/1590
+  - The backend can be tested with Virglrenderer compiled from source
+    using this PR:
+    https://gitlab.freedesktop.org/virgl/virglrenderer/-/merge_requests/1590
 * This work is pending changes in the VMM/hypervisor running the
   virtual machine, which need to know how to route the newly
   introduced APIR capset.
-  * The environment variable `VIRGL_ROUTE_VENUS_TO_APIR=1` allows
+  - The environment variable `VIRGL_ROUTE_VENUS_TO_APIR=1` allows
     using the Venus capset, until the relevant hypervisors have been
     patched. However, setting this flag breaks the Vulkan/Venus normal
     behavior.
-  * The environment variable `GGML_REMOTING_USE_APIR_CAPSET` tells the
+  - The environment variable `GGML_REMOTING_USE_APIR_CAPSET` tells the
     `ggml-virtgpu` backend to use the APIR capset. This will become
     the default when the relevant hypervisors have been patched.
 

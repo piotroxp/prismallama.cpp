@@ -6,15 +6,16 @@ The cross-compilation toolchain images are provided by the
 [Qualcomm Snapdragon Toolchain registry](https://github.com/snapdragon-toolchain).
 These Docker images include the Android NDK, OpenCL SDK, Hexagon SDK, CMake, and the necessary cross-compilers:
 
-* **Android toolchain**: `ghcr.io/snapdragon-toolchain/arm64-android:v0.8`
-* **Linux toolchain**: `ghcr.io/snapdragon-toolchain/arm64-linux:v0.8`
+- **Android toolchain**: `ghcr.io/snapdragon-toolchain/arm64-android:v0.8`
+- **Linux toolchain**: `ghcr.io/snapdragon-toolchain/arm64-linux:v0.8`
 
 The unified build utility (`scripts/snapdragon/build.py`) automatically pulls
 and orchestrates these containers to perform target compilation.
 You only need to ensure that Docker (or Docker Desktop on macOS/Windows) is running on your host machine.
 Specific setup, build, and installation details for Linux and Windows on Snapdragon platforms are documented in:
-* [Linux on Snapdragon guide](linux.md)
-* [Windows on Snapdragon guide](windows.md)
+
+- [Linux on Snapdragon guide](linux.md)
+- [Windows on Snapdragon guide](windows.md)
 
 ## How to Build
 
@@ -25,11 +26,13 @@ launches the correct compilation Docker container, builds the libraries and tool
 installs them, and optionally pushes them to your ADB device.
 
 Build and deploy for Android target (accepts `android` or `adb` alias):
+
 ```
 $ ./scripts/snapdragon/build.py --target adb --push
 ```
 
 Build and deploy for Linux target (accepts `linux` or `lnx` alias):
+
 ```
 $ ./scripts/snapdragon/build.py --target linux:user@host --push
 ```
@@ -353,7 +356,6 @@ on 4 physical NPUs, or `--devices 'HTP0[0-1:0],HTP1[0-1:1]'` on 2 physical NPUs 
 
       `GGML_HEXAGON_POWER_MODE=balanced llama-completion ...`
       `./scripts/snapdragon/run.py --hex-power-mode sustained_high_performance ...`
-
 
 - `GGML_HEXAGON_VERBOSE=1`
   Enables verbose logging of Ops from the backend. Example output:

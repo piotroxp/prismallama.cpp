@@ -103,7 +103,7 @@ First, we need to detect if the host is supplying the [NVIDIA driver libraries i
 ls -la /usr/lib64/libcuda.so.1
 ```
 
-### If *`libcuda.so.1`* is missing:
+### If _`libcuda.so.1`_ is missing:
 
 ```
 ls: cannot access '/usr/lib64/libcuda.so.1': No such file or directory
@@ -118,7 +118,8 @@ The host dose not supply the CUDA drivers, **install them now:**
 sudo dnf install nvidia-driver-cuda nvidia-driver-libs nvidia-driver-cuda-libs nvidia-persistenced
 ```
 
-### If *`libcuda.so.1`* exists:
+### If _`libcuda.so.1`_ exists:
+
 ```
 lrwxrwxrwx. 1 root root 21 Mar 24 11:26 /usr/lib64/libcuda.so.1 -> libcuda.so.570.133.07
 ```
@@ -148,14 +149,13 @@ sudo rpm --install --verbose --hash --justdb /tmp/nvidia-driver-libs/*
 
 ##### Check that the RPM Database has been correctly updated:
 
-**Note:** This is the same command as in the *"Install the Nvidia Driver Libraries on Guest"* for if *`libcuda.so.1`* was missing.
-
+**Note:** This is the same command as in the _"Install the Nvidia Driver Libraries on Guest"_ for if _`libcuda.so.1`_ was missing.
 
 ```bash
 sudo dnf install nvidia-driver-cuda nvidia-driver-libs nvidia-driver-cuda-libs nvidia-persistenced
 ```
 
-*(this time it will not install anything, as the database things that these packages are already installed)*
+_(this time it will not install anything, as the database things that these packages are already installed)_
 
 ```
 Updating and loading repositories:

@@ -25,6 +25,7 @@ Multimodal support in `llama.cpp` works by encoding images into embeddings using
 This approach keeps the multimodal components distinct from the core `libllama` library. Separating these allows for faster, independent development cycles. While many modern vision models are based on Vision Transformers (ViTs), their specific pre-processing and projection steps can vary significantly. Integrating this diverse complexity directly into `libllama` is currently challenging.
 
 Consequently, running a multimodal model typically requires two GGUF files:
+
 1.  The standard language model file.
 2.  A corresponding **multimodal projector (`mmproj`)** file, which handles the image encoding and projection.
 
@@ -33,6 +34,7 @@ Consequently, running a multimodal model typically requires two GGUF files:
 As outlined in the history, `libmtmd` is the modern library designed to replace the original `llava.cpp` implementation for handling multimodal inputs.
 
 Built upon `clip.cpp` (similar to `llava.cpp`), `libmtmd` offers several advantages:
+
 - **Unified Interface:** Aims to consolidate interaction for various multimodal models.
 - **Improved UX/DX:** Features a more intuitive API, inspired by the `Processor` class in the Hugging Face `transformers` library.
 - **Flexibility:** Designed to support multiple input types (text, audio, images) while respecting the wide variety of chat templates used by different models.
@@ -42,6 +44,7 @@ Built upon `clip.cpp` (similar to `llava.cpp`), `libmtmd` offers several advanta
 Multimodal projector (`mmproj`) files are specific to each model architecture.
 
 For the following models, you can use `convert_hf_to_gguf.py` with `--mmproj` flag to get the `mmproj` file:
+
 - [Gemma 3](https://huggingface.co/collections/google/gemma-3-release-67c6c6f89c4f76621268bb6d) ; See the guide [here](../../docs/multimodal/gemma3.md) - Note: 1B variant does not have vision support
 - SmolVLM (from [HuggingFaceTB](https://huggingface.co/HuggingFaceTB))
 - SmolVLM2 (from [HuggingFaceTB](https://huggingface.co/HuggingFaceTB))

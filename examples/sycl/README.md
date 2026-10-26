@@ -4,17 +4,17 @@ This example program provides the tools for llama.cpp for SYCL on Intel GPU.
 
 ## Tool
 
-|Tool Name| Function|Status|
-|-|-|-|
-|llama-ls-sycl-device| List all SYCL devices with ID, compute capability, max work group size, etc.|Support|
+| Tool Name            | Function                                                                     | Status  |
+| -------------------- | ---------------------------------------------------------------------------- | ------- |
+| llama-ls-sycl-device | List all SYCL devices with ID, compute capability, max work group size, etc. | Support |
 
 ### llama-ls-sycl-device
 
 List all SYCL devices with ID, compute capability, max work group size, etc.
 
-1. Build the llama.cpp for SYCL for the specified target *(using GGML_SYCL_TARGET)*.
+1. Build the llama.cpp for SYCL for the specified target _(using GGML_SYCL_TARGET)_.
 
-2. Enable oneAPI running environment *(if GGML_SYCL_TARGET is set to INTEL -default-)*
+2. Enable oneAPI running environment _(if GGML_SYCL_TARGET is set to INTEL -default-)_
 
 ```
 source /opt/intel/oneapi/setvars.sh
@@ -38,4 +38,3 @@ found 2 SYCL devices:
 | 1| [level_zero:gpu:1]|                 Intel UHD Graphics 750|    1.3|     32|     512|   32| 62631M|            1.3.29138|
 
 ```
-

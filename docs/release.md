@@ -4,11 +4,11 @@ llama.cpp uses [semantic versioning](https://semver.org) (`MAJOR.MINOR.PATCH`).
 
 ## Version bump guidelines
 
-| Change type | Version component |
-|---|---|
-| Breaking change to the public C API (`include/llama.h`)         | `MAJOR` |
-| Backward-compatible features, model support, or API addition    | `MINOR` |
-| Bug fix with no API change                                      | `PATCH` |
+| Change type                                                  | Version component |
+| ------------------------------------------------------------ | ----------------- |
+| Breaking change to the public C API (`include/llama.h`)      | `MAJOR`           |
+| Backward-compatible features, model support, or API addition | `MINOR`           |
+| Bug fix with no API change                                   | `PATCH`           |
 
 The version is set in the three variables at the top of the root `CMakeLists.txt`:
 
@@ -46,10 +46,11 @@ release tag must pass `-DLLAMA_BUILD_IS_DEV=OFF` to produce a clean version stri
 (e.g. `0.1.0` instead of `0.1.0-dev`).
 
 ## How releases reach users
+
 Currently releases are not published to github releases, only nightly/development
 builds are available there. The way users can access releases are using the following
 channels:
 
-- **llama-install.sh**  — downloads pre-built binaries built from the release tag.
-- **Package managers**  — consume the git tag directly.
+- **llama-install.sh** — downloads pre-built binaries built from the release tag.
+- **Package managers** — consume the git tag directly.
 - **Build from source** — users clone the repo and check out the tag.

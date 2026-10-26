@@ -5,7 +5,7 @@
  * markup that is already sanitized, this only isolates and sizes it.
  */
 export function mountSvgShadow(host: HTMLElement, markup: string, style: string): void {
-	const root = host.shadowRoot ?? host.attachShadow({ mode: 'open' });
+  const root = host.shadowRoot ?? host.attachShadow({ mode: "open" });
 
-	root.innerHTML = markup ? `<style>${style}</style>${markup}` : '';
+  root.innerHTML = markup ? `<style>${style}</style>${markup}` : "";
 }

@@ -32,11 +32,11 @@ The llama.cpp OpenCL backend is designed to enable llama.cpp on **Qualcomm Adren
 
 ## OS
 
-| OS      | Status  | Verified                                       |
-|---------|---------|------------------------------------------------|
-| Android | Support | Snapdragon 8 Gen 3, Snapdragon 8 Elite         |
-| Windows | Support | Windows 11 Arm64 with Snapdragon X Elite       |
-| Linux   | Support | Ubuntu 22.04 WSL2 with Intel 12700H            |
+| OS      | Status  | Verified                                 |
+| ------- | ------- | ---------------------------------------- |
+| Android | Support | Snapdragon 8 Gen 3, Snapdragon 8 Elite   |
+| Windows | Support | Windows 11 Arm64 with Snapdragon X Elite |
+| Linux   | Support | Ubuntu 22.04 WSL2 with Intel 12700H      |
 
 ## Hardware
 
@@ -44,33 +44,33 @@ The llama.cpp OpenCL backend is designed to enable llama.cpp on **Qualcomm Adren
 
 **Verified devices**
 
-| Adreno GPU                            | Status  |
-|:-------------------------------------:|:-------:|
-| Adreno 750 (Snapdragon 8 Gen 3)       | Support |
-| Adreno 810 (Snapdragon 7s Gen 3)      | Support |
-| Adreno 830 (Snapdragon 8 Elite)       | Support |
+|              Adreno GPU               | Status  |
+| :-----------------------------------: | :-----: |
+|    Adreno 750 (Snapdragon 8 Gen 3)    | Support |
+|   Adreno 810 (Snapdragon 7s Gen 3)    | Support |
+|    Adreno 830 (Snapdragon 8 Elite)    | Support |
 | Adreno 840 (Snapdragon 8 Elite Gen 5) | Support |
-| Adreno X1-85 (Snapdragon X Elite)     | Support |
-| Adreno X2-90 (Snapdragon X2 Elite)    | Support |
+|   Adreno X1-85 (Snapdragon X Elite)   | Support |
+|  Adreno X2-90 (Snapdragon X2 Elite)   | Support |
 
 > A6x GPUs with a recent driver and compiler are supported; they are usually found in IoT platforms.
-However, A6x GPUs in phones are likely not supported due to the outdated driver and compiler.
+> However, A6x GPUs in phones are likely not supported due to the outdated driver and compiler.
 
 ## DataType Supports
 
-| DataType               | Status                     |
-|:----------------------:|:--------------------------:|
-| Q1_0                   | Support                    |
-| Q4_0                   | Support                    |
-| Q4_1                   | Support                    |
-| Q5_0                   | Support                    |
-| Q5_1                   | Support                    |
-| Q8_0                   | Support                    |
-| Q4_K                   | Support                    |
-| Q5_K                   | Support                    |
-| Q6_K                   | Support                    |
-| MXFP4                  | Support                    |
-| IQ4_NL                 | Support                    |
+| DataType | Status  |
+| :------: | :-----: |
+|   Q1_0   | Support |
+|   Q4_0   | Support |
+|   Q4_1   | Support |
+|   Q5_0   | Support |
+|   Q5_1   | Support |
+|   Q8_0   | Support |
+|   Q4_K   | Support |
+|   Q5_K   | Support |
+|   Q6_K   | Support |
+|  MXFP4   | Support |
+|  IQ4_NL  | Support |
 
 ## Model Preparation
 
@@ -87,16 +87,15 @@ To allow using the kernel library, add `-DGGML_OPENCL_USE_ADRENO_BIN_KERNELS=ON`
 Then, extract `adreno-opencl-kernels.dll` from the zip file downloaded from the above URL and put it alongside the executables.
 If kernels compatible with the current GPU are found in the library, they will be loaded and used.
 
-
 ## CMake Options
 
 The OpenCL backend has the following CMake options that control the behavior of the backend.
 
-| CMake options                        | Default value  | Description                               |
-|:------------------------------------:|:--------------:|:------------------------------------------|
-| `GGML_OPENCL_EMBED_KERNELS`          | `ON`           | Embed OpenCL kernels into the executable. |
-| `GGML_OPENCL_USE_ADRENO_KERNELS`     | `ON`           | Use kernels optimized for Adreno.         |
-| `GGML_OPENCL_USE_ADRENO_BIN_KERNELS` | `OFF`          | Allow using binary kernel lib for Adreno. |
+|            CMake options             | Default value | Description                               |
+| :----------------------------------: | :-----------: | :---------------------------------------- |
+|     `GGML_OPENCL_EMBED_KERNELS`      |     `ON`      | Embed OpenCL kernels into the executable. |
+|   `GGML_OPENCL_USE_ADRENO_KERNELS`   |     `ON`      | Use kernels optimized for Adreno.         |
+| `GGML_OPENCL_USE_ADRENO_BIN_KERNELS` |     `OFF`     | Allow using binary kernel lib for Adreno. |
 
 ## Program Binary Cache
 
@@ -106,11 +105,11 @@ device, driver, or platform version).
 
 The cache is controlled with the `GGML_OPENCL_KERNEL_CACHE_DIR` environment variable:
 
-| Value                                  | Behavior                                       |
-|:---------------------------------------|:-----------------------------------------------|
-| unset / empty / `1` / `default`        | Enabled in the platform default cache directory: `%LOCALAPPDATA%\llama.cpp\cl-cache` (Windows), `~/Library/Caches/llama.cpp/cl-cache` (macOS), `<temp dir>/llama.cpp/cl-cache` elsewhere. |
-| `0` / `off` / `none` / `disable(d)`    | Disabled.                                      |
-| any other value                        | Used verbatim as the cache directory path.     |
+| Value                               | Behavior                                                                                                                                                                                  |
+| :---------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| unset / empty / `1` / `default`     | Enabled in the platform default cache directory: `%LOCALAPPDATA%\llama.cpp\cl-cache` (Windows), `~/Library/Caches/llama.cpp/cl-cache` (macOS), `<temp dir>/llama.cpp/cl-cache` elsewhere. |
+| `0` / `off` / `none` / `disable(d)` | Disabled.                                                                                                                                                                                 |
+| any other value                     | Used verbatim as the cache directory path.                                                                                                                                                |
 
 If the chosen directory cannot be created or used, the cache disables itself for the process
 and kernels are compiled from source as usual. Set `GGML_OPENCL_KERNEL_CACHE_DEBUG=1` to
@@ -120,10 +119,10 @@ print a HIT/MISS/SAVE trace to stderr.
 
 Ubuntu 22.04 is used for targeting Android. Make sure the following tools are accessible from command line,
 
-* Git
-* CMake 3.29
-* Ninja
-* Python3
+- Git
+- CMake 3.29
+- Ninja
+- Python3
 
 ### I. Setup Environment
 
@@ -189,13 +188,13 @@ ninja
 
 A Snapdragon X Elite device with Windows 11 Arm64 is used. Make sure the following tools are accessible from command line,
 
-* Git
-* CMake 3.29
-* Clang 19
-* Ninja
-* Visual Studio 2022
-* Powershell 7
-* Python
+- Git
+- CMake 3.29
+- Clang 19
+- Ninja
+- Visual Studio 2022
+- Powershell 7
+- Python
 
 Visual Studio provides necessary headers and libraries although it is not directly used for building.
 Alternatively, Visual Studio Build Tools can be installed instead of the full Visual Studio.

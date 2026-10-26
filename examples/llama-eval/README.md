@@ -74,16 +74,16 @@ python3 llama-eval.py \
 
 ### The tools
 
-| tool | purpose |
-|---|---|
-| `list_files` | enumerate the tree |
-| `read_file` | read, with 1-based line numbers and optional line-range narrowing |
-| `search` | regular-expression search across the repository |
-| `edit_lines` | replace an inclusive line range |
-| `edit_replace` | replace an exact snippet, which must be unique |
-| `write_file` | write a whole file |
-| `lint` | run the language's linter and type checker |
-| `finish` | declare the change complete |
+| tool           | purpose                                                           |
+| -------------- | ----------------------------------------------------------------- |
+| `list_files`   | enumerate the tree                                                |
+| `read_file`    | read, with 1-based line numbers and optional line-range narrowing |
+| `search`       | regular-expression search across the repository                   |
+| `edit_lines`   | replace an inclusive line range                                   |
+| `edit_replace` | replace an exact snippet, which must be unique                    |
+| `write_file`   | write a whole file                                                |
+| `lint`         | run the language's linter and type checker                        |
+| `finish`       | declare the change complete                                       |
 
 Three constraints are deliberate:
 
@@ -103,7 +103,7 @@ repository root, so a symlink planted inside the tree cannot reach outside it.
 
 ### Scoring
 
-A task is **resolved** when every test that was failing now passes *and* nothing
+A task is **resolved** when every test that was failing now passes _and_ nothing
 that was already passing broke. Both sets are derived by running the tests twice
 when the corpus is built -- once against the defective tree and once against the
 reference fix -- never hand-written, so a task whose defect no test exercises is
@@ -123,21 +123,20 @@ own test runner. Neither touches the other, and no other suite touches either.
 
 ### Useful flags
 
-| flag | meaning |
-|---|---|
-| `--agentic-lang` | restrict to one language, and provision only its toolchain |
-| `--agentic-max-turns` | give up after this many assistant turns (default 50) |
-| `--agentic-max-tokens` | cap generation per turn (default: no cap); bounds a model that falls into a repetition loop, but also cuts reasoning off mid-thought. Truncated turns are counted as `truncated_turns` |
-| `--agentic-context-limit` | abandon an episode once its context exceeds this many tokens |
+| flag                        | meaning                                                                                                                                                                                    |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--agentic-lang`            | restrict to one language, and provision only its toolchain                                                                                                                                 |
+| `--agentic-max-turns`       | give up after this many assistant turns (default 50)                                                                                                                                       |
+| `--agentic-max-tokens`      | cap generation per turn (default: no cap); bounds a model that falls into a repetition loop, but also cuts reasoning off mid-thought. Truncated turns are counted as `truncated_turns`     |
+| `--agentic-context-limit`   | abandon an episode once its context exceeds this many tokens                                                                                                                               |
 | `--agentic-transcripts DIR` | save each episode's full message history to `DIR/<task_id>.json`, plus a `DIR/<task_id>.html` showing every reasoning block, reply, tool call and tool result; the main report links to it |
-
 
 ## Code suites (HumanEval, ClassEval)
 
 `--dataset humaneval` runs the 164 OpenAI HumanEval problems; `--dataset
 classeval` runs the 100 ClassEval class-generation tasks. Unlike the other
 suites these are not graded by matching text: the model's reply is parsed for a
-```` ```python ```` block, that code is combined with the task's own unit tests,
+` ```python ` block, that code is combined with the task's own unit tests,
 and the result is **executed**.
 
 ClassEval asks for a whole class rather than one function, so it is scored the
@@ -175,15 +174,15 @@ python3 llama-eval.py \
 Generated code is untrusted, but these suites need far less than a container to
 run safely. **The package set is derived from the dataset's own imports at
 startup**, not hardcoded and not taken from the upstream `requirements.txt` -
-which for ClassEval lists `torch`, `openai` and `transformers` that its *tests*
+which for ClassEval lists `torch`, `openai` and `transformers` that its _tests_
 never touch. So each suite installs exactly what it needs:
 
-| suite | third-party packages |
-|---|---|
-| HumanEval | **none** - every problem imports only stdlib (`typing, math, random, copy, string, collections, hashlib, re`) |
+| suite     | third-party packages                                                                                                        |
+| --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| HumanEval | **none** - every problem imports only stdlib (`typing, math, random, copy, string, collections, hashlib, re`)               |
 | ClassEval | 13: `beautifulsoup4, gensim, lxml, netifaces, nltk, numpy, openpyxl, pandas, pillow, pypdf2, python-docx, reportlab, scipy` |
 
-Two of ClassEval's are *declared* rather than derived, because no import
+Two of ClassEval's are _declared_ rather than derived, because no import
 statement mentions them: `lxml` is selected by string
 (`BeautifulSoup(html, 'lxml')`, ClassEval_44 - without it that task silently
 drops from 23/23 to 7/23), and `scipy` is a hard gensim requirement. Note also
@@ -210,26 +209,26 @@ instead. Both paths score **100/100**.
 declares a provisioning step that runs once at venv build time, while the
 network is still up. ClassEval uses this to pre-seed exactly three nltk corpora
 (`punkt_tab`, `averaged_perceptron_tagger_eng`, `wordnet`, ~33 MB), so the tests
-themselves run with no network at all. Those are the *current* names - the
+themselves run with no network at all. Those are the _current_ names - the
 dataset asks for `punkt` and `averaged_perceptron_tagger`, which nltk has since
 renamed, and seeding the legacy names too is not harmless: with a network
 available nltk considers them satisfied and re-fetches the modern ones anyway.
-The corpora are written *inside* the venv, not `~/nltk_data`, because `$HOME` is
+The corpora are written _inside_ the venv, not `~/nltk_data`, because `$HOME` is
 a tmpfs under the strongest isolation tier.
 
 Each candidate program runs in a throwaway directory as its own process group,
 under the strongest isolation the host offers:
 
-| tier | requires | isolates |
-|---|---|---|
-| `bwrap` | bubblewrap installed | read-only root, tmpfs `/tmp` and `$HOME`, **no network** |
-| `unshare` | `unshare --map-current-user` | **no network** |
-| `unshare-root` | any `unshare -r` | no network, but **runs as uid 0** - see below |
-| `rlimit` | always available | cpu/memory/file-size/process caps only |
+| tier           | requires                     | isolates                                                 |
+| -------------- | ---------------------------- | -------------------------------------------------------- |
+| `bwrap`        | bubblewrap installed         | read-only root, tmpfs `/tmp` and `$HOME`, **no network** |
+| `unshare`      | `unshare --map-current-user` | **no network**                                           |
+| `unshare-root` | any `unshare -r`             | no network, but **runs as uid 0** - see below            |
+| `rlimit`       | always available             | cpu/memory/file-size/process caps only                   |
 
 **Candidate code must not run as root**, which is why `unshare -r` is a
 last-resort tier that prints a warning. Root bypasses file permission bits, so a
-test asserting that writing to a `chmod 0444` file *fails* instead sees it
+test asserting that writing to a `chmod 0444` file _fails_ instead sees it
 succeed - ClassEval_50 scores 14/16 under uid 0 and 16/16 under uid 1000, with
 nothing in the output to suggest the sandbox caused it. Install bubblewrap.
 
@@ -244,7 +243,7 @@ scoring output from a model you do not trust, check the tier printed at startup.
 
 ### Reproducibility
 
-Several tasks draw their test inputs from the *global, unseeded* RNG, so a
+Several tasks draw their test inputs from the _global, unseeded_ RNG, so a
 verdict is not reproducible run to run - which adds noise exactly when you are
 comparing two models or two quantisations. `--exec-seed` (default `0`) seeds the
 RNG before each test; pass `--exec-seed -1` for the stock upstream behaviour.
@@ -252,7 +251,7 @@ This does not change what the model is asked to compute.
 
 It matters more than it sounds. HumanEval/38, /50 and /53 are affected, and
 ClassEval_58 (duplicate mine placement) fails about 30% of the time on its own
-*reference* solution - measured here at 21/30 passes unseeded versus **30/30
+_reference_ solution - measured here at 21/30 passes unseeded versus **30/30
 seeded**.
 
 ### Dataset fidelity
@@ -262,7 +261,7 @@ solutions pass on CPython 3.14 with no patches, so no forked or re-hosted copy
 is needed. `--dataset-source` accepts a local `.jsonl` or a HuggingFace repo id
 if you do want to point at a modified copy.
 
-HumanEval does contain a handful of long-standing defects where the *prompt*
+HumanEval does contain a handful of long-standing defects where the _prompt_
 contradicts the graded test (notably HumanEval/47, /116 and /148). Those
 penalise a model that reads the docstring carefully, but correcting them makes
 the benchmark marginally easier and the resulting scores no longer comparable
@@ -283,7 +282,7 @@ could pass:
 - **ClassEval_31** compared floats with `assertEqual`, failing on a 4-ULP numpy
   difference.
 
-The other three fix only the *reference* solutions (NumPy 2.0 removals in
+The other three fix only the _reference_ solutions (NumPy 2.0 removals in
 ClassEval_51, a 30%-flaky mine generator in ClassEval_58) and cannot affect a
 model's score. No `skeleton` was touched, so what the model is asked to write is
 byte-identical to upstream. Pass `--dataset-source FudanSELab/ClassEval` for the

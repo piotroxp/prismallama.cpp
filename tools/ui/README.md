@@ -158,12 +158,12 @@ proxy: {
 
 ```json
 {
-	"svelte": "^5.0.0",
-	"bits-ui": "^2.8.11",
-	"dexie": "^4.0.11",
-	"pdfjs-dist": "^5.4.54",
-	"highlight.js": "^11.11.1",
-	"rehype-katex": "^7.0.1"
+  "svelte": "^5.0.0",
+  "bits-ui": "^2.8.11",
+  "dexie": "^4.0.11",
+  "pdfjs-dist": "^5.4.54",
+  "highlight.js": "^11.11.1",
+  "rehype-katex": "^7.0.1"
 }
 ```
 
@@ -530,13 +530,13 @@ All stores use Svelte 5's fine-grained reactivity:
 ```typescript
 // Store with reactive state
 class ChatStore {
-	#isLoading = $state(false);
-	#currentResponse = $state('');
+  #isLoading = $state(false);
+  #currentResponse = $state("");
 
-	// Derived values auto-update
-	get isStreaming() {
-		return $derived(this.#isLoading && this.#currentResponse.length > 0);
-	}
+  // Derived values auto-update
+  get isStreaming() {
+    return $derived(this.#isLoading && this.#currentResponse.length > 0);
+  }
 }
 
 // Exported reactive accessors
@@ -578,8 +578,8 @@ state and abort controllers live in per-conversation maps:
 
 ```typescript
 class ChatStore {
-	chatStreamingStates = new SvelteMap<string, { response: string; messageId: string }>();
-	abortControllers = new SvelteMap<string, AbortController>();
+  chatStreamingStates = new SvelteMap<string, { response: string; messageId: string }>();
+  abortControllers = new SvelteMap<string, AbortController>();
 }
 ```
 
@@ -589,15 +589,15 @@ Conversations are stored as a tree, not a linear list:
 
 ```typescript
 interface DatabaseMessage {
-	id: string;
-	parent: string | null; // Points to parent message
-	children: string[]; // List of child message IDs
-	// ...
+  id: string;
+  parent: string | null; // Points to parent message
+  children: string[]; // List of child message IDs
+  // ...
 }
 
 interface DatabaseConversation {
-	currentNode: string; // Currently viewed branch tip
-	// ...
+  currentNode: string; // Currently viewed branch tip
+  // ...
 }
 ```
 

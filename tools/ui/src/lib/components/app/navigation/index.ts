@@ -35,7 +35,7 @@
  * </DropdownMenu.Root>
  * ```
  */
-export { default as DropdownMenuSearchable } from './DropdownMenuSearchable.svelte';
+export { default as DropdownMenuSearchable } from "./DropdownMenuSearchable.svelte";
 
 /**
  * **DropdownMenuActions** - Multi-action dropdown menu
@@ -62,7 +62,7 @@ export { default as DropdownMenuSearchable } from './DropdownMenuSearchable.svel
  * />
  * ```
  */
-export { default as DropdownMenuActions } from './DropdownMenuActions.svelte';
+export { default as DropdownMenuActions } from "./DropdownMenuActions.svelte";
 /**
  * **SidebarNavigation** - Sidebar with actions menu and conversation list
  *
@@ -104,7 +104,7 @@ export { default as DropdownMenuActions } from './DropdownMenuActions.svelte';
  * <SidebarNavigation bind:this={sidebarRef} />
  * ```
  */
-export { default as SidebarNavigation } from './SidebarNavigation/SidebarNavigation.svelte';
+export { default as SidebarNavigation } from "./SidebarNavigation/SidebarNavigation.svelte";
 
 /**
  * Single conversation item in sidebar. Displays conversation title (truncated),
@@ -112,7 +112,7 @@ export { default as SidebarNavigation } from './SidebarNavigation/SidebarNavigat
  * rename and delete options. Highlights when active (matches current route).
  * Handles click to navigate and keyboard accessibility.
  */
-export { default as SidebarNavigationConversationItem } from './SidebarNavigation/SidebarNavigationConversationItem.svelte';
+export { default as SidebarNavigationConversationItem } from "./SidebarNavigation/SidebarNavigationConversationItem.svelte";
 
 /**
  * **SidebarNavigationSelectionBar** - Bulk action toolbar for selection mode
@@ -142,7 +142,7 @@ export { default as SidebarNavigationConversationItem } from './SidebarNavigatio
  * />
  * ```
  */
-export { default as SidebarNavigationSelectionBar } from './SidebarNavigation/SidebarNavigationSelectionBar.svelte';
+export { default as SidebarNavigationSelectionBar } from "./SidebarNavigation/SidebarNavigationSelectionBar.svelte";
 
 /**
  * **SidebarNavigationConversationList** - Grouped conversation list
@@ -166,8 +166,8 @@ export { default as SidebarNavigationSelectionBar } from './SidebarNavigation/Si
  * />
  * ```
  */
-export { default as SidebarNavigationConversationList } from './SidebarNavigation/SidebarNavigationConversationList.svelte';
-export { default as SidebarNavigationActions } from './SidebarNavigation/SidebarNavigationActions.svelte';
+export { default as SidebarNavigationConversationList } from "./SidebarNavigation/SidebarNavigationConversationList.svelte";
+export { default as SidebarNavigationActions } from "./SidebarNavigation/SidebarNavigationActions.svelte";
 
 /**
  * **SidebarNavigationSearchResults** - Filtered conversation list for search.
@@ -194,11 +194,11 @@ export { default as SidebarNavigationActions } from './SidebarNavigation/Sidebar
  * />
  * ```
  */
-export { default as SidebarNavigationSearchResults } from './SidebarNavigation/SidebarNavigationSearchResults.svelte';
+export { default as SidebarNavigationSearchResults } from "./SidebarNavigation/SidebarNavigationSearchResults.svelte";
 
 /**
  * Search input for filtering conversations in sidebar. Filters conversation
  * list by title as user types. Shows clear button when query is not empty.
  * Integrated into sidebar header with proper styling.
  */
-export { default as SidebarNavigationSearch } from './SidebarNavigation/SidebarNavigationSearch.svelte';
+export { default as SidebarNavigationSearch } from "./SidebarNavigation/SidebarNavigationSearch.svelte";

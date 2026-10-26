@@ -1,19 +1,19 @@
 import {
-	TRAILING_SLASHES_REGEX,
-	TWO_PART_PUBLIC_SUFFIXES,
-	WILDCARD_PUBLIC_SUFFIXES
-} from '$lib/constants';
-import { UrlProtocol } from '$lib/enums';
+  TRAILING_SLASHES_REGEX,
+  TWO_PART_PUBLIC_SUFFIXES,
+  WILDCARD_PUBLIC_SUFFIXES,
+} from "$lib/constants";
+import { UrlProtocol } from "$lib/enums";
 
 /**
  * Check whether a hostname looks like an IPv4 or IPv6 address.
  */
 function isIpAddress(hostname: string): boolean {
-	if (hostname.includes(':')) return true;
+  if (hostname.includes(":")) return true;
 
-	if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) return true;
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) return true;
 
-	return false;
+  return false;
 }
 
 /**
@@ -27,35 +27,35 @@ function isIpAddress(hostname: string): boolean {
  *   'localhost'                 -> null
  */
 export function extractRootDomain(url: URL): string | null {
-	const hostname = url.hostname.toLowerCase();
+  const hostname = url.hostname.toLowerCase();
 
-	if (!hostname || isIpAddress(hostname)) return null;
+  if (!hostname || isIpAddress(hostname)) return null;
 
-	const parts = hostname.split('.');
+  const parts = hostname.split(".");
 
-	if (parts.length < 2) return null;
+  if (parts.length < 2) return null;
 
-	if (parts.length >= 3) {
-		const suffix2 = `${parts[parts.length - 2]}.${parts[parts.length - 1]}`;
+  if (parts.length >= 3) {
+    const suffix2 = `${parts[parts.length - 2]}.${parts[parts.length - 1]}`;
 
-		if (TWO_PART_PUBLIC_SUFFIXES.has(suffix2)) {
-			return parts.slice(-3).join('.');
-		}
-	}
+    if (TWO_PART_PUBLIC_SUFFIXES.has(suffix2)) {
+      return parts.slice(-3).join(".");
+    }
+  }
 
-	for (let i = 2; i <= parts.length; i++) {
-		const candidate = parts.slice(-i).join('.');
+  for (let i = 2; i <= parts.length; i++) {
+    const candidate = parts.slice(-i).join(".");
 
-		if (WILDCARD_PUBLIC_SUFFIXES.has(candidate)) {
-			if (parts.length === i + 1) {
-				return hostname;
-			}
+    if (WILDCARD_PUBLIC_SUFFIXES.has(candidate)) {
+      if (parts.length === i + 1) {
+        return hostname;
+      }
 
-			return parts.slice(-(i + 2)).join('.');
-		}
-	}
+      return parts.slice(-(i + 2)).join(".");
+    }
+  }
 
-	return parts.slice(-2).join('.');
+  return parts.slice(-2).join(".");
 }
 
 /**
@@ -63,17 +63,17 @@ export function extractRootDomain(url: URL): string | null {
  * Only allows http: and https: schemes. Returns `null` for anything else.
  */
 export function sanitizeExternalUrl(raw: string): string | null {
-	try {
-		const url = new URL(raw);
+  try {
+    const url = new URL(raw);
 
-		if (url.protocol !== UrlProtocol.HTTP && url.protocol !== UrlProtocol.HTTPS) {
-			return null;
-		}
+    if (url.protocol !== UrlProtocol.HTTP && url.protocol !== UrlProtocol.HTTPS) {
+      return null;
+    }
 
-		return url.href;
-	} catch {
-		return null;
-	}
+    return url.href;
+  } catch {
+    return null;
+  }
 }
 
 /**
@@ -91,22 +91,22 @@ export function sanitizeExternalUrl(raw: string): string | null {
  * ports" policy never matches consistently across schemes.
  */
 export function canonicalizeServerUrl(raw: string): string {
-	const trimmed = raw.trim();
+  const trimmed = raw.trim();
 
-	try {
-		const parsed = new URL(trimmed);
-		const pathname = parsed.pathname.replace(TRAILING_SLASHES_REGEX, '');
-		// Aggressive: drop the port unconditionally. We only use this for
-		// equality checks between user-typed URLs and a hard-coded list of
-		// recommendations, where the port can never carry distinguishing
-		// information we care about (a different port = a different server,
-		// but two URLs that differ only in `:80` vs no-port are clearly the
-		// same intent). Lowercasing the hostname matches HTTP/HTTPS
-		// case-insensitivity - the URL parser does NOT lowercase it.
-		const host = parsed.hostname.toLowerCase();
+  try {
+    const parsed = new URL(trimmed);
+    const pathname = parsed.pathname.replace(TRAILING_SLASHES_REGEX, "");
+    // Aggressive: drop the port unconditionally. We only use this for
+    // equality checks between user-typed URLs and a hard-coded list of
+    // recommendations, where the port can never carry distinguishing
+    // information we care about (a different port = a different server,
+    // but two URLs that differ only in `:80` vs no-port are clearly the
+    // same intent). Lowercasing the hostname matches HTTP/HTTPS
+    // case-insensitivity - the URL parser does NOT lowercase it.
+    const host = parsed.hostname.toLowerCase();
 
-		return `${parsed.protocol}//${host}${pathname}${parsed.search}`;
-	} catch {
-		return trimmed.toLowerCase().replace(TRAILING_SLASHES_REGEX, '');
-	}
+    return `${parsed.protocol}//${host}${pathname}${parsed.search}`;
+  } catch {
+    return trimmed.toLowerCase().replace(TRAILING_SLASHES_REGEX, "");
+  }
 }

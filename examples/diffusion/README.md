@@ -3,13 +3,16 @@
 This directory contains implementations for Diffusion LLMs (DLLMs)
 
 More Info:
+
 - https://github.com/ggml-org/llama.cpp/pull/14644
 - https://github.com/ggml-org/llama.cpp/pull/14771
 
 ## Parameters
+
 The diffusion CLI supports various parameters to control the generation process:
 
 ### Core Diffusion Parameters
+
 - `--diffusion-steps`: Number of diffusion steps (default: 256)
 - `--diffusion-algorithm`: Algorithm for token selection
   - `0`: DIFFUSION_ALGORITHM_ORIGIN - Token will be generated in a purely random order from https://arxiv.org/abs/2107.03006.
@@ -21,21 +24,26 @@ The diffusion CLI supports various parameters to control the generation process:
 - `--diffusion-visual`: Enable live visualization during generation
 
 ### Scheduling Parameters
+
 Choose one of the following scheduling methods:
 
 **Timestep-based scheduling:**
+
 - `--diffusion-eps`: Epsilon value for timestep scheduling (e.g., 0.001)
 
 **Block-based scheduling:**
+
 - `--diffusion-block-length`: Block size for block-based scheduling (e.g., 32)
 
 ### Sampling Parameters
+
 - `--temp`: Temperature for sampling (0.0 = greedy/deterministic, higher = more random)
 - `--top-k`: Top-k filtering for sampling
 - `--top-p`: Top-p (nucleus) filtering for sampling
 - `--seed`: Random seed for reproducibility
 
 ### Model Parameters
+
 - `-m`: Path to the GGUF model file
 - `-p`: Input prompt text
 - `-ub`: Maximum sequence length (ubatch size)
@@ -43,17 +51,21 @@ Choose one of the following scheduling methods:
 - `-b`: Batch size
 
 ### Examples
+
 #### Dream architecture:
+
 ```
 llama-diffusion-cli -m dream7b.gguf -p "write code to train MNIST in pytorch" -ub 512 --diffusion-eps 0.001 --diffusion-algorithm 3 --diffusion-steps 256 --diffusion-visual
 ```
 
 #### LLaDA architecture:
+
 ```
 llama-diffusion-cli -m llada-8b.gguf -p "write code to train MNIST in pytorch" -ub 512 --diffusion-block-length 32 --diffusion-steps 256 --diffusion-visual
 ```
 
 #### RND1 architecture:
+
 ```
 llama-diffusion-cli -m RND1-Base-0910.gguf -p "write code to train MNIST in pytorch" -ub 512 --diffusion-algorithm 1 --diffusion-steps 256 --diffusion-visual --temp 0.5 --diffusion-eps 0.001
 ```

@@ -66,6 +66,7 @@ Devices:
 ```
 
 You can control the set of exposed CUDA devices with the `CUDA_VISIBLE_DEVICES` environment variable or the `--device` command line option. The following two commands have the same effect:
+
 ```bash
 $ CUDA_VISIBLE_DEVICES=0 bin/ggml-rpc-server -p 50052
 $ bin/ggml-rpc-server --device CUDA0 -p 50052
@@ -107,6 +108,7 @@ Two providers are supported, each enabled by default when its library is found a
 RDMA is point-to-point, so each side uses the local device whose GID matches the address the connection was made on. Connect over the RDMA-capable link -- with Thunderbolt, use the peer's Thunderbolt address in `--rpc`; a connection made over another interface stays on TCP.
 
 To force plain TCP without rebuilding, set `GGML_RPC_NO_RDMA` on either peer:
+
 ```bash
 $ GGML_RPC_NO_RDMA=1 bin/ggml-rpc-server
 ```
@@ -134,4 +136,3 @@ $ GGML_RPC_DEBUG=1 bin/ggml-rpc-server
 ```bash
 $ GGML_RPC_DEBUG=2 bin/llama-cli -hf ggml-org/gemma-3-1b-it-GGUF -ngl 99 --rpc 192.168.88.10:50052 -lv 5
 ```
-

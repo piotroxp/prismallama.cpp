@@ -1,16 +1,15 @@
 # llama.cpp for CANN
 
- - [Background](#background)
- - [News](#news)
- - [OS](#os)
- - [Hardware](#hardware)
- - [Model Supports](#model-supports)
- - [DataType Supports](#datatype-supports)
- - [Docker](#docker)
- - [Linux](#linux)
- - [Environment variable setup](#environment-variable-setup)
- - [TODO](#todo)
-
+- [Background](#background)
+- [News](#news)
+- [OS](#os)
+- [Hardware](#hardware)
+- [Model Supports](#model-supports)
+- [DataType Supports](#datatype-supports)
+- [Docker](#docker)
+- [Linux](#linux)
+- [Environment variable setup](#environment-variable-setup)
+- [TODO](#todo)
 
 ## Background
 
@@ -33,10 +32,9 @@ The llama.cpp CANN backend is designed to support Ascend NPU. It utilize the abi
 
 ## OS
 
-| OS      | Status  | Verified                                       |
-|:-------:|:-------:|:----------------------------------------------:|
-| Linux   | Support | Ubuntu 22.04, OpenEuler22.03                   |
-
+|  OS   | Status  |           Verified           |
+| :---: | :-----: | :--------------------------: |
+| Linux | Support | Ubuntu 22.04, OpenEuler22.03 |
 
 ## Hardware
 
@@ -51,126 +49,126 @@ lspci -n | grep -Eo '19e5:d[0-9a-f]{3}' | cut -d: -f2
 **Devices**
 
 | Device Id | Product Series | Product Models | Chip Model | Verified Status |
-|:---------:|----------------|----------------|:----------:|:---------------:|
-|    d803   | Atlas A3 Train |                |    910C    |                 |
-|    d803   | Atlas A3 Infer |                |    910C    |                 |
-|    d802   | Atlas A2 Train |                |    910B    |                 |
-|    d802   | Atlas A2 Infer | Atlas 300I A2  |    910B    |     Support     |
-|    d801   | Atlas Train    |                |     910    |                 |
-|    d500   | Atlas Infer    | Atlas 300I Duo |    310P    |     Support     |
+| :-------: | -------------- | -------------- | :--------: | :-------------: |
+|   d803    | Atlas A3 Train |                |    910C    |                 |
+|   d803    | Atlas A3 Infer |                |    910C    |                 |
+|   d802    | Atlas A2 Train |                |    910B    |                 |
+|   d802    | Atlas A2 Infer | Atlas 300I A2  |    910B    |     Support     |
+|   d801    | Atlas Train    |                |    910     |                 |
+|   d500    | Atlas Infer    | Atlas 300I Duo |    310P    |     Support     |
 
-*Notes:*
+_Notes:_
 
 - If you have trouble with Ascend NPU device, please create a issue with **[CANN]** prefix/tag.
 - If you run successfully with your Ascend NPU device, please help update the upper table.
-
 
 ## Model Supports
 
 <details>
 <summary>Text-only</summary>
 
-| Model Name                  | FP16  | Q4_0 | Q8_0 |
-|:----------------------------|:-----:|:----:|:----:|
-| Llama-2                     |   √   |   √  |   √  |
-| Llama-3                     |   √   |   √  |   √  |
-| Mistral-7B                  |   √   |   √  |   √  |
-| Mistral MOE                 |   √   |   √  |   √  |
-| DBRX                        |   -   |   -  |   -  |
-| Falcon                      |   √   |   √  |   √  |
-| Chinese LLaMA/Alpaca        |   √   |   √  |   √  |
-| Vigogne(French)             |   √   |   √  |   √  |
-| BERT                        |   x   |   x  |   x  |
-| Koala                       |   √   |   √  |   √  |
-| Baichuan                    |   √   |   √  |   √  |
-| Aquila 1 & 2                |   √   |   √  |   √  |
-| Starcoder models            |   √   |   √  |   √  |
-| Refact                      |   √   |   √  |   √  |
-| MPT                         |   √   |   √  |   √  |
-| Bloom                       |   √   |   √  |   √  |
-| Yi models                   |   √   |   √  |   √  |
-| stablelm models             |   √   |   √  |   √  |
-| DeepSeek models             |   x   |   x  |   x  |
-| Qwen models                 |   √   |   √  |   √  |
-| PLaMo-13B                   |   √   |   √  |   √  |
-| Phi models                  |   √   |   √  |   √  |
-| PhiMoE                      |   √   |   √  |   √  |
-| GPT-2                       |   √   |   √  |   √  |
-| Orion                       |   √   |   √  |   √  |
-| InternlLM2                  |   √   |   √  |   √  |
-| CodeShell                   |   √   |   √  |   √  |
-| Gemma                       |   √   |   √  |   √  |
-| Mamba                       |   √   |   √  |   √  |
-| Xverse                      |   √   |   √  |   √  |
-| command-r models            |   √   |   √  |   √  |
-| Grok-1                      |   -   |   -  |   -  |
-| SEA-LION                    |   √   |   √  |   √  |
-| GritLM-7B                   |   √   |   √  |   √  |
-| OLMo                        |   √   |   √  |   √  |
-| OLMo 2                      |   √   |   √  |   √  |
-| OLMoE                       |   √   |   √  |   √  |
-| Granite models              |   √   |   √  |   √  |
-| GPT-NeoX                    |   √   |   √  |   √  |
-| Pythia                      |   √   |   √  |   √  |
-| Snowflake-Arctic MoE        |   -   |   -  |   -  |
-| Smaug                       |   √   |   √  |   √  |
-| Poro 34B                    |   √   |   √  |   √  |
-| Bitnet b1.58 models         |   √   |   x  |   x  |
-| Flan-T5                     |   √   |   √  |   √  |
-| Open Elm models             |   x   |   √  |   √  |
-| chatGLM3-6B + ChatGLM4-9b +  GLMEdge-1.5b + GLMEdge-4b    |   √   |   √  |   √  |
-| GLM-4-0414                  |   √   |   √  |   √  |
-| SmolLM                      |   √   |   √  |   √  |
-| EXAONE-3.0-7.8B-Instruct    |   √   |   √  |   √  |
-| FalconMamba Models          |   √   |   √  |   √  |
-| Jais Models                 |   -   |   x  |   x  |
-| Bielik-11B-v2.3             |   √   |   √  |   √  |
-| RWKV-6                      |   -   |   √  |   √  |
-| QRWKV-6                     |   √   |   √  |   √  |
-| GigaChat-20B-A3B            |   x   |   x  |   x  |
-| Trillion-7B-preview         |   √   |   √  |   √  |
-| Ling models                 |   √   |   √  |   √  |
+| Model Name                                            | FP16 | Q4_0 | Q8_0 |
+| :---------------------------------------------------- | :--: | :--: | :--: |
+| Llama-2                                               |  √   |  √   |  √   |
+| Llama-3                                               |  √   |  √   |  √   |
+| Mistral-7B                                            |  √   |  √   |  √   |
+| Mistral MOE                                           |  √   |  √   |  √   |
+| DBRX                                                  |  -   |  -   |  -   |
+| Falcon                                                |  √   |  √   |  √   |
+| Chinese LLaMA/Alpaca                                  |  √   |  √   |  √   |
+| Vigogne(French)                                       |  √   |  √   |  √   |
+| BERT                                                  |  x   |  x   |  x   |
+| Koala                                                 |  √   |  √   |  √   |
+| Baichuan                                              |  √   |  √   |  √   |
+| Aquila 1 & 2                                          |  √   |  √   |  √   |
+| Starcoder models                                      |  √   |  √   |  √   |
+| Refact                                                |  √   |  √   |  √   |
+| MPT                                                   |  √   |  √   |  √   |
+| Bloom                                                 |  √   |  √   |  √   |
+| Yi models                                             |  √   |  √   |  √   |
+| stablelm models                                       |  √   |  √   |  √   |
+| DeepSeek models                                       |  x   |  x   |  x   |
+| Qwen models                                           |  √   |  √   |  √   |
+| PLaMo-13B                                             |  √   |  √   |  √   |
+| Phi models                                            |  √   |  √   |  √   |
+| PhiMoE                                                |  √   |  √   |  √   |
+| GPT-2                                                 |  √   |  √   |  √   |
+| Orion                                                 |  √   |  √   |  √   |
+| InternlLM2                                            |  √   |  √   |  √   |
+| CodeShell                                             |  √   |  √   |  √   |
+| Gemma                                                 |  √   |  √   |  √   |
+| Mamba                                                 |  √   |  √   |  √   |
+| Xverse                                                |  √   |  √   |  √   |
+| command-r models                                      |  √   |  √   |  √   |
+| Grok-1                                                |  -   |  -   |  -   |
+| SEA-LION                                              |  √   |  √   |  √   |
+| GritLM-7B                                             |  √   |  √   |  √   |
+| OLMo                                                  |  √   |  √   |  √   |
+| OLMo 2                                                |  √   |  √   |  √   |
+| OLMoE                                                 |  √   |  √   |  √   |
+| Granite models                                        |  √   |  √   |  √   |
+| GPT-NeoX                                              |  √   |  √   |  √   |
+| Pythia                                                |  √   |  √   |  √   |
+| Snowflake-Arctic MoE                                  |  -   |  -   |  -   |
+| Smaug                                                 |  √   |  √   |  √   |
+| Poro 34B                                              |  √   |  √   |  √   |
+| Bitnet b1.58 models                                   |  √   |  x   |  x   |
+| Flan-T5                                               |  √   |  √   |  √   |
+| Open Elm models                                       |  x   |  √   |  √   |
+| chatGLM3-6B + ChatGLM4-9b + GLMEdge-1.5b + GLMEdge-4b |  √   |  √   |  √   |
+| GLM-4-0414                                            |  √   |  √   |  √   |
+| SmolLM                                                |  √   |  √   |  √   |
+| EXAONE-3.0-7.8B-Instruct                              |  √   |  √   |  √   |
+| FalconMamba Models                                    |  √   |  √   |  √   |
+| Jais Models                                           |  -   |  x   |  x   |
+| Bielik-11B-v2.3                                       |  √   |  √   |  √   |
+| RWKV-6                                                |  -   |  √   |  √   |
+| QRWKV-6                                               |  √   |  √   |  √   |
+| GigaChat-20B-A3B                                      |  x   |  x   |  x   |
+| Trillion-7B-preview                                   |  √   |  √   |  √   |
+| Ling models                                           |  √   |  √   |  √   |
 
 </details>
 
 <details>
 <summary>Multimodal</summary>
 
-| Model Name                  | FP16  | Q4_0 | Q8_0 |
-|:----------------------------|:-----:|:----:|:----:|
-| LLaVA 1.5 models, LLaVA 1.6 models      |   x   |   x  |   x  |
-|  BakLLaVA                   |   √   |   √  |   √  |
-|  Obsidian                   |   √   |   -  |   -  |
-|  ShareGPT4V                 |   x   |   -  |   -  |
-|  MobileVLM 1.7B/3B models   |   -   |   -  |   -  |
-|  Yi-VL                      |   -   |   -  |   -  |
-|  Mini CPM                   |   √   |   √  |   √  |
-|  Moondream                  |   √   |   √  |   √  |
-|  Bunny                      |   √   |   -  |   -  |
-|  GLM-EDGE                   |   √   |   √  |   √  |
-|  Qwen2-VL                   |   √   |   √  |   √  |
+| Model Name                         | FP16 | Q4_0 | Q8_0 |
+| :--------------------------------- | :--: | :--: | :--: |
+| LLaVA 1.5 models, LLaVA 1.6 models |  x   |  x   |  x   |
+| BakLLaVA                           |  √   |  √   |  √   |
+| Obsidian                           |  √   |  -   |  -   |
+| ShareGPT4V                         |  x   |  -   |  -   |
+| MobileVLM 1.7B/3B models           |  -   |  -   |  -   |
+| Yi-VL                              |  -   |  -   |  -   |
+| Mini CPM                           |  √   |  √   |  √   |
+| Moondream                          |  √   |  √   |  √   |
+| Bunny                              |  √   |  -   |  -   |
+| GLM-EDGE                           |  √   |  √   |  √   |
+| Qwen2-VL                           |  √   |  √   |  √   |
 
 </details>
 
-
-
 ## DataType Supports
 
-| DataType               | 910B    | 310P    |
-|:----------------------:|:-------:|:-------:|
-| FP16                   | Support | Support |
-| Q8_0                   | Support | Partial |
-| Q4_0                   | Support | Partial |
-| BF16                   | Support |         |
+| DataType |  910B   |  310P   |
+| :------: | :-----: | :-----: |
+|   FP16   | Support | Support |
+|   Q8_0   | Support | Partial |
+|   Q4_0   | Support | Partial |
+|   BF16   | Support |         |
 
 > **310P note**
+>
 > - `Q8_0`: data transform / buffer path is implemented, and `GET_ROWS` is supported, but quantized `MUL_MAT` / `MUL_MAT_ID` are not supported.
 > - `Q4_0`: data transform / buffer path is implemented, but quantized `MUL_MAT` / `MUL_MAT_ID` are not supported.
 
 ## Docker
 
 ### Build Images
+
 You can get a image with llama.cpp in one command.
+
 ```sh
 docker build -t llama-cpp-cann -f .devops/llama-cli-cann.Dockerfile .
 ```
@@ -199,9 +197,9 @@ docker run --name llamacpp \
   -p "Building a website can be done in 10 simple steps:"
 ```
 
-*Notes:*
+_Notes:_
 
-- You may need to install Ascend Driver and firmware on the **host** machine *(Please refer to the [Linux configuration](#linux) for details)*.
+- You may need to install Ascend Driver and firmware on the **host** machine _(Please refer to the [Linux configuration](#linux) for details)_.
 
 ## Linux
 
@@ -209,55 +207,57 @@ docker run --name llamacpp \
 
 1. **Configure Ascend user and group**
 
-    ```sh
-    sudo groupadd HwHiAiUser
-    sudo useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
-    sudo usermod -aG HwHiAiUser $USER
-    ```
+   ```sh
+   sudo groupadd HwHiAiUser
+   sudo useradd -g HwHiAiUser -d /home/HwHiAiUser -m HwHiAiUser -s /bin/bash
+   sudo usermod -aG HwHiAiUser $USER
+   ```
 
 2. **Install dependencies**
 
-    **Ubuntu/Debian:**
-    ```sh
-    sudo apt-get update
-    sudo apt-get install -y gcc python3 python3-pip linux-headers-$(uname -r)
-    ```
+   **Ubuntu/Debian:**
 
-    **RHEL/CentOS:**
-    ```sh
-    sudo yum makecache
-    sudo yum install -y gcc python3 python3-pip kernel-headers-$(uname -r) kernel-devel-$(uname -r)
-    ```
+   ```sh
+   sudo apt-get update
+   sudo apt-get install -y gcc python3 python3-pip linux-headers-$(uname -r)
+   ```
+
+   **RHEL/CentOS:**
+
+   ```sh
+   sudo yum makecache
+   sudo yum install -y gcc python3 python3-pip kernel-headers-$(uname -r) kernel-devel-$(uname -r)
+   ```
 
 3. **Install CANN (driver + toolkit)**
 
-    > The `Ascend-cann` package includes both the driver and toolkit.
-    > `$ARCH` can be `x86_64` or `aarch64`, `$CHIP` can be `910b` or `310p`.
+   > The `Ascend-cann` package includes both the driver and toolkit.
+   > `$ARCH` can be `x86_64` or `aarch64`, `$CHIP` can be `910b` or `310p`.
 
-    ```sh
-    wget https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%208.5.T63/Ascend-cann_8.5.0_linux-$ARCH.run
-    sudo bash ./Ascend-cann_8.5.0_linux-$ARCH.run --install
+   ```sh
+   wget https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%208.5.T63/Ascend-cann_8.5.0_linux-$ARCH.run
+   sudo bash ./Ascend-cann_8.5.0_linux-$ARCH.run --install
 
-    wget https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%208.5.T63/Ascend-cann-$CHIP-ops_8.5.0_linux-$ARCH.run
-    sudo bash ./Ascend-cann-$CHIP-ops_8.5.0_linux-$ARCH.run --install
-    ```
+   wget https://ascend-repo.obs.cn-east-2.myhuaweicloud.com/CANN/CANN%208.5.T63/Ascend-cann-$CHIP-ops_8.5.0_linux-$ARCH.run
+   sudo bash ./Ascend-cann-$CHIP-ops_8.5.0_linux-$ARCH.run --install
+   ```
 
 4. **Verify installation**
 
-    ```sh
-    npu-smi info
-    ```
+   ```sh
+   npu-smi info
+   ```
 
-    If device information is displayed correctly, the driver is functioning properly.
+   If device information is displayed correctly, the driver is functioning properly.
 
-    ```sh
-    # Set environment variables (adjust path if needed)
-    source /usr/local/Ascend/cann/set_env.sh
+   ```sh
+   # Set environment variables (adjust path if needed)
+   source /usr/local/Ascend/cann/set_env.sh
 
-    python3 -c "import acl; print(acl.get_soc_name())"
-    ```
+   python3 -c "import acl; print(acl.get_soc_name())"
+   ```
 
-    If the command outputs the chip model, the installation was successful.
+   If the command outputs the chip model, the installation was successful.
 
 ### II. Build llama.cpp
 
@@ -270,43 +270,46 @@ cmake --build build --config release
 
 1. **Retrieve and prepare model**
 
-    You can refer to the general [*Obtaining and quantizing models*](../../README.md#obtaining-and-quantizing-models) guide for model prepration.
+   You can refer to the general [_Obtaining and quantizing models_](../../README.md#obtaining-and-quantizing-models) guide for model prepration.
 
-    **Notes**:
+   **Notes**:
 
-      - CANN backend only supports FP16/Q4_0/Q8_0 models currently.
+   - CANN backend only supports FP16/Q4_0/Q8_0 models currently.
 
 2. **Launch inference**
 
-    There are two device selection modes:
+   There are two device selection modes:
 
-    - Single device: Use one device target specified by the user.
-    - Multiple devices: Automatically choose the devices with the same backend.
+   - Single device: Use one device target specified by the user.
+   - Multiple devices: Automatically choose the devices with the same backend.
 
-    | Device selection | Parameter                              |
-    |:----------------:|:--------------------------------------:|
-    | Single device    | --split-mode none --main-gpu DEVICE_ID |
-    | Multiple devices | --split-mode layer (default)           |
+   | Device selection |               Parameter                |
+   | :--------------: | :------------------------------------: |
+   |  Single device   | --split-mode none --main-gpu DEVICE_ID |
+   | Multiple devices |      --split-mode layer (default)      |
 
-    Examples:
+   Examples:
 
-    - Use device 0:
+   - Use device 0:
 
-    ```sh
-    ./build/bin/llama-cli -m path_to_model -p "Building a website can be done in 10 simple steps:" -n 400 -e -ngl 33 -sm none -mg 0
-    ```
+   ```sh
+   ./build/bin/llama-cli -m path_to_model -p "Building a website can be done in 10 simple steps:" -n 400 -e -ngl 33 -sm none -mg 0
+   ```
 
-    - Use multiple devices:
+   - Use multiple devices:
 
-    ```sh
-    ./build/bin/llama-cli -m path_to_model -p "Building a website can be done in 10 simple steps:" -n 400 -e -ngl 33 -sm layer
-    ```
+   ```sh
+   ./build/bin/llama-cli -m path_to_model -p "Building a website can be done in 10 simple steps:" -n 400 -e -ngl 33 -sm layer
+   ```
 
 ### **GitHub contribution**:
+
 Please add the **[CANN]** prefix/tag in issues/PRs titles to help the CANN-team check/address them without delay.
 
 ## Updates
+
 ### Basic Flash Attention Support
+
 The basic FA kernel with aclnnops has been added in aclnn_ops.cpp.
 Currently, the FA only supports the cases with FP16 KV tensors and NO logit softcap.
 Since the aclnn interface for flash attention cannot support the logit softcap, we will only update the quantized version in the future.

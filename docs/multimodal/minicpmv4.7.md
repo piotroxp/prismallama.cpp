@@ -13,17 +13,18 @@ If the checkpoint ships no MTP weights, pass `--no-mtp` to skip the nextn layers
 If there are differences in usage, please refer to the official build [documentation](https://github.com/ggml-org/llama.cpp/blob/master/docs/build.md)
 
 Clone llama.cpp:
+
 ```bash
 git clone https://github.com/ggml-org/llama.cpp
 cd llama.cpp
 ```
 
 Build llama.cpp using `CMake`:
+
 ```bash
 cmake -B build
 cmake --build build --config Release
 ```
-
 
 ### Usage of MiniCPM-V 4.7
 
@@ -42,8 +43,8 @@ python ./convert_hf_to_gguf.py ../MiniCPM-V-4.7 --mmproj --outfile ../MiniCPM-V-
 
 The default projector merges 16x (4x4 patches into one token). To keep 4x more visual tokens, copy the model dir and set `"downsample_mode": "4x"` in the copy's `preprocessor_config.json` before running the `--mmproj` conversion; the loader reads `clip.vision.projector.scale_factor` to pick the graph.
 
-
 Inference on Linux or Mac
+
 ```bash
 # run in single-turn mode
 ./build/bin/llama-mtmd-cli -m ../MiniCPM-V-4.7/ggml-model-f16.gguf --mmproj ../MiniCPM-V-4.7/mmproj-model-f16.gguf -c 4096 --jinja --image xx.jpg -p "What is in the image?"

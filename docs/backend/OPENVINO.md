@@ -59,13 +59,16 @@ Although OpenVINO supports a wide range of [Intel hardware](https://docs.openvin
 > Accuracy validation and performance optimizations for quantized models are a work in progress.
 
 **CPU and GPU Quantization Details:**
+
 - `Q5_K` and `Q6_K` tensors are converted to `Q8_0_C`
 
 **NPU Quantization Details:**
+
 - Primary supported quantization scheme is `Q4_0`
 - `Q6_K` tensors are requantized to `Q4_0_128` in general. For embedding weights, `Q6_K` tensors are requantized to `Q8_0_C` except for the token embedding matrix which is dequantized to fp16
 
 **Additional Notes:**
+
 - Both `Q4_0` and `Q4_1` models use `Q6_K` for the token embedding tensor and the final matmul weight tensor (often the same tensor)
 - `Q4_0` models may produce some `Q4_1` tensors if an imatrix is provided during quantization using `llama-quantize`
 - `Q4_K_M` models may include both `Q6_K` and `Q5_K` tensors (observed in Phi-3)
@@ -93,6 +96,7 @@ Although, the validated models below were tested with `llama-cli` using the `Q4_
 > Extensive accuracy validation, performance optimizations, and broader architecture coverage are work in progress.
 
 **Legend & Test Configuration:**
+
 - **Status:** ✓ = Passed | ~ = Accuracy issues | ✗ = Failed or Unsupported
 - **Execution Modes:**
   - **SL** = Stateless (`GGML_OPENVINO_STATEFUL_EXECUTION=0`)
@@ -101,51 +105,51 @@ Although, the validated models below were tested with `llama-cli` using the `Q4_
 - **Validation system:** Intel® Core™ Ultra 5 238V (Lunar Lake) | 32 GB RAM | Ubuntu 24.04 | Intel Graphics Compiler 2.41.5 | Intel OpenCL GPU Driver 26.35.39758.10-0 | Intel NPU Driver 1.38.0.
 - See [Known Limitations](#known-limitations) for context on observed failures.
 
-| Model | CPU (SL / SF) | GPU (SL / SF) | NPU (SL) |
-| :--- | :---: | :---: | :---: |
-| [bartowski/Llama-3.2-1B-Instruct-Q4_K_M](https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/Llama-3.2-3B-Instruct-Q4_K_M](https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/Meta-Llama-3.1-8B-Instruct-Q4_K_M](https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-|  |  |  |  |
-| [Qwen/qwen2.5-1.5b-instruct-q4_k_m](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [Qwen/qwen2.5-coder-7b-instruct-q4_k_m](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/Qwen_Qwen3-0.6B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3-0.6B-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/Qwen_Qwen3-1.7B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3-1.7B-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [Qwen/Qwen3-4B-Q4_K_M](https://huggingface.co/Qwen/Qwen3-4B-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [lm-kit/Qwen3-8B-Q4_K_M](https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/Qwen_Qwen3.5-0.8B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3.5-0.8B-GGUF) | ✓ / ✓ | ✓ / ✓ | ✗ |
-| [bartowski/Qwen_Qwen3.5-2B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3.5-2B-GGUF) | ✓ / ✓ | ✓ / ✓ | ✗ |
-| [bartowski/Qwen_Qwen3.5-4B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3.5-4B-GGUF) | ✓ / ✓ | ✓ / ✓ | ✗ |
-| [lmstudio-community/Qwen3.5-9B-Q4_K_M](https://huggingface.co/lmstudio-community/Qwen3.5-9B-GGUF) | ✓ / ✓ | ✓ / ✓ | ✗ |
-|  |  |  |  |
-| [unsloth/gemma-3-4b-it-Q4_K_M](https://huggingface.co/unsloth/gemma-3-4b-it-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/google_gemma-4-E2B-it-Q4_K_M](https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF) | ✓ / ✓ | ✓ / ✓ | ~ |
-| [bartowski/google_gemma-4-E4B-it-Q4_K_M](https://huggingface.co/bartowski/google_gemma-4-E4B-it-GGUF) | ✓ / ✓ | ✗ / ✗ | ✓ |
-| [bartowski/gemma-4-12B-it-Q4_K_M](https://huggingface.co/bartowski/gemma-4-12B-it-GGUF) | ✓ / ✓ | ✓ / ✓ | ✗ |
-|  |  |  |  |
-| [bartowski/Phi-3-mini-4k-instruct-Q4_K_M](https://huggingface.co/bartowski/Phi-3-mini-4k-instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/Phi-3.5-mini-instruct-Q4_K_M](https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/microsoft_Phi-4-mini-instruct-Q4_K_M](https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-|  |  |  |  |
-| [bartowski/Mistral-7B-Instruct-v0.3-Q4_K_M](https://huggingface.co/bartowski/Mistral-7B-Instruct-v0.3-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [QuantFactory/Ministral-3b-instruct.Q4_K_M](https://huggingface.co/QuantFactory/Ministral-3b-instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/Ministral-8B-Instruct-2410-Q4_K_M](https://huggingface.co/bartowski/Ministral-8B-Instruct-2410-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-|  |  |  |  |
-| [bartowski/DeepSeek-R1-Distill-Llama-8B-Q4_K_M](https://huggingface.co/bartowski/DeepSeek-R1-Distill-Llama-8B-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/DeepSeek-R1-Distill-Qwen-7B-Q4_K_M](https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-|  |  |  |  |
-| [ibm-granite/granite-4.0-350m-Q4_K_M](https://huggingface.co/ibm-granite/granite-4.0-350m-GGUF) | ✓ / ✓ | ~ / ~ | ✓ |
-| [ibm-granite/granite-4.0-micro-Q4_K_M](https://huggingface.co/ibm-granite/granite-4.0-micro-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [ibm-granite/granite-4.0-1b-Q4_K_M](https://huggingface.co/ibm-granite/granite-4.0-1b-GGUF) | ✓ / ✓ | ~ / ~ | ~ |
-| [ibm-research/granite-3.2-8b-instruct-Q4_K_M](https://huggingface.co/ibm-research/granite-3.2-8b-instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-|  |  |  |  |
-| [HuggingFaceTB/smollm2-1.7b-instruct-q4_k_m](https://huggingface.co/HuggingFaceTB/SmolLM2-1.7B-Instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [openbmb/MiniCPM-V-2_6-Q4_K_M](https://huggingface.co/openbmb/MiniCPM-V-2_6-gguf) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/tencent_Hunyuan-7B-Instruct-Q4_K_M](https://huggingface.co/bartowski/tencent_Hunyuan-7B-Instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct-Q4_K_M](https://huggingface.co/LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-| [bartowski/prism-ml_Bonsai-8B-unpacked-Q4_K_M](https://huggingface.co/bartowski/prism-ml_Bonsai-8B-unpacked-GGUF) | ✓ / ✓ | ✓ / ✓ | ✓ |
-|  |  |  |  |
-| [gpustack/bge-m3-Q4_K_M.gguf](https://huggingface.co/gpustack/bge-m3-GGUF) | ✓ | ✗ | ✗ |
+| Model                                                                                                                 | CPU (SL / SF) | GPU (SL / SF) | NPU (SL) |
+| :-------------------------------------------------------------------------------------------------------------------- | :-----------: | :-----------: | :------: |
+| [bartowski/Llama-3.2-1B-Instruct-Q4_K_M](https://huggingface.co/bartowski/Llama-3.2-1B-Instruct-GGUF)                 |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/Llama-3.2-3B-Instruct-Q4_K_M](https://huggingface.co/bartowski/Llama-3.2-3B-Instruct-GGUF)                 |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/Meta-Llama-3.1-8B-Instruct-Q4_K_M](https://huggingface.co/bartowski/Meta-Llama-3.1-8B-Instruct-GGUF)       |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+|                                                                                                                       |               |               |          |
+| [Qwen/qwen2.5-1.5b-instruct-q4_k_m](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct-GGUF)                           |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [Qwen/qwen2.5-coder-7b-instruct-q4_k_m](https://huggingface.co/Qwen/Qwen2.5-Coder-7B-Instruct-GGUF)                   |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/Qwen_Qwen3-0.6B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3-0.6B-GGUF)                             |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/Qwen_Qwen3-1.7B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3-1.7B-GGUF)                             |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [Qwen/Qwen3-4B-Q4_K_M](https://huggingface.co/Qwen/Qwen3-4B-GGUF)                                                     |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [lm-kit/Qwen3-8B-Q4_K_M](https://huggingface.co/lm-kit/qwen-3-8b-instruct-gguf)                                       |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/Qwen_Qwen3.5-0.8B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3.5-0.8B-GGUF)                         |     ✓ / ✓     |     ✓ / ✓     |    ✗     |
+| [bartowski/Qwen_Qwen3.5-2B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3.5-2B-GGUF)                             |     ✓ / ✓     |     ✓ / ✓     |    ✗     |
+| [bartowski/Qwen_Qwen3.5-4B-Q4_K_M](https://huggingface.co/bartowski/Qwen_Qwen3.5-4B-GGUF)                             |     ✓ / ✓     |     ✓ / ✓     |    ✗     |
+| [lmstudio-community/Qwen3.5-9B-Q4_K_M](https://huggingface.co/lmstudio-community/Qwen3.5-9B-GGUF)                     |     ✓ / ✓     |     ✓ / ✓     |    ✗     |
+|                                                                                                                       |               |               |          |
+| [unsloth/gemma-3-4b-it-Q4_K_M](https://huggingface.co/unsloth/gemma-3-4b-it-GGUF)                                     |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/google_gemma-4-E2B-it-Q4_K_M](https://huggingface.co/bartowski/google_gemma-4-E2B-it-GGUF)                 |     ✓ / ✓     |     ✓ / ✓     |    ~     |
+| [bartowski/google_gemma-4-E4B-it-Q4_K_M](https://huggingface.co/bartowski/google_gemma-4-E4B-it-GGUF)                 |     ✓ / ✓     |     ✗ / ✗     |    ✓     |
+| [bartowski/gemma-4-12B-it-Q4_K_M](https://huggingface.co/bartowski/gemma-4-12B-it-GGUF)                               |     ✓ / ✓     |     ✓ / ✓     |    ✗     |
+|                                                                                                                       |               |               |          |
+| [bartowski/Phi-3-mini-4k-instruct-Q4_K_M](https://huggingface.co/bartowski/Phi-3-mini-4k-instruct-GGUF)               |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/Phi-3.5-mini-instruct-Q4_K_M](https://huggingface.co/bartowski/Phi-3.5-mini-instruct-GGUF)                 |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/microsoft_Phi-4-mini-instruct-Q4_K_M](https://huggingface.co/bartowski/microsoft_Phi-4-mini-instruct-GGUF) |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+|                                                                                                                       |               |               |          |
+| [bartowski/Mistral-7B-Instruct-v0.3-Q4_K_M](https://huggingface.co/bartowski/Mistral-7B-Instruct-v0.3-GGUF)           |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [QuantFactory/Ministral-3b-instruct.Q4_K_M](https://huggingface.co/QuantFactory/Ministral-3b-instruct-GGUF)           |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/Ministral-8B-Instruct-2410-Q4_K_M](https://huggingface.co/bartowski/Ministral-8B-Instruct-2410-GGUF)       |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+|                                                                                                                       |               |               |          |
+| [bartowski/DeepSeek-R1-Distill-Llama-8B-Q4_K_M](https://huggingface.co/bartowski/DeepSeek-R1-Distill-Llama-8B-GGUF)   |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/DeepSeek-R1-Distill-Qwen-7B-Q4_K_M](https://huggingface.co/bartowski/DeepSeek-R1-Distill-Qwen-7B-GGUF)     |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+|                                                                                                                       |               |               |          |
+| [ibm-granite/granite-4.0-350m-Q4_K_M](https://huggingface.co/ibm-granite/granite-4.0-350m-GGUF)                       |     ✓ / ✓     |     ~ / ~     |    ✓     |
+| [ibm-granite/granite-4.0-micro-Q4_K_M](https://huggingface.co/ibm-granite/granite-4.0-micro-GGUF)                     |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [ibm-granite/granite-4.0-1b-Q4_K_M](https://huggingface.co/ibm-granite/granite-4.0-1b-GGUF)                           |     ✓ / ✓     |     ~ / ~     |    ~     |
+| [ibm-research/granite-3.2-8b-instruct-Q4_K_M](https://huggingface.co/ibm-research/granite-3.2-8b-instruct-GGUF)       |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+|                                                                                                                       |               |               |          |
+| [HuggingFaceTB/smollm2-1.7b-instruct-q4_k_m](https://huggingface.co/HuggingFaceTB/SmolLM2-1.7B-Instruct-GGUF)         |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [openbmb/MiniCPM-V-2_6-Q4_K_M](https://huggingface.co/openbmb/MiniCPM-V-2_6-gguf)                                     |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/tencent_Hunyuan-7B-Instruct-Q4_K_M](https://huggingface.co/bartowski/tencent_Hunyuan-7B-Instruct-GGUF)     |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct-Q4_K_M](https://huggingface.co/LGAI-EXAONE/EXAONE-3.5-7.8B-Instruct-GGUF)       |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+| [bartowski/prism-ml_Bonsai-8B-unpacked-Q4_K_M](https://huggingface.co/bartowski/prism-ml_Bonsai-8B-unpacked-GGUF)     |     ✓ / ✓     |     ✓ / ✓     |    ✓     |
+|                                                                                                                       |               |               |          |
+| [gpustack/bge-m3-Q4_K_M.gguf](https://huggingface.co/gpustack/bge-m3-GGUF)                                            |       ✓       |       ✗       |    ✗     |
 
 ## Build Instructions
 
@@ -155,20 +159,23 @@ Although, the validated models below were tested with `llama-cli` using the `Q4_
 - **For Intel GPU or NPU Usage**: Install the appropriate hardware drivers for your Intel GPU or NPU. For detailed instructions, see: [Additional Configurations for Hardware Acceleration](https://docs.openvino.ai/2026/get-started/install-openvino/configurations.html).
 
 - **Linux:**
-    - Git, CMake, and Ninja software tools are needed for building.
-    ```bash
-      sudo apt-get update
-      sudo apt-get install -y build-essential libcurl4-openssl-dev libtbb12 cmake ninja-build python3-pip curl wget tar
-    ```
-    - OpenCL
-    ```bash
-      sudo apt install ocl-icd-opencl-dev opencl-headers opencl-clhpp-headers intel-opencl-icd
-    ```
+  - Git, CMake, and Ninja software tools are needed for building.
+
+  ```bash
+    sudo apt-get update
+    sudo apt-get install -y build-essential libcurl4-openssl-dev libtbb12 cmake ninja-build python3-pip curl wget tar
+  ```
+  - OpenCL
+
+  ```bash
+    sudo apt install ocl-icd-opencl-dev opencl-headers opencl-clhpp-headers intel-opencl-icd
+  ```
 
 - **Windows:**
   - Download and install [Microsoft Visual Studio 2022 Build Tools](https://aka.ms/vs/17/release/vs_BuildTools.exe). During installation, select the **"Desktop development with C++"** workload.
 
   - Install required tools:
+
     ```powershell
     # Windows PowerShell
     winget install Git.Git
@@ -207,6 +214,7 @@ cd llama.cpp
 ```
 
 - **Linux:**
+
 ```bash
 source /opt/intel/openvino/setupvars.sh
 cmake -B build/ReleaseOV -G Ninja -DCMAKE_BUILD_TYPE=Release -DGGML_OPENVINO=ON
@@ -556,7 +564,6 @@ endlocal
 
 </details>
 
-
 ### 3. Download Sample Model
 
 Download sample model for testing.
@@ -624,6 +631,7 @@ set GGML_OPENVINO_DEVICE=NPU
 $env:GGML_OPENVINO_DEVICE = "NPU"
 build\ReleaseOV\bin\llama-cli.exe -m "C:\models\Llama-3.2-1B-Instruct-Q4_K_M.gguf" -c 512
 ```
+
 > [!NOTE]
 > On systems with multiple GPUs, use `GPU.0` or `GPU.1` to explicitly target specific GPU. A device that is not available is an error (no fallback to CPU), and the error message lists the available OpenVINO devices with their names. Run `llama-cli --list-devices` to see the valid values: each OpenVINO device shows the `GGML_OPENVINO_DEVICE=<value>` to set, and `(selected)` marks the active one. Select the OpenVINO device with this variable, not with `-dev`. See [OpenVINO GPU Device](https://docs.openvino.ai/2026/openvino-workflow/running-inference/inference-devices-and-modes/gpu-device.html) for more details.
 
@@ -651,7 +659,6 @@ docker build --build-arg http_proxy=$http_proxy --build-arg https_proxy=$https_p
 Run llama.cpp with OpenVINO backend Docker container.
 Save sample models in `~/models` as [shown above](#3-download-sample-model). It will be mounted to the container in the examples below.
 
-
 ```bash
 #  Run Docker container
 docker run --rm -it -v ~/models:/models llama-openvino:light --no-warmup -c 1024 -m /models/Llama-3.2-1B-Instruct-Q4_K_M.gguf
@@ -670,6 +677,7 @@ llama-openvino:light --no-warmup -c 1024 -m /models/Llama-3.2-1B-Instruct-Q4_K_M
 ```
 
 Run Llama.cpp Server with OpenVINO Backend.
+
 > [!NOTE]
 > `llama-server` with OpenVINO backend supports only one chat session/thread, when `GGML_OPENVINO_STATEFUL_EXECUTION=1` is enabled.
 
@@ -711,35 +719,36 @@ curl -X POST "http://localhost:8080/v1/chat/completions" -H "Content-Type: appli
 The OpenVINO backend can be configured using the following environment variables at runtime to control device selection, caching, debugging, and profiling behavior.
 Boolean flags follow a uniform convention: set to a **positive integer** (e.g. `1`) to enable; unset, empty, `0`, negative, or non-numeric values are treated as disabled.
 
-| Variable                          | Type      | Default    | Description                                                                                                 |
-|-----------------------------------|-----------|------------|-------------------------------------------------------------------------------------------------------------|
-| `GGML_OPENVINO_DEVICE`            | String    | `CPU`      | Specify the target device (CPU, GPU, NPU). On systems with multiple GPUs, use `GPU.0` or `GPU.1` to explicitly target specific GPU. A device that is not available is an error (no fallback to CPU), and the error message lists the available OpenVINO devices with their names. See [OpenVINO GPU Device](https://docs.openvino.ai/2026/openvino-workflow/running-inference/inference-devices-and-modes/gpu-device.html). When set to **NPU**, static compilation mode is enabled for optimal performance. |
-| `GGML_OPENVINO_CACHE_DIR`         | String    | `not set`  | Directory for OpenVINO's separate plugin cache. On NPU, this sets `NPUW_CACHE_DIR`. |
-| `GGML_OPENVINO_COMPILED_MODEL_CACHE_DIR` | String | `not set` | Directory for standalone compiled blobs with weights. Dynamic CPU/GPU graphs can import matching blobs on later runs. |
-| `GGML_OPENVINO_COMPILED_MODEL_CACHE_ONLY` | Boolean | `0` | Require an existing compiled blob and skip weight uploads and compilation. Requires Linux or Windows mmap loading and a full dynamic CPU/GPU graph on OpenVINO. |
-| `GGML_OPENVINO_PREFILL_CHUNK_SIZE`| Integer   | `256`      | Token chunk size for **NPU** prefill (NPU-only; ignored on CPU/GPU). Must be a positive integer; otherwise the default is used. |
-| `GGML_OPENVINO_NPU_COMPILE_CONFIG` | String | `not set` | NPU-only compiler mode parameters forwarded to OpenVINO as `NPU_COMPILATION_MODE_PARAMS`, for example `optimization-level=3`. |
-| `GGML_OPENVINO_STATEFUL_EXECUTION`| Boolean   | `0`        | Keep KV and supported recurrent caches inside the model. Single-slot CPU/GPU execution only.               |
-| `GGML_OPENVINO_DISABLE_CACHE`     | Boolean   | `0`        | Disable the in-process compiled-model / decoder cache (cache is on by default). Set to `1` to disable.      |
-| `GGML_OPENVINO_DISABLE_KV_SLICE`  | Boolean   | `0`        | Disable the KV-cache input-tensor slicing optimization (slicing is on by default on CPU/GPU). Set to `1` to disable. |
-| `GGML_OPENVINO_DISABLE_KV_STATE_RELAYOUT` | Boolean | `0`     | Disable the stateful KV-state sequence-axis relayout (relayout is on by default). It moves the KV state sequence axis from dim 1 to dim 2, so the GPU plugin can append new tokens in place instead of copying the whole state every token, and the reader side no longer transposes the whole accumulated state. Set to `1` to disable. |
-| `GGML_OPENVINO_MANUAL_GQA_ATTN`   | Boolean   | device-based | Tri-state. When **unset**, manual GQA attention is enabled by default on `GPU` and disabled on other devices. Set to a positive integer to force-enable, or `0` to force-disable. |
-| `GGML_OPENVINO_MEMORY_OPTIMIZE`   | Boolean   | `0`        | Umbrella switch for compile-time memory reductions. Enables `GGML_OPENVINO_REDUCE_COMPILE_MEM` and, on GPU, `GGML_OPENVINO_RELEASE_WEIGHTS` unless those fine-grained variables are explicitly set. |
-| `GGML_OPENVINO_REDUCE_COMPILE_MEM`| Boolean   | inherits from `GGML_OPENVINO_MEMORY_OPTIMIZE` | Reduce compile-time host memory use by streaming weight requantization and avoiding extra weight-node materialization where possible. Set explicitly to override the umbrella switch. |
-| `GGML_OPENVINO_RELEASE_WEIGHTS`   | Boolean   | inherits from `GGML_OPENVINO_MEMORY_OPTIMIZE` on GPU | GPU-only. Release host weight buffers after the compiled model cache can reuse the device/plugin copy. Requires stable graph shapes; dynamic workloads that need recompilation should leave this disabled. |
-| `GGML_OPENVINO_SPILL_DIR`         | String    | `not set`  | Directory for a disk-backed weight buffer. When set, the repacked weight buffer is mapped from an unlinked file on this path instead of anonymous memory, so its pages are reclaimable under memory pressure instead of staying pinned, cutting the load-time host memory peak. Must point at real storage; a tmpfs mount (e.g. `/tmp` on many systems) backs it with RAM and makes the peak worse. |
-| `GGML_OPENVINO_REQUANT_KQUANT`    | String    | `not set`  | Requantize Q6_K/Q5_K weights (and matching MoE expert weights) to a 4-bit target instead of the default Q8_0_C, trading accuracy for less memory traffic. One of `q4_asym64` (Q6_K/Q5_K only, keeps a real zero point at group 64), `q4_asym64_all` (also requantizes Q4_K), `q4_sym128` (Q6_K/Q5_K only), `q4_sym128_all` (Q4_K too, drops its per-group zero point), or `native` (no requantization). |
-| `GGML_OPENVINO_PROFILING`         | Integer   | `0`        | `1` logs execution timing; `2` or higher also enables OpenVINO and OpenCL profiling.                        |
-| `GGML_OPENVINO_DEBUG_NODE`       | String    | `not set`  | Add the named graph nodes as compiled outputs for debugging. Separate multiple names with commas.          |
-| `GGML_OPENVINO_MOE_OP`           | Boolean   | `1`        | On GPU, set to `0` to keep the unfused GatherMatmul path.                                                  |
-| `GGML_OPENVINO_DUMP_CGRAPH`       | Boolean   | `0`        | Dump the GGML compute graph to `cgraph_ov.txt`.                                                             |
-| `GGML_OPENVINO_DUMP_IR`           | Boolean   | `0`        | Serialize OpenVINO IR files with timestamps.                                                                |
-| `GGML_OPENVINO_DEBUG_INPUT`       | Boolean   | `0`        | Enable input debugging and print input tensor info.                                                         |
-| `GGML_OPENVINO_DEBUG_OUTPUT`      | Boolean   | `0`        | Enable output debugging and print output tensor info.                                                       |
-| `GGML_OPENVINO_PRINT_CGRAPH_TENSOR_ADDRESS` | Boolean | `0` | Print tensor address map once.                                                                           |
-| `GGML_OPENVINO_LOG_UNSUPPORTED_OPS`| Boolean   | `0`        | Log warning messages with tensor details and rejection reasons for any ops not supported by the OpenVINO backend. Emits at `WARN` level (requires `--log-verbosity >= 2`, enabled by default). |
+| Variable                                    | Type    | Default                                              | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ------------------------------------------- | ------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `GGML_OPENVINO_DEVICE`                      | String  | `CPU`                                                | Specify the target device (CPU, GPU, NPU). On systems with multiple GPUs, use `GPU.0` or `GPU.1` to explicitly target specific GPU. A device that is not available is an error (no fallback to CPU), and the error message lists the available OpenVINO devices with their names. See [OpenVINO GPU Device](https://docs.openvino.ai/2026/openvino-workflow/running-inference/inference-devices-and-modes/gpu-device.html). When set to **NPU**, static compilation mode is enabled for optimal performance. |
+| `GGML_OPENVINO_CACHE_DIR`                   | String  | `not set`                                            | Directory for OpenVINO's separate plugin cache. On NPU, this sets `NPUW_CACHE_DIR`.                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `GGML_OPENVINO_COMPILED_MODEL_CACHE_DIR`    | String  | `not set`                                            | Directory for standalone compiled blobs with weights. Dynamic CPU/GPU graphs can import matching blobs on later runs.                                                                                                                                                                                                                                                                                                                                                                                        |
+| `GGML_OPENVINO_COMPILED_MODEL_CACHE_ONLY`   | Boolean | `0`                                                  | Require an existing compiled blob and skip weight uploads and compilation. Requires Linux or Windows mmap loading and a full dynamic CPU/GPU graph on OpenVINO.                                                                                                                                                                                                                                                                                                                                              |
+| `GGML_OPENVINO_PREFILL_CHUNK_SIZE`          | Integer | `256`                                                | Token chunk size for **NPU** prefill (NPU-only; ignored on CPU/GPU). Must be a positive integer; otherwise the default is used.                                                                                                                                                                                                                                                                                                                                                                              |
+| `GGML_OPENVINO_NPU_COMPILE_CONFIG`          | String  | `not set`                                            | NPU-only compiler mode parameters forwarded to OpenVINO as `NPU_COMPILATION_MODE_PARAMS`, for example `optimization-level=3`.                                                                                                                                                                                                                                                                                                                                                                                |
+| `GGML_OPENVINO_STATEFUL_EXECUTION`          | Boolean | `0`                                                  | Keep KV and supported recurrent caches inside the model. Single-slot CPU/GPU execution only.                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `GGML_OPENVINO_DISABLE_CACHE`               | Boolean | `0`                                                  | Disable the in-process compiled-model / decoder cache (cache is on by default). Set to `1` to disable.                                                                                                                                                                                                                                                                                                                                                                                                       |
+| `GGML_OPENVINO_DISABLE_KV_SLICE`            | Boolean | `0`                                                  | Disable the KV-cache input-tensor slicing optimization (slicing is on by default on CPU/GPU). Set to `1` to disable.                                                                                                                                                                                                                                                                                                                                                                                         |
+| `GGML_OPENVINO_DISABLE_KV_STATE_RELAYOUT`   | Boolean | `0`                                                  | Disable the stateful KV-state sequence-axis relayout (relayout is on by default). It moves the KV state sequence axis from dim 1 to dim 2, so the GPU plugin can append new tokens in place instead of copying the whole state every token, and the reader side no longer transposes the whole accumulated state. Set to `1` to disable.                                                                                                                                                                     |
+| `GGML_OPENVINO_MANUAL_GQA_ATTN`             | Boolean | device-based                                         | Tri-state. When **unset**, manual GQA attention is enabled by default on `GPU` and disabled on other devices. Set to a positive integer to force-enable, or `0` to force-disable.                                                                                                                                                                                                                                                                                                                            |
+| `GGML_OPENVINO_MEMORY_OPTIMIZE`             | Boolean | `0`                                                  | Umbrella switch for compile-time memory reductions. Enables `GGML_OPENVINO_REDUCE_COMPILE_MEM` and, on GPU, `GGML_OPENVINO_RELEASE_WEIGHTS` unless those fine-grained variables are explicitly set.                                                                                                                                                                                                                                                                                                          |
+| `GGML_OPENVINO_REDUCE_COMPILE_MEM`          | Boolean | inherits from `GGML_OPENVINO_MEMORY_OPTIMIZE`        | Reduce compile-time host memory use by streaming weight requantization and avoiding extra weight-node materialization where possible. Set explicitly to override the umbrella switch.                                                                                                                                                                                                                                                                                                                        |
+| `GGML_OPENVINO_RELEASE_WEIGHTS`             | Boolean | inherits from `GGML_OPENVINO_MEMORY_OPTIMIZE` on GPU | GPU-only. Release host weight buffers after the compiled model cache can reuse the device/plugin copy. Requires stable graph shapes; dynamic workloads that need recompilation should leave this disabled.                                                                                                                                                                                                                                                                                                   |
+| `GGML_OPENVINO_SPILL_DIR`                   | String  | `not set`                                            | Directory for a disk-backed weight buffer. When set, the repacked weight buffer is mapped from an unlinked file on this path instead of anonymous memory, so its pages are reclaimable under memory pressure instead of staying pinned, cutting the load-time host memory peak. Must point at real storage; a tmpfs mount (e.g. `/tmp` on many systems) backs it with RAM and makes the peak worse.                                                                                                          |
+| `GGML_OPENVINO_REQUANT_KQUANT`              | String  | `not set`                                            | Requantize Q6_K/Q5_K weights (and matching MoE expert weights) to a 4-bit target instead of the default Q8_0_C, trading accuracy for less memory traffic. One of `q4_asym64` (Q6_K/Q5_K only, keeps a real zero point at group 64), `q4_asym64_all` (also requantizes Q4_K), `q4_sym128` (Q6_K/Q5_K only), `q4_sym128_all` (Q4_K too, drops its per-group zero point), or `native` (no requantization).                                                                                                      |
+| `GGML_OPENVINO_PROFILING`                   | Integer | `0`                                                  | `1` logs execution timing; `2` or higher also enables OpenVINO and OpenCL profiling.                                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `GGML_OPENVINO_DEBUG_NODE`                  | String  | `not set`                                            | Add the named graph nodes as compiled outputs for debugging. Separate multiple names with commas.                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `GGML_OPENVINO_MOE_OP`                      | Boolean | `1`                                                  | On GPU, set to `0` to keep the unfused GatherMatmul path.                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `GGML_OPENVINO_DUMP_CGRAPH`                 | Boolean | `0`                                                  | Dump the GGML compute graph to `cgraph_ov.txt`.                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `GGML_OPENVINO_DUMP_IR`                     | Boolean | `0`                                                  | Serialize OpenVINO IR files with timestamps.                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| `GGML_OPENVINO_DEBUG_INPUT`                 | Boolean | `0`                                                  | Enable input debugging and print input tensor info.                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `GGML_OPENVINO_DEBUG_OUTPUT`                | Boolean | `0`                                                  | Enable output debugging and print output tensor info.                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| `GGML_OPENVINO_PRINT_CGRAPH_TENSOR_ADDRESS` | Boolean | `0`                                                  | Print tensor address map once.                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| `GGML_OPENVINO_LOG_UNSUPPORTED_OPS`         | Boolean | `0`                                                  | Log warning messages with tensor details and rejection reasons for any ops not supported by the OpenVINO backend. Emits at `WARN` level (requires `--log-verbosity >= 2`, enabled by default).                                                                                                                                                                                                                                                                                                               |
 
 > [!NOTE]
+>
 > - `GGML_OPENVINO_STATEFUL_EXECUTION` is an **Experimental** feature for managing caches internally inside the OpenVINO model on CPUs and GPUs. Use a single slot (`-np 1`). KV caches retain the append-based state layout and sequence-axis optimization. Qwen3.5 adds recurrent cache states in their GGML layouts. Qwen3.5 requires an unsplit graph with model caching enabled and no recurrent rollback. A prompt starting at position 0 resets all states. State save/restore, sequence rewind, context shift, and mid-sequence graph replacement are unsupported. Stateful execution is not effective on NPUs.
 > - `GGML_OPENVINO_LOG_UNSUPPORTED_OPS` emits logs at `WARN` level (`GGML_LOG_WARN`), which requires application log verbosity `--log-verbosity >= 2` (or `-lv 2`).
 > - With `GGML_OPENVINO_COMPILED_MODEL_CACHE_ONLY=1`, use the same compilation settings as the export run. One directory can hold blobs for different models and settings; `GGML_OPENVINO_SPILL_DIR` does not affect the cache key and is ignored in cache-only mode. See [Compiled model cache](../../ggml/src/ggml-openvino/README.md) for the workflow and restrictions.

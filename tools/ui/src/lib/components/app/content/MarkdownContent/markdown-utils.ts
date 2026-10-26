@@ -2,8 +2,8 @@
  * Utility functions for markdown processing in MarkdownContent component.
  */
 
-import { MARKDOWN_DATA_ATTRS } from '$lib/constants';
-import type { RootContent as HastRootContent } from 'hast';
+import { MARKDOWN_DATA_ATTRS } from "$lib/constants";
+import type { RootContent as HastRootContent } from "hast";
 
 /**
  * Generates a unique identifier for a HAST node based on its position.
@@ -13,13 +13,13 @@ import type { RootContent as HastRootContent } from 'hast';
  * @returns Unique string identifier for the node
  */
 export function getHastNodeId(node: HastRootContent, indexFallback: number): string {
-	const position = node.position;
+  const position = node.position;
 
-	if (position?.start?.offset != null && position?.end?.offset != null) {
-		return `hast-${position.start.offset}-${position.end.offset}`;
-	}
+  if (position?.start?.offset != null && position?.end?.offset != null) {
+    return `hast-${position.start.offset}-${position.end.offset}`;
+  }
 
-	return `${node.type}-${indexFallback}`;
+  return `${node.type}-${indexFallback}`;
 }
 
 /**
@@ -27,16 +27,16 @@ export function getHastNodeId(node: HastRootContent, indexFallback: number): str
  * Used for cache lookup during incremental rendering.
  */
 export function getMdastNodeHash(node: unknown, index: number): string {
-	const n = node as {
-		type?: string;
-		position?: { start?: { offset?: number }; end?: { offset?: number } };
-	};
+  const n = node as {
+    type?: string;
+    position?: { start?: { offset?: number }; end?: { offset?: number } };
+  };
 
-	if (n.position?.start?.offset != null && n.position?.end?.offset != null) {
-		return `${n.type}-${n.position.start.offset}-${n.position.end.offset}`;
-	}
+  if (n.position?.start?.offset != null && n.position?.end?.offset != null) {
+    return `${n.type}-${n.position.start.offset}-${n.position.end.offset}`;
+  }
 
-	return `${n.type}-idx${index}`;
+  return `${n.type}-idx${index}`;
 }
 
 /**
@@ -48,12 +48,12 @@ export function getMdastNodeHash(node: unknown, index: number): string {
  * @returns true if the content appears to be an append operation
  */
 export function isAppendMode(newContent: string, previousContent: string): boolean {
-	return previousContent.length > 0 && newContent.startsWith(previousContent);
+  return previousContent.length > 0 && newContent.startsWith(previousContent);
 }
 
 export interface CodeInfo {
-	rawCode: string;
-	language: string;
+  rawCode: string;
+  language: string;
 }
 
 /**
@@ -62,25 +62,25 @@ export interface CodeInfo {
  * @returns Object with rawCode and language, or null if extraction fails
  */
 export function getCodeInfoFromTarget(target: HTMLElement): CodeInfo | null {
-	const wrapper = target.closest('.code-block-wrapper');
+  const wrapper = target.closest(".code-block-wrapper");
 
-	if (!wrapper) {
-		console.error('No wrapper found');
+  if (!wrapper) {
+    console.error("No wrapper found");
 
-		return null;
-	}
+    return null;
+  }
 
-	const codeElement = wrapper.querySelector<HTMLElement>(`code[${MARKDOWN_DATA_ATTRS.CODE_ID}]`);
+  const codeElement = wrapper.querySelector<HTMLElement>(`code[${MARKDOWN_DATA_ATTRS.CODE_ID}]`);
 
-	if (!codeElement) {
-		console.error('No code element found in wrapper');
+  if (!codeElement) {
+    console.error("No code element found in wrapper");
 
-		return null;
-	}
+    return null;
+  }
 
-	const rawCode = codeElement.textContent ?? '';
-	const languageLabel = wrapper.querySelector<HTMLElement>('.code-language');
-	const language = languageLabel?.textContent?.trim() || 'text';
+  const rawCode = codeElement.textContent ?? "";
+  const languageLabel = wrapper.querySelector<HTMLElement>(".code-language");
+  const language = languageLabel?.textContent?.trim() || "text";
 
-	return { language, rawCode };
+  return { language, rawCode };
 }

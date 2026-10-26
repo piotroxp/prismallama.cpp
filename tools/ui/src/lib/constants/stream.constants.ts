@@ -4,7 +4,7 @@ export const STREAM_VISIBILITY_KICK_MS = 3000;
 
 // separator joining a conversation id and its per-model stream identity
 // suffix (conv::model) used by the server side replay buffer
-export const CONVERSATION_ID_SEPARATOR = '::';
+export const CONVERSATION_ID_SEPARATOR = "::";
 
 /**
  * Server-sent events wire format, shared by the chat stream and the
@@ -12,13 +12,13 @@ export const CONVERSATION_ID_SEPARATOR = '::';
  */
 
 // blank line between two events
-export const SSE_RECORD_SEPARATOR = '\n\n';
+export const SSE_RECORD_SEPARATOR = "\n\n";
 
 // line break inside an event
-export const SSE_LINE_SEPARATOR = '\n';
+export const SSE_LINE_SEPARATOR = "\n";
 
 // data field prefix, the value follows after an optional space
-export const SSE_DATA_PREFIX = 'data:';
+export const SSE_DATA_PREFIX = "data:";
 
 // end-of-stream marker on the chat completion stream
-export const SSE_DONE_MARKER = '[DONE]';
+export const SSE_DONE_MARKER = "[DONE]";

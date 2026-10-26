@@ -4,7 +4,7 @@
 // Each tool needs to surface fields like `error`, `result`, `bytes`,
 // `edits_applied` without repeating the try/JSON.parse/object guard inline.
 
-import { JSON_OBJECT_OPEN } from '$lib/constants';
+import { JSON_OBJECT_OPEN } from "$lib/constants";
 
 /**
  * Parse a tool-result blob into a JSON object, or `null` if it isn't
@@ -14,25 +14,25 @@ import { JSON_OBJECT_OPEN } from '$lib/constants';
  *   - any parse failure (always returns null rather than throwing).
  */
 export function tryParseToolResultObject(
-	toolResultString: string | undefined
+  toolResultString: string | undefined,
 ): Record<string, unknown> | null {
-	if (!toolResultString) return null;
+  if (!toolResultString) return null;
 
-	// Tool results are usually large plain text (file contents, stdout); only
-	// a JSON object root can carry fields, so skip the parse otherwise
-	const trimmed = toolResultString.trimStart();
+  // Tool results are usually large plain text (file contents, stdout); only
+  // a JSON object root can carry fields, so skip the parse otherwise
+  const trimmed = toolResultString.trimStart();
 
-	if (trimmed[0] !== JSON_OBJECT_OPEN) return null;
+  if (trimmed[0] !== JSON_OBJECT_OPEN) return null;
 
-	try {
-		const parsed: unknown = JSON.parse(trimmed);
+  try {
+    const parsed: unknown = JSON.parse(trimmed);
 
-		if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-			return parsed as Record<string, unknown>;
-		}
+    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+      return parsed as Record<string, unknown>;
+    }
 
-		return null;
-	} catch {
-		return null;
-	}
+    return null;
+  } catch {
+    return null;
+  }
 }

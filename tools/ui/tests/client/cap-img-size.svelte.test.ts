@@ -1,6 +1,6 @@
-import { capImageDataURLSize } from '$lib/utils/cap-img-size';
-import { getJpegOrientationFromDataURL } from '$lib/utils/jpeg-orientation';
-import { describe, expect, it } from 'vitest';
+import { capImageDataURLSize } from "$lib/utils/cap-img-size";
+import { getJpegOrientationFromDataURL } from "$lib/utils/jpeg-orientation";
+import { describe, expect, it } from "vitest";
 
 // Real 64x32 jpegs generated with Pillow, quality 90. The upright picture is
 // four solid quadrants: top left red, top right green, bottom left blue,
@@ -25,100 +25,100 @@ const QUARTER_AREA_MEGAPIXELS = 0.000512;
 type Rgb = [number, number, number];
 
 function loadImage(dataUrl: string): Promise<HTMLImageElement> {
-	return new Promise((resolve, reject) => {
-		const img = new Image();
+  return new Promise((resolve, reject) => {
+    const img = new Image();
 
-		img.onload = () => resolve(img);
-		img.onerror = () => reject(new Error('Failed to decode image.'));
-		img.src = dataUrl;
-	});
+    img.onload = () => resolve(img);
+    img.onerror = () => reject(new Error("Failed to decode image."));
+    img.src = dataUrl;
+  });
 }
 
 // Decodes a data URL and samples the center of each quadrant of the picture
 async function quadrantColors(dataUrl: string): Promise<Rgb[]> {
-	const img = await loadImage(dataUrl);
-	const canvas = document.createElement('canvas');
+  const img = await loadImage(dataUrl);
+  const canvas = document.createElement("canvas");
 
-	canvas.width = img.naturalWidth;
-	canvas.height = img.naturalHeight;
-	const ctx = canvas.getContext('2d')!;
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext("2d")!;
 
-	ctx.drawImage(img, 0, 0);
-	const points = [
-		[0.25, 0.25],
-		[0.75, 0.25],
-		[0.25, 0.75],
-		[0.75, 0.75]
-	];
+  ctx.drawImage(img, 0, 0);
+  const points = [
+    [0.25, 0.25],
+    [0.75, 0.25],
+    [0.25, 0.75],
+    [0.75, 0.75],
+  ];
 
-	return points.map(([fx, fy]) => {
-		const d = ctx.getImageData(
-			Math.floor(canvas.width * fx),
-			Math.floor(canvas.height * fy),
-			1,
-			1
-		).data;
+  return points.map(([fx, fy]) => {
+    const d = ctx.getImageData(
+      Math.floor(canvas.width * fx),
+      Math.floor(canvas.height * fy),
+      1,
+      1,
+    ).data;
 
-		return [d[0], d[1], d[2]];
-	});
+    return [d[0], d[1], d[2]];
+  });
 }
 
 function expectUpright(colors: Rgb[]) {
-	const targets = [RED, GREEN, BLUE, YELLOW];
+  const targets = [RED, GREEN, BLUE, YELLOW];
 
-	for (let i = 0; i < 4; i++) {
-		for (let c = 0; c < 3; c++) {
-			expect(Math.abs(colors[i][c] - targets[i][c])).toBeLessThan(COLOR_TOLERANCE);
-		}
-	}
+  for (let i = 0; i < 4; i++) {
+    for (let c = 0; c < 3; c++) {
+      expect(Math.abs(colors[i][c] - targets[i][c])).toBeLessThan(COLOR_TOLERANCE);
+    }
+  }
 }
 
-describe('capImageDataURLSize orientation and capping', () => {
-	it('passes upright jpegs through untouched when capping is disabled', async () => {
-		expect(await capImageDataURLSize(EXIF1, 0)).toBe(EXIF1);
-		expect(await capImageDataURLSize(NOEXIF, 0)).toBe(NOEXIF);
-	});
+describe("capImageDataURLSize orientation and capping", () => {
+  it("passes upright jpegs through untouched when capping is disabled", async () => {
+    expect(await capImageDataURLSize(EXIF1, 0)).toBe(EXIF1);
+    expect(await capImageDataURLSize(NOEXIF, 0)).toBe(NOEXIF);
+  });
 
-	it('passes upright jpegs through untouched when under the cap threshold', async () => {
-		expect(await capImageDataURLSize(EXIF1, 1)).toBe(EXIF1);
-	});
+  it("passes upright jpegs through untouched when under the cap threshold", async () => {
+    expect(await capImageDataURLSize(EXIF1, 1)).toBe(EXIF1);
+  });
 
-	it.each([
-		['orientation 3', EXIF3],
-		['orientation 5', EXIF5],
-		['orientation 6', EXIF6],
-		['orientation 8', EXIF8]
-	])('bakes %s into upright pixels without capping', async (_label, fixture) => {
-		const result = await capImageDataURLSize(fixture, 0);
+  it.each([
+    ["orientation 3", EXIF3],
+    ["orientation 5", EXIF5],
+    ["orientation 6", EXIF6],
+    ["orientation 8", EXIF8],
+  ])("bakes %s into upright pixels without capping", async (_label, fixture) => {
+    const result = await capImageDataURLSize(fixture, 0);
 
-		expect(result).not.toBe(fixture);
+    expect(result).not.toBe(fixture);
 
-		const img = await loadImage(result);
+    const img = await loadImage(result);
 
-		expect(img.naturalWidth).toBe(64);
-		expect(img.naturalHeight).toBe(32);
-		expectUpright(await quadrantColors(result));
+    expect(img.naturalWidth).toBe(64);
+    expect(img.naturalHeight).toBe(32);
+    expectUpright(await quadrantColors(result));
 
-		// The re-encoded jpeg carries no orientation tag anymore
-		expect(getJpegOrientationFromDataURL(result)).toBe(1);
-	});
+    // The re-encoded jpeg carries no orientation tag anymore
+    expect(getJpegOrientationFromDataURL(result)).toBe(1);
+  });
 
-	it('caps and bakes the orientation in a single output', async () => {
-		const result = await capImageDataURLSize(EXIF6, QUARTER_AREA_MEGAPIXELS);
-		const img = await loadImage(result);
+  it("caps and bakes the orientation in a single output", async () => {
+    const result = await capImageDataURLSize(EXIF6, QUARTER_AREA_MEGAPIXELS);
+    const img = await loadImage(result);
 
-		expect(img.naturalWidth).toBe(32);
-		expect(img.naturalHeight).toBe(16);
-		expectUpright(await quadrantColors(result));
-		expect(getJpegOrientationFromDataURL(result)).toBe(1);
-	});
+    expect(img.naturalWidth).toBe(32);
+    expect(img.naturalHeight).toBe(16);
+    expectUpright(await quadrantColors(result));
+    expect(getJpegOrientationFromDataURL(result)).toBe(1);
+  });
 
-	it('caps upright jpegs without disturbing the picture', async () => {
-		const result = await capImageDataURLSize(EXIF1, QUARTER_AREA_MEGAPIXELS);
-		const img = await loadImage(result);
+  it("caps upright jpegs without disturbing the picture", async () => {
+    const result = await capImageDataURLSize(EXIF1, QUARTER_AREA_MEGAPIXELS);
+    const img = await loadImage(result);
 
-		expect(img.naturalWidth).toBe(32);
-		expect(img.naturalHeight).toBe(16);
-		expectUpright(await quadrantColors(result));
-	});
+    expect(img.naturalWidth).toBe(32);
+    expect(img.naturalHeight).toBe(16);
+    expectUpright(await quadrantColors(result));
+  });
 });

@@ -21,8 +21,8 @@
 
 **oneAPI** is an open ecosystem and a standard-based specification, supporting multiple architectures including but not limited to Intel CPUs, GPUs and FPGAs. The key components of the oneAPI ecosystem include:
 
-- **DPCPP** *(Data Parallel C++)*: The primary oneAPI SYCL implementation, which includes the icpx/icx Compilers.
-- **oneAPI Libraries**: A set of highly optimized libraries targeting multiple domains *(e.g. Intel oneMKL, oneMath and oneDNN)*.
+- **DPCPP** _(Data Parallel C++)_: The primary oneAPI SYCL implementation, which includes the icpx/icx Compilers.
+- **oneAPI Libraries**: A set of highly optimized libraries targeting multiple domains _(e.g. Intel oneMKL, oneMath and oneDNN)_.
 - **oneAPI LevelZero**: A high performance low level interface for fine-grained control over Intel iGPUs and dGPUs.
 
 ### Llama.cpp + SYCL
@@ -36,11 +36,11 @@ SYCL cross-platform capabilities enable support for other vendor GPUs as well.
 
 The following releases are verified and recommended:
 
-|Commit ID|Tag|Release|Verified  Platform| Update date|
-|-|-|-|-|-|
-|24e86cae7219b0f3ede1d5abdf5bf3ad515cccb8|b5377 |[llama-b5377-bin-win-sycl-x64.zip](https://github.com/ggml-org/llama.cpp/releases/download/b5377/llama-b5377-bin-win-sycl-x64.zip) |Arc B580/Linux/oneAPI 2025.1<br>LNL Arc GPU/Windows 11/oneAPI 2025.1.1|2025-05-15|
-|3bcd40b3c593d14261fb2abfabad3c0fb5b9e318|b4040 |[llama-b4040-bin-win-sycl-x64.zip](https://github.com/ggml-org/llama.cpp/releases/download/b4040/llama-b4040-bin-win-sycl-x64.zip) |Arc A770/Linux/oneAPI 2024.1<br>MTL Arc GPU/Windows 11/oneAPI 2024.1| 2024-11-19|
-|fb76ec31a9914b7761c1727303ab30380fd4f05c|b3038 |[llama-b3038-bin-win-sycl-x64.zip](https://github.com/ggml-org/llama.cpp/releases/download/b3038/llama-b3038-bin-win-sycl-x64.zip) |Arc A770/Linux/oneAPI 2024.1<br>MTL Arc GPU/Windows 11/oneAPI 2024.1||
+| Commit ID                                | Tag   | Release                                                                                                                            | Verified Platform                                                      | Update date |
+| ---------------------------------------- | ----- | ---------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- | ----------- |
+| 24e86cae7219b0f3ede1d5abdf5bf3ad515cccb8 | b5377 | [llama-b5377-bin-win-sycl-x64.zip](https://github.com/ggml-org/llama.cpp/releases/download/b5377/llama-b5377-bin-win-sycl-x64.zip) | Arc B580/Linux/oneAPI 2025.1<br>LNL Arc GPU/Windows 11/oneAPI 2025.1.1 | 2025-05-15  |
+| 3bcd40b3c593d14261fb2abfabad3c0fb5b9e318 | b4040 | [llama-b4040-bin-win-sycl-x64.zip](https://github.com/ggml-org/llama.cpp/releases/download/b4040/llama-b4040-bin-win-sycl-x64.zip) | Arc A770/Linux/oneAPI 2024.1<br>MTL Arc GPU/Windows 11/oneAPI 2024.1   | 2024-11-19  |
+| fb76ec31a9914b7761c1727303ab30380fd4f05c | b3038 | [llama-b3038-bin-win-sycl-x64.zip](https://github.com/ggml-org/llama.cpp/releases/download/b3038/llama-b3038-bin-win-sycl-x64.zip) | Arc A770/Linux/oneAPI 2024.1<br>MTL Arc GPU/Windows 11/oneAPI 2024.1   |             |
 
 ### Ubuntu 24.04
 
@@ -72,13 +72,13 @@ The packages for FP32 and FP16 would have different accuracy and performance on 
 
 - 2025.2
   - Optimize MUL_MAT Q4_0 on Intel GPU for all dGPUs and built-in GPUs since MTL. Increase the performance of LLM (llama-2-7b.Q4_0.gguf) 21%-87% on Intel GPUs (MTL, ARL-H, Arc, Flex, PVC).
-    |GPU|Base tokens/s|Increased tokens/s|Percent|
-    |-|-|-|-|
-    |PVC 1550|39|73|+87%|
-    |Flex 170|39|50|+28%|
-    |Arc A770|42|55|+30%|
-    |MTL|13|16|+23%|
-    |ARL-H|14|17|+21%|
+    | GPU      | Base tokens/s | Increased tokens/s | Percent |
+    | -------- | ------------- | ------------------ | ------- |
+    | PVC 1550 | 39            | 73                 | +87%    |
+    | Flex 170 | 39            | 50                 | +28%    |
+    | Arc A770 | 42            | 55                 | +30%    |
+    | MTL      | 13            | 16                 | +23%    |
+    | ARL-H    | 14            | 17                 | +21%    |
 
 - 2024.11
   - Use syclcompat to improve the performance on some platforms. This requires to use oneAPI 2025.0 or newer.
@@ -112,10 +112,9 @@ The packages for FP32 and FP16 would have different accuracy and performance on 
 ## OS
 
 | OS      | Status  | Verified                                       |
-|---------|---------|------------------------------------------------|
+| ------- | ------- | ---------------------------------------------- |
 | Linux   | Support | Ubuntu 22.04, Fedora Silverblue 39, Arch Linux |
 | Windows | Support | Windows 11                                     |
-
 
 ## Hardware
 
@@ -132,20 +131,20 @@ On older Intel GPUs, you may try [OpenCL](/docs/backend/OPENCL.md) although the 
 
 #### Verified devices
 
-| Intel GPU                     | Status  | Verified Model                        |
-|-------------------------------|---------|---------------------------------------|
-| Intel Data Center Max Series  | Support | Max 1550, 1100                        |
-| Intel Data Center Flex Series | Support | Flex 170                              |
-| Intel Arc A-Series            | Support | Arc A770, Arc A730M, Arc A750         |
-| Intel Arc B-Series            | Support | Arc B580                              |
+| Intel GPU                     | Status  | Verified Model                                          |
+| ----------------------------- | ------- | ------------------------------------------------------- |
+| Intel Data Center Max Series  | Support | Max 1550, 1100                                          |
+| Intel Data Center Flex Series | Support | Flex 170                                                |
+| Intel Arc A-Series            | Support | Arc A770, Arc A730M, Arc A750                           |
+| Intel Arc B-Series            | Support | Arc B580                                                |
 | Intel built-in Arc GPU        | Support | built-in Arc GPU in Meteor Lake, Arrow Lake, Lunar Lake |
-| Intel iGPU                    | Support | iGPU in 13700k, 13400, i5-1250P, i7-1260P, i7-1165G7  |
+| Intel iGPU                    | Support | iGPU in 13700k, 13400, i5-1250P, i7-1260P, i7-1165G7    |
 
-*Notes:*
+_Notes:_
 
 - **Memory**
-  - The device memory is a limitation when running a large model. The loaded model size, *`llm_load_tensors: buffer_size`*, is displayed in the log when running `./bin/llama-completion`.
-  - Please make sure the GPU shared memory from the host is large enough to account for the model's size. For e.g. the *llama-2-7b.Q4_0* requires at least 8.0GB for integrated GPU and 4.0GB for discrete GPU.
+  - The device memory is a limitation when running a large model. The loaded model size, _`llm_load_tensors: buffer_size`_, is displayed in the log when running `./bin/llama-completion`.
+  - Please make sure the GPU shared memory from the host is large enough to account for the model's size. For e.g. the _llama-2-7b.Q4_0_ requires at least 8.0GB for integrated GPU and 4.0GB for discrete GPU.
 
 - **Execution Unit (EU)**
   - If the iGPU has less than 80 EUs, the inference speed will likely be too slow for practical use.
@@ -155,7 +154,6 @@ On older Intel GPUs, you may try [OpenCL](/docs/backend/OPENCL.md) although the 
 NA
 
 ## Performance Reference
-
 
 To get the supported LLMs, GPUs, and performance reference, please check [Performance of llama.cpp on Intel GPU with SYCL backend](https://github.com/ggml-org/llama.cpp/discussions/23313).
 
@@ -170,9 +168,10 @@ Please refer to [Docker with SYCL](../docker.md#docker-with-sycl) for details.
 This chapter is for quick development & try with SYCL backend on Intel GPU.
 
 You need to install following sofeware before development:
-   - Intel GPU driver
-   - oneAPI package
-   - other development tools.
+
+- Intel GPU driver
+- oneAPI package
+- other development tools.
 
 Please refer to [Linux](#linux) or [Windows](#windows-1) for above installation and resolve the trouble in usage. There are the detailed guide.
 
@@ -222,18 +221,17 @@ examples\sycl\win-start-svr.bat -m xxxx.gguf
 examples\sycl\win-update-ops-doc.bat
 ```
 
-
 ## Linux
 
 ### I. Setup Environment
 
 1. **Install GPU drivers**
 
-  - **Intel GPU**
+- **Intel GPU**
 
 Intel data center GPUs drivers installation guide and download page can be found here: [Get Intel dGPU Drivers](https://dgpu-docs.intel.com/driver/installation.html#ubuntu-install-steps).
 
-*Note*: for client GPUs *(iGPU & Arc A-Series)*, please refer to the [client iGPU driver installation](https://dgpu-docs.intel.com/driver/client/overview.html).
+_Note_: for client GPUs _(iGPU & Arc A-Series)_, please refer to the [client iGPU driver installation](https://dgpu-docs.intel.com/driver/client/overview.html).
 
 Once installed, add the user(s) to the `video` and `render` groups.
 
@@ -242,7 +240,7 @@ sudo usermod -aG render $USER
 sudo usermod -aG video $USER
 ```
 
-*Note*: logout/re-login for the changes to take effect.
+_Note_: logout/re-login for the changes to take effect.
 
 Verify installation through `clinfo`:
 
@@ -264,10 +262,11 @@ Platform #0: Intel(R) OpenCL HD Graphics
 2. **Install Intel® oneAPI Toolkit**
 
 SYCL backend depends on:
-  - Intel® oneAPI DPC++/C++ compiler/running-time.
-  - Intel® oneAPI DPC++/C++ library (oneDPL).
-  - Intel® oneAPI Deep Neural Network Library (oneDNN).
-  - Intel® oneAPI Math Kernel Library (oneMKL).
+
+- Intel® oneAPI DPC++/C++ compiler/running-time.
+- Intel® oneAPI DPC++/C++ library (oneDPL).
+- Intel® oneAPI Deep Neural Network Library (oneDNN).
+- Intel® oneAPI Math Kernel Library (oneMKL).
 
 - **For Intel GPU**
 
@@ -277,23 +276,24 @@ It's recommended to install the **Intel® oneAPI Toolkit**. This includes all de
 
 The **Intel® oneAPI Toolkit** can be obtained from the official [Intel® oneAPI Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit-download.html) page.
 
-Please follow the instructions for downloading and installing the Toolkit for Linux, and preferably keep the default installation values unchanged, notably the installation path *(`/opt/intel/oneapi` by default)*.
+Please follow the instructions for downloading and installing the Toolkit for Linux, and preferably keep the default installation values unchanged, notably the installation path _(`/opt/intel/oneapi` by default)_.
 
 Following guidelines/code snippets assume the default installation values. Otherwise, please make sure the necessary changes are reflected where applicable.
 
 Upon a successful installation, SYCL is enabled for the available Intel devices, along with relevant libraries such as oneAPI oneDNN for Intel GPUs.
 
-|Verified release|
-|-|
-|2026.1 |
-|2025.3.3 |
-|2025.2.1|
-|2025.1|
-|2024.1|
+| Verified release |
+| ---------------- |
+| 2026.1           |
+| 2025.3.3         |
+| 2025.2.1         |
+| 2025.1           |
+| 2024.1           |
 
 3. **Verify installation and environment**
 
 In order to check the available SYCL devices on the machine, please use the `sycl-ls` command.
+
 ```sh
 source /opt/intel/oneapi/setvars.sh
 sycl-ls
@@ -346,7 +346,7 @@ as `-cl-fp32-correctly-rounded-divide-sqrt`
 
 #### Retrieve and prepare model
 
-You can refer to the general [*Obtaining and quantizing models*](../../README.md#obtaining-and-quantizing-models) guide for model preparation, or download an already quantized model like [llama-2-7b.Q4_0.gguf](https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q4_0.gguf?download=true) or [Meta-Llama-3-8B-Instruct-Q4_0.gguf](https://huggingface.co/aptha/Meta-Llama-3-8B-Instruct-Q4_0-GGUF/resolve/main/Meta-Llama-3-8B-Instruct-Q4_0.gguf).
+You can refer to the general [_Obtaining and quantizing models_](../../README.md#obtaining-and-quantizing-models) guide for model preparation, or download an already quantized model like [llama-2-7b.Q4_0.gguf](https://huggingface.co/TheBloke/Llama-2-7B-GGUF/resolve/main/llama-2-7b.Q4_0.gguf?download=true) or [Meta-Llama-3-8B-Instruct-Q4_0.gguf](https://huggingface.co/aptha/Meta-Llama-3-8B-Instruct-Q4_0-GGUF/resolve/main/Meta-Llama-3-8B-Instruct-Q4_0.gguf).
 
 ##### Check device
 
@@ -364,7 +364,8 @@ Similar to the native `sycl-ls`, available SYCL devices can be queried as follow
 ./build/bin/llama-ls-sycl-device
 ```
 
-This command will only display the selected backend that is supported by SYCL. The default backend is level_zero. For example, in a system with 2 *Intel GPU* it would look like the following:
+This command will only display the selected backend that is supported by SYCL. The default backend is level_zero. For example, in a system with 2 _Intel GPU_ it would look like the following:
+
 ```
 found 2 SYCL devices:
 
@@ -377,11 +378,11 @@ found 2 SYCL devices:
 
 #### Choose level-zero devices
 
-|Chosen Device ID|Setting|
-|-|-|
-|0|`export ONEAPI_DEVICE_SELECTOR="level_zero:0"` or no action|
-|1|`export ONEAPI_DEVICE_SELECTOR="level_zero:1"`|
-|0 & 1|`export ONEAPI_DEVICE_SELECTOR="level_zero:0;level_zero:1"`|
+| Chosen Device ID | Setting                                                     |
+| ---------------- | ----------------------------------------------------------- |
+| 0                | `export ONEAPI_DEVICE_SELECTOR="level_zero:0"` or no action |
+| 1                | `export ONEAPI_DEVICE_SELECTOR="level_zero:1"`              |
+| 0 & 1            | `export ONEAPI_DEVICE_SELECTOR="level_zero:0;level_zero:1"` |
 
 #### Execute
 
@@ -394,6 +395,7 @@ Choose one of following methods to run.
 ```sh
 ./examples/sycl/test.sh -mg 0
 ```
+
 - Use multiple devices:
 
 ```sh
@@ -407,7 +409,7 @@ Choose one of following methods to run.
 ```
 
 2. Command line
-Launch inference
+   Launch inference
 
 There are two device selection modes:
 
@@ -416,10 +418,10 @@ There are two device selection modes:
 
 In two device selection modes, the default SYCL backend is level_zero, you can choose other backend supported by SYCL by setting environment variable ONEAPI_DEVICE_SELECTOR.
 
-| Device selection | Parameter                              |
-|------------------|----------------------------------------|
-| Single device    | --split-mode none --main-gpu DEVICE_ID |
-| Multiple devices | --split-mode layer (default)           |
+| Device selection | Parameter                                |
+| ---------------- | ---------------------------------------- |
+| Single device    | --split-mode none --main-gpu DEVICE_ID   |
+| Multiple devices | --split-mode layer (default)             |
 | Multiple devices | --split-mode tensor (tensor parallelism) |
 
 `--split-mode tensor` (tensor parallelism) shards each layer across the selected
@@ -444,14 +446,16 @@ ZES_ENABLE_SYSMAN=1 ./build/bin/llama-completion -no-cnv -m models/llama-2-7b.Q4
 ZES_ENABLE_SYSMAN=1 ./build/bin/llama-completion -no-cnv -m models/llama-2-7b.Q4_0.gguf -p "Building a website can be done in 10 simple steps:" -n 400 -e -ngl 99 -sm layer --load-mode auto
 ```
 
-*Notes:*
+_Notes:_
 
 - Upon execution, verify the selected device(s) ID(s) in the output log, which can for instance be displayed as follow:
 
 ```sh
 detect 1 SYCL GPUs: [0] with top Max compute units:512
 ```
+
 Or
+
 ```sh
 use 1 SYCL GPUs: [0] with Max compute units:512
 ```
@@ -483,10 +487,11 @@ If you already have a recent version of Microsoft Visual Studio, you can skip th
 2. Install Intel® oneAPI Base toolkit
 
 SYCL backend depends on:
-  - Intel® oneAPI DPC++/C++ compiler/running-time.
-  - Intel® oneAPI DPC++/C++ library (oneDPL).
-  - Intel® oneAPI Deep Neural Network Library (oneDNN).
-  - Intel® oneAPI Math Kernel Library (oneMKL).
+
+- Intel® oneAPI DPC++/C++ compiler/running-time.
+- Intel® oneAPI DPC++/C++ library (oneDPL).
+- Intel® oneAPI Deep Neural Network Library (oneDNN).
+- Intel® oneAPI Math Kernel Library (oneMKL).
 
 All above are included in both **Intel® oneAPI Base toolkit** and **Intel® Deep Learning Essentials** packages.
 
@@ -494,7 +499,7 @@ It's recommended to install **Intel® Deep Learning Essentials** which only prov
 
 The **Intel® oneAPI Base toolkit** and **Intel® Deep Learning Essentials** can be obtained from the official [Intel® oneAPI Base Toolkit](https://www.intel.com/content/www/us/en/developer/tools/oneapi/base-toolkit.html) page.
 
-Please follow the instructions for downloading and installing the Toolkit for Windows, and preferably keep the default installation values unchanged, notably the installation path *(`C:\Program Files (x86)\Intel\oneAPI` by default)*.
+Please follow the instructions for downloading and installing the Toolkit for Windows, and preferably keep the default installation values unchanged, notably the installation path _(`C:\Program Files (x86)\Intel\oneAPI` by default)_.
 
 Following guidelines/code snippets assume the default installation values. Otherwise, please make sure the necessary changes are reflected where applicable.
 
@@ -503,6 +508,7 @@ b. Enable oneAPI running environment:
 - Type "oneAPI" in the search bar, then open the `Intel oneAPI command prompt for Intel 64 for Visual Studio 2022` App.
 
 - On the command prompt, enable the runtime environment with the following:
+
 ```
 "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64
 ```
@@ -521,9 +527,10 @@ In the oneAPI command line, run the following to print the available SYCL device
 sycl-ls.exe
 ```
 
-There should be one or more *level-zero* GPU devices displayed as **[ext_oneapi_level_zero:gpu]**. Below is example of such output detecting an *Intel Iris Xe* GPU as a Level-zero SYCL device:
+There should be one or more _level-zero_ GPU devices displayed as **[ext_oneapi_level_zero:gpu]**. Below is example of such output detecting an _Intel Iris Xe_ GPU as a Level-zero SYCL device:
 
 Output (example):
+
 ```
 [opencl:acc:0] Intel(R) FPGA Emulation Platform for OpenCL(TM), Intel(R) FPGA Emulation Device OpenCL 1.2  [2023.16.10.0.17_160000]
 [opencl:cpu:1] Intel(R) OpenCL, 11th Gen Intel(R) Core(TM) i7-1185G7 @ 3.00GHz OpenCL 3.0 (Build 0) [2023.16.10.0.17_160000]
@@ -535,7 +542,6 @@ Output (example):
 
 a. Download & install cmake for Windows: https://cmake.org/download/ (CMake can also be installed from Visual Studio Installer)
 b. The new Visual Studio will install Ninja as default. (If not, please install it manually: https://ninja-build.org/)
-
 
 #### II. Build llama.cpp
 
@@ -582,6 +588,7 @@ cmake --build build-x64-windows-sycl-debug -j --target llama-completion
 ##### Option 3: Visual Studio
 
 You have two options to use Visual Studio to build llama.cpp:
+
 - As CMake Project using CMake presets.
 - Creating a Visual Studio solution to handle the project.
 
@@ -597,12 +604,13 @@ You can use Visual Studio to open the `llama.cpp` folder directly as a CMake pro
 
 - `x64-windows-sycl-debug`
 
-*Notes:*
+_Notes:_
+
 - For a minimal experimental setup, you can build only the inference executable using:
 
-    ```Powershell
-    cmake --build build --config Release -j --target llama-completion
-    ```
+  ```Powershell
+  cmake --build build --config Release -j --target llama-completion
+  ```
 
 ###### - Generating a Visual Studio Solution
 
@@ -622,7 +630,7 @@ cmake -B build -G "Visual Studio 17 2022" -A x64 -DGGML_SYCL=ON -DCMAKE_BUILD_TY
       -DSYCL_LIBRARY_DIR="C:\Program Files (x86)\Intel\oneAPI\compiler\latest\lib"
 ```
 
-If successful the build files have been written to: *path/to/llama.cpp/build*
+If successful the build files have been written to: _path/to/llama.cpp/build_
 Open the project file **build/llama.cpp.sln** with Visual Studio.
 
 Once the Visual Studio solution is created, follow these steps:
@@ -637,8 +645,7 @@ Once the Visual Studio solution is created, follow these steps:
 
 5. Apply the changes and save.
 
-
-*Navigation Path:*
+_Navigation Path:_
 
 ```
 Properties -> C/C++ -> DPC++ -> Enable SYCL Offload (Yes)
@@ -648,13 +655,13 @@ Now, you can build `llama.cpp` with the SYCL backend as a Visual Studio project.
 To do it from menu: `Build -> Build Solution`.
 Once it is completed, final results will be in **build/Release/bin**
 
-*Additional Note*
+_Additional Note_
 
 - You can avoid specifying `SYCL_INCLUDE_DIR` and `SYCL_LIBRARY_DIR` in the CMake command by setting the environment variables:
 
-    - `SYCL_INCLUDE_DIR_HINT`
+  - `SYCL_INCLUDE_DIR_HINT`
 
-    - `SYCL_LIBRARY_DIR_HINT`
+  - `SYCL_LIBRARY_DIR_HINT`
 
 - Above instruction has been tested with Visual Studio 17 Community edition and oneAPI 2025.0. We expect them to work also with future version if the instructions are adapted accordingly.
 
@@ -662,13 +669,14 @@ Once it is completed, final results will be in **build/Release/bin**
 
 #### Retrieve and prepare model
 
-You can refer to the general [*Obtaining and quantizing models*](../../README.md#obtaining-and-quantizing-models) guide for model preparation, or download an already quantized model like [llama-2-7b.Q4_0.gguf](https://huggingface.co/TheBloke/Llama-2-7B-GGUF/blob/main/llama-2-7b.Q4_0.gguf) or [Meta-Llama-3-8B-Instruct-Q4_0.gguf](https://huggingface.co/aptha/Meta-Llama-3-8B-Instruct-Q4_0-GGUF/resolve/main/Meta-Llama-3-8B-Instruct-Q4_0.gguf).
+You can refer to the general [_Obtaining and quantizing models_](../../README.md#obtaining-and-quantizing-models) guide for model preparation, or download an already quantized model like [llama-2-7b.Q4_0.gguf](https://huggingface.co/TheBloke/Llama-2-7B-GGUF/blob/main/llama-2-7b.Q4_0.gguf) or [Meta-Llama-3-8B-Instruct-Q4_0.gguf](https://huggingface.co/aptha/Meta-Llama-3-8B-Instruct-Q4_0-GGUF/resolve/main/Meta-Llama-3-8B-Instruct-Q4_0.gguf).
 
 ##### Check device
 
 1. Enable oneAPI running environment
 
 On the oneAPI command line window, run the following and step into the llama.cpp directory:
+
 ```
 "C:\Program Files (x86)\Intel\oneAPI\setvars.bat" intel64
 ```
@@ -681,7 +689,8 @@ Similar to the native `sycl-ls`, available SYCL devices can be queried as follow
 build\bin\llama-ls-sycl-device.exe
 ```
 
-This command will only display the selected backend that is supported by SYCL. The default backend is level_zero. For example, in a system with 2 *Intel GPU* it would look like the following:
+This command will only display the selected backend that is supported by SYCL. The default backend is level_zero. For example, in a system with 2 _Intel GPU_ it would look like the following:
+
 ```
 found 2 SYCL devices:
 |  |                  |                                             |Compute   |Max compute|Max work|Max sub|               |
@@ -694,11 +703,11 @@ found 2 SYCL devices:
 
 ##### Choose level-zero devices
 
-|Chosen Device ID|Setting|
-|-|-|
-|0|Default option. You may also want to `set ONEAPI_DEVICE_SELECTOR="level_zero:0"`|
-|1|`set ONEAPI_DEVICE_SELECTOR="level_zero:1"`|
-|0 & 1|`set ONEAPI_DEVICE_SELECTOR="level_zero:0;level_zero:1"` or `set ONEAPI_DEVICE_SELECTOR="level_zero:*"`|
+| Chosen Device ID | Setting                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------- |
+| 0                | Default option. You may also want to `set ONEAPI_DEVICE_SELECTOR="level_zero:0"`                        |
+| 1                | `set ONEAPI_DEVICE_SELECTOR="level_zero:1"`                                                             |
+| 0 & 1            | `set ONEAPI_DEVICE_SELECTOR="level_zero:0;level_zero:1"` or `set ONEAPI_DEVICE_SELECTOR="level_zero:*"` |
 
 ##### Execute
 
@@ -729,10 +738,10 @@ There are two device selection modes:
 
 In two device selection modes, the default SYCL backend is level_zero, you can choose other backend supported by SYCL by setting environment variable ONEAPI_DEVICE_SELECTOR.
 
-| Device selection | Parameter                              |
-|------------------|----------------------------------------|
-| Single device    | --split-mode none --main-gpu DEVICE_ID |
-| Multiple devices | --split-mode layer (default)           |
+| Device selection | Parameter                                |
+| ---------------- | ---------------------------------------- |
+| Single device    | --split-mode none --main-gpu DEVICE_ID   |
+| Multiple devices | --split-mode layer (default)             |
 | Multiple devices | --split-mode tensor (tensor parallelism) |
 
 `--split-mode tensor` (tensor parallelism) shards each layer across the selected
@@ -757,7 +766,6 @@ build\bin\llama-completion.exe -no-cnv -m models\llama-2-7b.Q4_0.gguf -p "Buildi
 build\bin\llama-completion.exe -no-cnv -m models\llama-2-7b.Q4_0.gguf -p "Building a website can be done in 10 simple steps:\nStep 1:" -n 400 -e -ngl 99 -sm layer --load-mode auto
 ```
 
-
 Note:
 
 - Upon execution, verify the selected device(s) ID(s) in the output log, which can for instance be displayed as follow:
@@ -778,62 +786,62 @@ User can use the device management in [docs/multi-gpu.md](https://github.com/ggm
 
 ### Build
 
-| Name               | Value                                 | Function                                    |
-|--------------------|---------------------------------------|---------------------------------------------|
-| GGML_SYCL          | ON (mandatory)                        | Enable build with SYCL code path.           |
-| GGML_SYCL_TARGET   | INTEL *(default)*                     | Set the SYCL target device type.            |
-| GGML_SYCL_DEVICE_ARCH | Optional                           | Set the SYCL device architecture. Setting the device architecture can improve the performance. See the table [--offload-arch](https://github.com/intel/llvm/blob/sycl/sycl/doc/design/OffloadDesign.md#--offload-arch) for a list of valid architectures. |
-| GGML_SYCL_F16      | OFF *(default)* \|ON *(optional)*     | Enable FP16 build with SYCL code path. [1.](#sycl-f16-footnote) |
-| GGML_SYCL_GRAPH    | ON *(default)* \|OFF *(Optional)*     | Enable build with [SYCL Graph extension](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc). |
-| GGML_SYCL_DNN      | ON *(default)* \|OFF *(Optional)*     | Enable build with oneDNN.                   |
-| GGML_SYCL_HOST_MEM_FALLBACK | ON *(default)* \|OFF *(Optional)* | Allow host memory fallback when device memory is full during quantized weight reorder. Enables inference to continue at reduced speed (reading over PCIe) instead of failing. Requires Linux kernel 6.8+. |
-| GGML_SYCL_SUPPORT_LEVEL_ZERO_API | ON *(default)* \|OFF *(Optional)* | Support to use Level Zero API for device memory allocation. Requires Level Zero headers/library at build time and Intel GPU driver (Level Zero runtime) at run time. Reduces system RAM usage during multi-GPU inference. SYCL backend always runs on Level Zero running time even if it's set as OFF (The SYCL api will be usage for memory allocation).|
-| CMAKE_C_COMPILER   | `icx` *(Linux)*, `icx/cl` *(Windows)* | Set `icx` compiler for SYCL code path.      |
-| CMAKE_CXX_COMPILER | `icpx` *(Linux)*, `icx` *(Windows)*   | Set `icpx/icx` compiler for SYCL code path. |
+| Name                             | Value                                 | Function                                                                                                                                                                                                                                                                                                                                                  |
+| -------------------------------- | ------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GGML_SYCL                        | ON (mandatory)                        | Enable build with SYCL code path.                                                                                                                                                                                                                                                                                                                         |
+| GGML_SYCL_TARGET                 | INTEL _(default)_                     | Set the SYCL target device type.                                                                                                                                                                                                                                                                                                                          |
+| GGML_SYCL_DEVICE_ARCH            | Optional                              | Set the SYCL device architecture. Setting the device architecture can improve the performance. See the table [--offload-arch](https://github.com/intel/llvm/blob/sycl/sycl/doc/design/OffloadDesign.md#--offload-arch) for a list of valid architectures.                                                                                                 |
+| GGML_SYCL_F16                    | OFF _(default)_ \|ON _(optional)_     | Enable FP16 build with SYCL code path. [1.](#sycl-f16-footnote)                                                                                                                                                                                                                                                                                           |
+| GGML_SYCL_GRAPH                  | ON _(default)_ \|OFF _(Optional)_     | Enable build with [SYCL Graph extension](https://github.com/intel/llvm/blob/sycl/sycl/doc/extensions/experimental/sycl_ext_oneapi_graph.asciidoc).                                                                                                                                                                                                        |
+| GGML_SYCL_DNN                    | ON _(default)_ \|OFF _(Optional)_     | Enable build with oneDNN.                                                                                                                                                                                                                                                                                                                                 |
+| GGML_SYCL_HOST_MEM_FALLBACK      | ON _(default)_ \|OFF _(Optional)_     | Allow host memory fallback when device memory is full during quantized weight reorder. Enables inference to continue at reduced speed (reading over PCIe) instead of failing. Requires Linux kernel 6.8+.                                                                                                                                                 |
+| GGML_SYCL_SUPPORT_LEVEL_ZERO_API | ON _(default)_ \|OFF _(Optional)_     | Support to use Level Zero API for device memory allocation. Requires Level Zero headers/library at build time and Intel GPU driver (Level Zero runtime) at run time. Reduces system RAM usage during multi-GPU inference. SYCL backend always runs on Level Zero running time even if it's set as OFF (The SYCL api will be usage for memory allocation). |
+| CMAKE_C_COMPILER                 | `icx` _(Linux)_, `icx/cl` _(Windows)_ | Set `icx` compiler for SYCL code path.                                                                                                                                                                                                                                                                                                                    |
+| CMAKE_CXX_COMPILER               | `icpx` _(Linux)_, `icx` _(Windows)_   | Set `icpx/icx` compiler for SYCL code path.                                                                                                                                                                                                                                                                                                               |
 
 1. <a id="sycl-f16-footnote"></a>FP32 or FP16 have different performance impact to LLM. Recommended to test them for better prompt processing performance on your models. You need to rebuild the code after change `GGML_SYCL_F16=OFF/ON`.
 
 ### Runtime
 
-| Name              | Value            | Function                                                                                                                  |
-|-------------------|------------------|---------------------------------------------------------------------------------------------------------------------------|
-| GGML_SYCL_DEBUG   | 0 (default) or 1 | Enable log function: GGML_SYCL_DEBUG() for common debug. |
-| GGML_SYCL_DEV_DEBUG   | 0 (default) or 1 | Enable log function: GGML_SYCL_DEV_DEBUG() for developmental purposes by replacing GGML_SYCL_DEBUG() in special codes. Restore to GGML_SYCL_DEBUG() before committing code.|
-| GGML_SYCL_DEV2DEV_MEMCPY | 0 (default), 1, 2 | Choose the method of dev2dev memory copy.<br>Value: <br>*  0: SYCL API (default), only support dGPUs.<br>* 1: L0 API -- Better performance, only support dGPUs, found to lead to abnormal crash in some case. <br>* 2: Host Forward -- Most stable method for all cases (including iGPU + dGPU*N), but with lower performance (-2% to -5%).<br>SYCL & L0 API are easy to be impacted by Intel GPU driver issue. When you meet the garbled output or crash issues in multiple GPUs case, try with this debug flag to work around or check the issue.|
-| GGML_SYCL_ENABLE_FLASH_ATTN | 1 (default) or 0| Enable Flash-Attention. It can reduce memory usage. The performance impact depends on the LLM.|
-| GGML_SYCL_ENABLE_OPT | 0 or 1 (default)| Enable optimize features for Intel GPUs. (Recommended to 0 for Intel devices older than Gen 10) |
-| GGML_SYCL_ENABLE_GRAPH | 0 (default) or 1 | Enable running computations through SYCL Graphs feature. Disabled by default because SYCL Graph is still in development, performance depends on model and device. [1.](#sycl-graph-footnote) |
-| GGML_SYCL_GRAPH_EVICTION_TIMEOUT | 10 (default) or positive integer | Seconds a cached SYCL graph can go unused before it is evicted. Checked on a sweep that runs every half of this timeout. |
-| GGML_SYCL_ENABLE_HOST_PINNED_MEM | 0 or 1 (default) | Enable host pinned memory to speed up copy data from host to device. When disable it, host memory will common malloc() on CPU. Disable it when use `--load-model mlock`.|
-| GGML_SYCL_HOST_PINNED_MEM_2G | 0 (default) or 1 | Limit the max memory allocation to be no more than 2GB when enable host pinned memory. USM allocations above 2 GiB take the relaxed/large-allocation path, which serializes H2D copies with compute and prevents copy/compute overlap. It will impact the startup time. Need more test. Depend on `GGML_SYCL_ENABLE_HOST_PINNED_MEM=1`.|
-| GGML_SYCL_UPLOAD_STAGING_SLOTS | 4 (default) or non-negative integer | Number of 8 MiB pinned host slots used to stage tensor uploads (model loading), so the host copy of one slot overlaps the transfer of the previous one. Set to 0 to use the old path: a malloc'd bounce buffer and a blocking copy per tensor. |
-| GGML_SYCL_GET_MEM_API | 0 (default) or 1  | Set to get memory info (free, total) by Level Zero or SYCL API:<br>0 - Level Zero API: support more GPUs, only run on Level Zero running time. When there is an error, fallback to call SYCL API. Depend on GGML_SYCL_SUPPORT_LEVEL_ZERO_API.<br>1 - SYCL API: legacy, support more running time, it can't get the free size of some GPUs (like Arc770). In such case, return the free size as value of total size.|
-| GGML_SYCL_USE_LEVEL_ZERO_API | 1 (default) or 0 | Use Level Zero API for device memory allocation instead of SYCL. Reduces system RAM usage on Intel dGPUs by avoiding DMA-buf/TTM host memory staging. Requires GGML_SYCL_SUPPORT_LEVEL_ZERO_API=ON at build time. SYCL backend always runs on Level Zero running time even if it's set as OFF (The SYCL api will be usage for memory allocation).|
-| GGML_SYCL_ENABLE_DNN | 0 or 1 (default)| Enable running computations through oneDNN and always use oneMKL. |
-| GGML_SYCL_FA_ONEDNN | 1 (default) or 0 | Enable the oneDNN fused SDPA (flash-attention) path on supported GPUs. Set to 0 to always use the native SYCL flash-attention kernel. |
-| GGML_SYCL_FA_ONEDNN_MAX_KV | 0 (default, disabled) or positive integer | By default (0), all sequences are handled by the oneDNN fused SDPA path, regardless of KV length; a positive value caps that length, past which sequences fall back to the native kernel. If GPU driver watchdog resets (DEVICE_LOST) occur during long-context inference, set this near the context depth where they start, e.g. 24576. |
-| GGML_SYCL_ENABLE_VMM | 0 or 1 (default) | Enable the virtual-memory device pool. |
-| GGML_SYCL_ENABLE_MKL_FA | 1 (default) or 0 | Enable oneMKL GEMM flash attention for XMX-accelerated prompt processing with quantized KV cache. Automatically activates during prefill (prompt processing) when all conditions are met: (1) flash-attn enabled (`-fa` or `--flash-attn on`), (2) KV cache quantized (`--cache-type-k q8_0 --cache-type-v q8_0` or other `*_0/*_1` types), (3) batch size ≥ 1024 (`--batch-size 1024`), (4) prompt length ≥ 1024 tokens. Set to 0 to force the TILE kernel for A/B testing. Example minimum command: `llama-cli -m model.gguf -fa -ngl 99 --cache-type-k q8_0 --cache-type-v q8_0 --batch-size 1024 -p "your prompt"` |
-| GGML_SYCL_MKL_FA_DEBUG | 0 (default) or 1 | Enable per-call diagnostic logging for MKL flash attention: GEMM/softmax timings, interleaved-head detection, and buffer memory usage. |
-| GGML_SYCL_MEMTRACE | 0 (default), 1, 2 | Enable record and output memory allocation diagnostics. Requires `-lv 4`. <br>0 -  Disable<br>1 - Basic memory info, including current and peak allocations, as well allocations from other sources, around 50 lines per model load.<br>2 - More verbose, logging around 900 specific allocations and deallocations. |
-| GGML_SYCL_MEMTRACE_STEP | 64 (default) or positive integer | With GGML_SYCL_MEMTRACE=1, the minimum growth in memory usage to trigger another log record. |
-| GGML_SYCL_MKL_FA_DIAG | 0 (default) or 1 | Enable output fingerprinting for MKL flash attention. Dumps the first 64 float output values for the first 6 FA calls with n_kv ≥ 1024, labeled with kernel type (MKL/TILE/VEC) for cross-kernel comparison. |
-| GGML_SYCL_ENABLE_FUSION | 0 or 1 (default) | Enable fused-kernel dispatch in graph compute. Unsupported types and layouts fall back to the standalone op kernels. See `ggml_sycl_can_fuse()`. |
-| GGML_SYCL_ENABLE_ESIMD | 0 or 1 (default)| Enable ESIMD kernels when available. |
-| GGML_SYCL_ENABLE_XMX_ESIMD | 0 or 1 (default) | Use the XMX (DPAS) multi-column mat-vec kernels for reordered Q2_K to Q6_K and Q8_0 weights on Xe2 GPUs. Speeds up speculative decoding and short prompt batches. |
-| GGML_SYCL_XMX_MAX_COLS | non-negative integer, 80 (default) | Most activation columns (batch size) the `GGML_SYCL_ENABLE_XMX_ESIMD` kernels take; wider batches use the other mat-mul kernels. A larger value keeps XMX for bigger batches (as repeated launches), `0` never uses it. |
-| GGML_SYCL_XMX_GLU_MAX_COLS | 0 to 16, 16 (default) | Most columns the fused gate and up XMX kernel takes; wider batches run gate and up as separate mat-vecs. 16 is the most the kernel is built for, larger values are clamped to 16 and `0` turns the fused kernel off. |
-| GGML_SYCL_XMX_GATHER_TYPES | decimal bitmask, all bits set (default) | Weight formats that may use the XMX dequant-GEMM paths, which dequantize weights straight into the XMX tiles. This speeds up prompt processing of MoE models on GPUs with XMX units (Arc A- and B-series, Arc Pro, Data Center GPU Max), for example pp512 of Qwen3-30B-A3B UD-IQ3_XXS by about 50% on an Arc Pro B60. Bits:<br>* 1: IQ4_NL, 2: IQ3_S, 4: IQ4_XS, 8: IQ3_XXS, 16: IQ2_XXS, 32: IQ2_XS, 64: IQ2_S, 128: IQ1_S, 256: IQ1_M<br>* 512: Q8_0, 1024: Q4_K, 2048: Q5_K, 4096: Q6_K (MoE `MUL_MAT_ID` only)<br>Add values to combine them, for example `3` for IQ4_NL and IQ3_S; `0` disables the paths. A set bit does not force the path: batches of more than 64 tokens per expert or row lengths that are not a multiple of 256 (32 for IQ4_NL and Q8_0) use the library GEMM. |
-| GGML_SYCL_XMX_GATHER_SHAPES | decimal bitmask, 255 (default) | XMX `joint_matrix` combinations the paths of `GGML_SYCL_XMX_GATHER_TYPES` may use; the operand type comes from `GGML_SYCL_DYNAMIC_PRECISION` and the best supported combination is picked automatically (logged as `fg_pick_combo`). Bits:<br>* Xe2, Xe3, Xe-HPC: 1: f16 8x16x16, 2: f16 16x16x16, 4: f16 32x64x16, 8: f16 32x64x32, 32: tf32 8x16x8, 64: bf16 8x16x16<br>* Xe-HPG (Arc A770, ARL-H): 16: f16 8x8x16, 128: bf16 8x8x16<br>Clear a bit to exclude a combination, or set a single bit to force one for testing. |
-| GGML_SYCL_DYNAMIC_PRECISION | `F16` (default with `GGML_SYCL_F16=ON`), `BF16`, `TF32` or `F32` (default otherwise) | Operand type of the XMX dequant-GEMM paths (`GGML_SYCL_XMX_GATHER_TYPES`); accumulation is always f32. `F16` is the fastest, but activations above 65504 overflow. `BF16` keeps the f32 range at a 7-bit mantissa, `TF32` keeps the range and the f16 mantissa but is about 30% slower and needs Xe2, Xe3 or Xe-HPC, and `F32` turns the XMX paths off. Ops that request a higher src1 precision ([TAG_GGML_PREC]) get it regardless of this setting. |
-| GGML_SYCL_DYNAMIC_REQUIRED_PRECISION | `F32` (default), `TF32`, `BF16` or `F16` | Lowest type the XMX paths may use for an op that requests an F32 src1, such as Mistral 4 `ffn_down_exps`. The default runs such ops on the library f32 GEMM; `TF32` or `BF16` trade mantissa for speed while keeping the f32 range. `F16` ignores the request and can overflow; it is meant for testing only. |
-| GGML_SYCL_MMVQ_WIDE | 0 or 1 (default) | Use the wide-load variant of the reordered Q8_0 mat-vec kernel, which reads four contiguous dwords per operand instead of one value at a time. Set to 0 to fall back to the per-value loads. Only affects Q8_0 weights in the reordered layout. |
-| GGML_SYCL_SPARSE_FA | 0 (default) or 1 | Enable Sparse Flash-attention.|
-| GGML_SYCL_SPARSE_FA_DEBUG | 0 (default) or 1 | Enable to debug for Sparse Flash-attention.|
-| GGML_SYCL_SPARSE_FA_MARGIN | [0,..] default:256 | Set the margin value for Sparse Flash-attention.|
-| ZES_ENABLE_SYSMAN | 0 (default) or 1 | Support to get free memory of GPU by sycl::aspect::ext_intel_free_memory.<br>Recommended to use when --split-mode = layer |
-| UR_L0_ENABLE_RELAXED_ALLOCATION_LIMITS | 0 (default) or 1 | Allow SYCL/Unified Runtime Level Zero device allocations larger than 4 GiB. llama.cpp's direct Level Zero allocation path requests the relaxed maximum-size limit itself when GGML_SYCL_ENABLE_LEVEL_ZERO=1. |
-| GGML_SYCL_USM_SYSTEM | 0 (default) or 1 | Enable experimental support for [USM system allocations](https://github.khronos.org/SYCL_Reference/iface/usm_basic_concept.html#system-allocations) for large GPU buffers. This requires enough host memory for model weights and caches, an Intel Xe2+ GPU such as BMG or newer and supported on Linux only, with CONFIG_DRM_XE_GPUSVM enabled. |
+| Name                                   | Value                                                                                | Function                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| -------------------------------------- | ------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| GGML_SYCL_DEBUG                        | 0 (default) or 1                                                                     | Enable log function: GGML_SYCL_DEBUG() for common debug.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| GGML_SYCL_DEV_DEBUG                    | 0 (default) or 1                                                                     | Enable log function: GGML_SYCL_DEV_DEBUG() for developmental purposes by replacing GGML_SYCL_DEBUG() in special codes. Restore to GGML_SYCL_DEBUG() before committing code.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| GGML_SYCL_DEV2DEV_MEMCPY               | 0 (default), 1, 2                                                                    | Choose the method of dev2dev memory copy.<br>Value: <br>* 0: SYCL API (default), only support dGPUs.<br>* 1: L0 API -- Better performance, only support dGPUs, found to lead to abnormal crash in some case. <br>* 2: Host Forward -- Most stable method for all cases (including iGPU + dGPU*N), but with lower performance (-2% to -5%).<br>SYCL & L0 API are easy to be impacted by Intel GPU driver issue. When you meet the garbled output or crash issues in multiple GPUs case, try with this debug flag to work around or check the issue.                                                                                                                                                                                                                                         |
+| GGML_SYCL_ENABLE_FLASH_ATTN            | 1 (default) or 0                                                                     | Enable Flash-Attention. It can reduce memory usage. The performance impact depends on the LLM.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| GGML_SYCL_ENABLE_OPT                   | 0 or 1 (default)                                                                     | Enable optimize features for Intel GPUs. (Recommended to 0 for Intel devices older than Gen 10)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| GGML_SYCL_ENABLE_GRAPH                 | 0 (default) or 1                                                                     | Enable running computations through SYCL Graphs feature. Disabled by default because SYCL Graph is still in development, performance depends on model and device. [1.](#sycl-graph-footnote)                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| GGML_SYCL_GRAPH_EVICTION_TIMEOUT       | 10 (default) or positive integer                                                     | Seconds a cached SYCL graph can go unused before it is evicted. Checked on a sweep that runs every half of this timeout.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| GGML_SYCL_ENABLE_HOST_PINNED_MEM       | 0 or 1 (default)                                                                     | Enable host pinned memory to speed up copy data from host to device. When disable it, host memory will common malloc() on CPU. Disable it when use `--load-model mlock`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| GGML_SYCL_HOST_PINNED_MEM_2G           | 0 (default) or 1                                                                     | Limit the max memory allocation to be no more than 2GB when enable host pinned memory. USM allocations above 2 GiB take the relaxed/large-allocation path, which serializes H2D copies with compute and prevents copy/compute overlap. It will impact the startup time. Need more test. Depend on `GGML_SYCL_ENABLE_HOST_PINNED_MEM=1`.                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| GGML_SYCL_UPLOAD_STAGING_SLOTS         | 4 (default) or non-negative integer                                                  | Number of 8 MiB pinned host slots used to stage tensor uploads (model loading), so the host copy of one slot overlaps the transfer of the previous one. Set to 0 to use the old path: a malloc'd bounce buffer and a blocking copy per tensor.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| GGML_SYCL_GET_MEM_API                  | 0 (default) or 1                                                                     | Set to get memory info (free, total) by Level Zero or SYCL API:<br>0 - Level Zero API: support more GPUs, only run on Level Zero running time. When there is an error, fallback to call SYCL API. Depend on GGML_SYCL_SUPPORT_LEVEL_ZERO_API.<br>1 - SYCL API: legacy, support more running time, it can't get the free size of some GPUs (like Arc770). In such case, return the free size as value of total size.                                                                                                                                                                                                                                                                                                                                                                        |
+| GGML_SYCL_USE_LEVEL_ZERO_API           | 1 (default) or 0                                                                     | Use Level Zero API for device memory allocation instead of SYCL. Reduces system RAM usage on Intel dGPUs by avoiding DMA-buf/TTM host memory staging. Requires GGML_SYCL_SUPPORT_LEVEL_ZERO_API=ON at build time. SYCL backend always runs on Level Zero running time even if it's set as OFF (The SYCL api will be usage for memory allocation).                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| GGML_SYCL_ENABLE_DNN                   | 0 or 1 (default)                                                                     | Enable running computations through oneDNN and always use oneMKL.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| GGML_SYCL_FA_ONEDNN                    | 1 (default) or 0                                                                     | Enable the oneDNN fused SDPA (flash-attention) path on supported GPUs. Set to 0 to always use the native SYCL flash-attention kernel.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| GGML_SYCL_FA_ONEDNN_MAX_KV             | 0 (default, disabled) or positive integer                                            | By default (0), all sequences are handled by the oneDNN fused SDPA path, regardless of KV length; a positive value caps that length, past which sequences fall back to the native kernel. If GPU driver watchdog resets (DEVICE_LOST) occur during long-context inference, set this near the context depth where they start, e.g. 24576.                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| GGML_SYCL_ENABLE_VMM                   | 0 or 1 (default)                                                                     | Enable the virtual-memory device pool.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| GGML_SYCL_ENABLE_MKL_FA                | 1 (default) or 0                                                                     | Enable oneMKL GEMM flash attention for XMX-accelerated prompt processing with quantized KV cache. Automatically activates during prefill (prompt processing) when all conditions are met: (1) flash-attn enabled (`-fa` or `--flash-attn on`), (2) KV cache quantized (`--cache-type-k q8_0 --cache-type-v q8_0` or other `*_0/*_1` types), (3) batch size ≥ 1024 (`--batch-size 1024`), (4) prompt length ≥ 1024 tokens. Set to 0 to force the TILE kernel for A/B testing. Example minimum command: `llama-cli -m model.gguf -fa -ngl 99 --cache-type-k q8_0 --cache-type-v q8_0 --batch-size 1024 -p "your prompt"`                                                                                                                                                                     |
+| GGML_SYCL_MKL_FA_DEBUG                 | 0 (default) or 1                                                                     | Enable per-call diagnostic logging for MKL flash attention: GEMM/softmax timings, interleaved-head detection, and buffer memory usage.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| GGML_SYCL_MEMTRACE                     | 0 (default), 1, 2                                                                    | Enable record and output memory allocation diagnostics. Requires `-lv 4`. <br>0 - Disable<br>1 - Basic memory info, including current and peak allocations, as well allocations from other sources, around 50 lines per model load.<br>2 - More verbose, logging around 900 specific allocations and deallocations.                                                                                                                                                                                                                                                                                                                                                                                                                                                                        |
+| GGML_SYCL_MEMTRACE_STEP                | 64 (default) or positive integer                                                     | With GGML_SYCL_MEMTRACE=1, the minimum growth in memory usage to trigger another log record.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| GGML_SYCL_MKL_FA_DIAG                  | 0 (default) or 1                                                                     | Enable output fingerprinting for MKL flash attention. Dumps the first 64 float output values for the first 6 FA calls with n_kv ≥ 1024, labeled with kernel type (MKL/TILE/VEC) for cross-kernel comparison.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| GGML_SYCL_ENABLE_FUSION                | 0 or 1 (default)                                                                     | Enable fused-kernel dispatch in graph compute. Unsupported types and layouts fall back to the standalone op kernels. See `ggml_sycl_can_fuse()`.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| GGML_SYCL_ENABLE_ESIMD                 | 0 or 1 (default)                                                                     | Enable ESIMD kernels when available.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| GGML_SYCL_ENABLE_XMX_ESIMD             | 0 or 1 (default)                                                                     | Use the XMX (DPAS) multi-column mat-vec kernels for reordered Q2_K to Q6_K and Q8_0 weights on Xe2 GPUs. Speeds up speculative decoding and short prompt batches.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| GGML_SYCL_XMX_MAX_COLS                 | non-negative integer, 80 (default)                                                   | Most activation columns (batch size) the `GGML_SYCL_ENABLE_XMX_ESIMD` kernels take; wider batches use the other mat-mul kernels. A larger value keeps XMX for bigger batches (as repeated launches), `0` never uses it.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| GGML_SYCL_XMX_GLU_MAX_COLS             | 0 to 16, 16 (default)                                                                | Most columns the fused gate and up XMX kernel takes; wider batches run gate and up as separate mat-vecs. 16 is the most the kernel is built for, larger values are clamped to 16 and `0` turns the fused kernel off.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| GGML_SYCL_XMX_GATHER_TYPES             | decimal bitmask, all bits set (default)                                              | Weight formats that may use the XMX dequant-GEMM paths, which dequantize weights straight into the XMX tiles. This speeds up prompt processing of MoE models on GPUs with XMX units (Arc A- and B-series, Arc Pro, Data Center GPU Max), for example pp512 of Qwen3-30B-A3B UD-IQ3_XXS by about 50% on an Arc Pro B60. Bits:<br>* 1: IQ4_NL, 2: IQ3_S, 4: IQ4_XS, 8: IQ3_XXS, 16: IQ2_XXS, 32: IQ2_XS, 64: IQ2_S, 128: IQ1_S, 256: IQ1_M<br>* 512: Q8_0, 1024: Q4_K, 2048: Q5_K, 4096: Q6_K (MoE `MUL_MAT_ID` only)<br>Add values to combine them, for example `3` for IQ4_NL and IQ3_S; `0` disables the paths. A set bit does not force the path: batches of more than 64 tokens per expert or row lengths that are not a multiple of 256 (32 for IQ4_NL and Q8_0) use the library GEMM. |
+| GGML_SYCL_XMX_GATHER_SHAPES            | decimal bitmask, 255 (default)                                                       | XMX `joint_matrix` combinations the paths of `GGML_SYCL_XMX_GATHER_TYPES` may use; the operand type comes from `GGML_SYCL_DYNAMIC_PRECISION` and the best supported combination is picked automatically (logged as `fg_pick_combo`). Bits:<br>* Xe2, Xe3, Xe-HPC: 1: f16 8x16x16, 2: f16 16x16x16, 4: f16 32x64x16, 8: f16 32x64x32, 32: tf32 8x16x8, 64: bf16 8x16x16<br>* Xe-HPG (Arc A770, ARL-H): 16: f16 8x8x16, 128: bf16 8x8x16<br>Clear a bit to exclude a combination, or set a single bit to force one for testing.                                                                                                                                                                                                                                                              |
+| GGML_SYCL_DYNAMIC_PRECISION            | `F16` (default with `GGML_SYCL_F16=ON`), `BF16`, `TF32` or `F32` (default otherwise) | Operand type of the XMX dequant-GEMM paths (`GGML_SYCL_XMX_GATHER_TYPES`); accumulation is always f32. `F16` is the fastest, but activations above 65504 overflow. `BF16` keeps the f32 range at a 7-bit mantissa, `TF32` keeps the range and the f16 mantissa but is about 30% slower and needs Xe2, Xe3 or Xe-HPC, and `F32` turns the XMX paths off. Ops that request a higher src1 precision ([TAG_GGML_PREC]) get it regardless of this setting.                                                                                                                                                                                                                                                                                                                                      |
+| GGML_SYCL_DYNAMIC_REQUIRED_PRECISION   | `F32` (default), `TF32`, `BF16` or `F16`                                             | Lowest type the XMX paths may use for an op that requests an F32 src1, such as Mistral 4 `ffn_down_exps`. The default runs such ops on the library f32 GEMM; `TF32` or `BF16` trade mantissa for speed while keeping the f32 range. `F16` ignores the request and can overflow; it is meant for testing only.                                                                                                                                                                                                                                                                                                                                                                                                                                                                              |
+| GGML_SYCL_MMVQ_WIDE                    | 0 or 1 (default)                                                                     | Use the wide-load variant of the reordered Q8_0 mat-vec kernel, which reads four contiguous dwords per operand instead of one value at a time. Set to 0 to fall back to the per-value loads. Only affects Q8_0 weights in the reordered layout.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| GGML_SYCL_SPARSE_FA                    | 0 (default) or 1                                                                     | Enable Sparse Flash-attention.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| GGML_SYCL_SPARSE_FA_DEBUG              | 0 (default) or 1                                                                     | Enable to debug for Sparse Flash-attention.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                |
+| GGML_SYCL_SPARSE_FA_MARGIN             | [0,..] default:256                                                                   | Set the margin value for Sparse Flash-attention.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| ZES_ENABLE_SYSMAN                      | 0 (default) or 1                                                                     | Support to get free memory of GPU by sycl::aspect::ext_intel_free_memory.<br>Recommended to use when --split-mode = layer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| UR_L0_ENABLE_RELAXED_ALLOCATION_LIMITS | 0 (default) or 1                                                                     | Allow SYCL/Unified Runtime Level Zero device allocations larger than 4 GiB. llama.cpp's direct Level Zero allocation path requests the relaxed maximum-size limit itself when GGML_SYCL_ENABLE_LEVEL_ZERO=1.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               |
+| GGML_SYCL_USM_SYSTEM                   | 0 (default) or 1                                                                     | Enable experimental support for [USM system allocations](https://github.khronos.org/SYCL_Reference/iface/usm_basic_concept.html#system-allocations) for large GPU buffers. This requires enough host memory for model weights and caches, an Intel Xe2+ GPU such as BMG or newer and supported on Linux only, with CONFIG_DRM_XE_GPUSVM enabled.                                                                                                                                                                                                                                                                                                                                                                                                                                           |
 
 1. <a id="sycl-graph-footnote"></a>SYCL Graph support (`GGML_SYCL_ENABLE_GRAPH=1`) is limited to single-GPU workloads and may also depend on the model architecture and kernels in use.
    Performance depends on how often a recorded graph can be reused, which will vary by workload.
@@ -850,31 +858,31 @@ User can use the device management in [docs/multi-gpu.md](https://github.com/ggm
 
 Pass these via `CXXFLAGS` or add a one-off `#define` to enable a flag on the spot.
 
-| Name            | Function                                                                         |
-|-----------------|----------------------------------------------------------------------------------|
-| DEBUG_SYCL_POOL | Enable device memory pool logging on teardown. Useful for profiling allocations. |
-| DEBUG_SYCL_MALLOC | Enable verbose per-call logging of device pool alloc/free operations. |
-| GGML_SYCL_SUPPORT_VMM | Support to building with VMM code. Default is Yes. |
+| Name                  | Function                                                                         |
+| --------------------- | -------------------------------------------------------------------------------- |
+| DEBUG_SYCL_POOL       | Enable device memory pool logging on teardown. Useful for profiling allocations. |
+| DEBUG_SYCL_MALLOC     | Enable verbose per-call logging of device pool alloc/free operations.            |
+| GGML_SYCL_SUPPORT_VMM | Support to building with VMM code. Default is Yes.                               |
 
 ## Design Rule
 
 - Open to all contributors.
 
 - All code change should be useful to user:
-    - Fix bug.
-    - Add new function.
-    - Improve the performance/usage.
-    - Make code be easy to maintain.
-    - ...
+  - Fix bug.
+  - Add new function.
+  - Improve the performance/usage.
+  - Make code be easy to maintain.
+  - ...
 
 - Don't accept the codes of following cases:
-    - Break legacy function.
-    - Reduce the performance of legacy case in default.
-    - Not completed work/the functionality cannot be demonstrated.
+  - Break legacy function.
+  - Reduce the performance of legacy case in default.
+  - Not completed work/the functionality cannot be demonstrated.
 
 - Encourage to use environment variable to control features to be opened/closed.
-    - User can evaluate the feature without rebuild the code.
-    - Recommend the best features to user by setting them be opened as default.
+  - User can evaluate the feature without rebuild the code.
+  - Recommend the best features to user by setting them be opened as default.
 
 - Design the code based on the published official releases of oneAPI packages: compiler, library, driver, OS kernel.
 
@@ -890,10 +898,10 @@ Pass these via `CXXFLAGS` or add a one-off `#define` to enable a flag on the spo
 
 ## Q&A
 
-- Error:  `error while loading shared libraries: libsycl.so: cannot open shared object file: No such file or directory`.
+- Error: `error while loading shared libraries: libsycl.so: cannot open shared object file: No such file or directory`.
 
   - Potential cause: Unavailable oneAPI installation or not set ENV variables.
-  - Solution: Install *oneAPI base toolkit* and enable its ENV through: `source /opt/intel/oneapi/setvars.sh`.
+  - Solution: Install _oneAPI base toolkit_ and enable its ENV through: `source /opt/intel/oneapi/setvars.sh`.
 
 - General compiler error:
 
@@ -909,6 +917,7 @@ Pass these via `CXXFLAGS` or add a one-off `#define` to enable a flag on the spo
   sudo usermod -aG render $USER
   sudo usermod -aG video $USER
   ```
+
   Otherwise, please double-check the GPU driver installation steps.
 
 - Can I report Ollama issue on Intel GPU to llama.cpp SYCL backend?
@@ -923,14 +932,15 @@ Pass these via `CXXFLAGS` or add a one-off `#define` to enable a flag on the spo
 
   You are running out of Device Memory.
 
-  |Reason|Solution|
-  |-|-|
-  | The default context is too big. It leads to excessive memory usage.|Set `-c 8192` or a smaller value.|
-  | The model is too big and requires more memory than what is available.|Choose a smaller model or change to a smaller quantization, like Q5 -> Q4;<br>Alternatively, use more than one device to load model.|
+  | Reason                                                                | Solution                                                                                                                             |
+  | --------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+  | The default context is too big. It leads to excessive memory usage.   | Set `-c 8192` or a smaller value.                                                                                                    |
+  | The model is too big and requires more memory than what is available. | Choose a smaller model or change to a smaller quantization, like Q5 -> Q4;<br>Alternatively, use more than one device to load model. |
 
 - `ggml_backend_sycl_buffer_type_alloc_buffer: can't allocate 5000000000 Bytes of memory on device`
 
   With the default `GGML_SYCL_ENABLE_LEVEL_ZERO=1`, llama.cpp requests Level Zero's relaxed maximum-size allocation limit directly. If Level Zero support is disabled at build time or runtime and the allocation goes through SYCL/Unified Runtime instead, enable support for allocations larger than 4 GiB by:
+
   ```
     export UR_L0_ENABLE_RELAXED_ALLOCATION_LIMITS=1
     set UR_L0_ENABLE_RELAXED_ALLOCATION_LIMITS=1
@@ -953,6 +963,7 @@ Pass these via `CXXFLAGS` or add a one-off `#define` to enable a flag on the spo
 - How to use iGPU and dGPU in same time?
 
   1. Detect the devices in your running time.
+
   ```
   source /opt/intel/oneapi/setvars.sh
   ./build/bin/llama-server --list-devices
@@ -974,8 +985,8 @@ Pass these via `CXXFLAGS` or add a one-off `#define` to enable a flag on the spo
 
   Set the iGPU and dGPU by `./build/bin/llama-server --device SYCL0,SYCL1,SYCLxxx`.
 
-
 ### **GitHub contribution**:
+
 Please add the `[SYCL]` prefix/tag in issues/PRs titles to help the SYCL contributors to check/address them without delay.
 
 ## TODO

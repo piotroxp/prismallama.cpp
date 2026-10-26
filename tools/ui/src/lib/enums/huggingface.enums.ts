@@ -8,11 +8,11 @@
 
 /** Sort field for /api/models search queries. */
 export enum HfModelSort {
-	CREATED_AT = 'createdAt',
-	DOWNLOADS = 'downloads',
-	LAST_MODIFIED = 'lastModified',
-	LIKES = 'likes',
-	TRENDING_SCORE = 'trendingScore'
+  CREATED_AT = "createdAt",
+  DOWNLOADS = "downloads",
+  LAST_MODIFIED = "lastModified",
+  LIKES = "likes",
+  TRENDING_SCORE = "trendingScore",
 }
 
 /**
@@ -23,13 +23,13 @@ export enum HfModelSort {
  * - `infix`   standalone sidecar named between head and quant, e.g. `model-mtp-Q8_0.gguf`
  */
 export enum SidecarForm {
-	INFIX = 'infix',
-	PREFIX = 'prefix',
-	SUFFIX = 'suffix'
+  INFIX = "infix",
+  PREFIX = "prefix",
+  SUFFIX = "suffix",
 }
 
 /** Entry type in a model repository file tree (`/tree` responses). */
 export enum HfEntryType {
-	DIRECTORY = 'directory',
-	FILE = 'file'
+  DIRECTORY = "directory",
+  FILE = "file",
 }

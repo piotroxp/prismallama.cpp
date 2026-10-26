@@ -8,11 +8,12 @@ GBNF (GGML BNF) is a format for defining [formal grammars](https://en.wikipedia.
 
 ## Basics
 
-In GBNF, we define *production rules* that specify how a *non-terminal* (rule name) can be replaced with sequences of *terminals* (characters, specifically Unicode [code points](https://en.wikipedia.org/wiki/Code_point)) and other non-terminals. The basic format of a production rule is `nonterminal ::= sequence...`.
+In GBNF, we define _production rules_ that specify how a _non-terminal_ (rule name) can be replaced with sequences of _terminals_ (characters, specifically Unicode [code points](https://en.wikipedia.org/wiki/Code_point)) and other non-terminals. The basic format of a production rule is `nonterminal ::= sequence...`.
 
 ## Example
 
 Before going deeper, let's look at some of the features demonstrated in `grammars/chess.gbnf`, a small chess notation grammar:
+
 ```
 # `root` specifies the pattern for the overall output
 root ::= (
@@ -45,6 +46,7 @@ Terminals are actual characters ([code points](https://en.wikipedia.org/wiki/Cod
 Terminals support the full range of Unicode. Unicode characters can be specified directly in the grammar, for example `hiragana ::= [ぁ-ゟ]`, or with escapes: 8-bit (`\xXX`), 16-bit (`\uXXXX`) or 32-bit (`\UXXXXXXXX`).
 
 Character ranges can be negated with `^`:
+
 ```
 single-line ::= [^\n]+ "\n"
 ```
@@ -77,7 +79,7 @@ Tokens can be specified in two ways:
 
 2. **Token string**: Use angle brackets with the token text directly: `<token>`. For example, `<think>` will match the token whose text is exactly `<think>`. This only works if the string tokenizes to exactly one token in the vocabulary, otherwise the grammar will fail to parse.
 
-You can negate token matches using the `!` prefix: `!<[1000]>` or `!<think>` matches any token *except* the specified one.
+You can negate token matches using the `!` prefix: `!<[1000]>` or `!<think>` matches any token _except_ the specified one.
 
 ```
 # Match a thinking block: <think>...</think>
@@ -94,6 +96,7 @@ thinking ::= !<[1001]>*
 ## Comments and newlines
 
 Comments can be specified with `#`:
+
 ```
 # defines optional whitespace
 ws ::= [ \t\n]+
@@ -114,6 +117,7 @@ item ::= [^\n]+ "\n"
 ## Next steps
 
 This guide provides a brief overview. Check out the GBNF files in this directory (`grammars/`) for examples of full grammars. You can try them out with:
+
 ```
 ./llama-cli -m <model> --grammar-file grammars/some-grammar.gbnf -p 'Some prompt'
 ```
@@ -143,8 +147,8 @@ You can use GBNF grammars:
 `llama.cpp` supports converting a subset of https://json-schema.org/ to GBNF grammars:
 
 - In [llama-server](../tools/server):
-    - For any completion endpoints, passed as the `json_schema` body field
-    - For the `/chat/completions` endpoint, passed inside the `response_format` body field (e.g. `{"type", "json_object", "schema": {"items": {}}}` or `{ type: "json_schema", json_schema: {"schema": ...} }`)
+  - For any completion endpoints, passed as the `json_schema` body field
+  - For the `/chat/completions` endpoint, passed inside the `response_format` body field (e.g. `{"type", "json_object", "schema": {"items": {}}}` or `{ type: "json_schema", json_schema: {"schema": ...} }`)
 - In [llama-cli](../tools/cli) and [llama-completion](../tools/completion), passed as the `--json` / `-j` flag
 
 > [!NOTE]
@@ -274,11 +278,7 @@ print(json.dumps(Summary.model_json_schema(), indent=2))
           "type": "string"
         }
       },
-      "required": [
-        "question",
-        "concise_answer",
-        "justification"
-      ],
+      "required": ["question", "concise_answer", "justification"],
       "title": "QAPair",
       "type": "object"
     }
@@ -305,10 +305,7 @@ print(json.dumps(Summary.model_json_schema(), indent=2))
       "type": "array"
     }
   },
-  "required": [
-    "key_facts",
-    "question_answers"
-  ],
+  "required": ["key_facts", "question_answers"],
   "title": "Summary",
   "type": "object"
 }
@@ -351,13 +348,15 @@ value ::= object | array | string | number | boolean | null
 If you're using [Zod](https://zod.dev/), you can make your objects to explicitly allow extra properties w/ `nonstrict()` / `passthrough()` (or explicitly no extra props w/ `z.object(...).strict()` or `z.strictObject(...)`) but note that [zod-to-json-schema](https://github.com/StefanTerdell/zod-to-json-schema) currently always sets `"additionalProperties": false` anyway.
 
 ```js
-import { z } from 'zod';
-import { zodToJsonSchema } from 'zod-to-json-schema';
+import { z } from "zod";
+import { zodToJsonSchema } from "zod-to-json-schema";
 
-const Foo = z.object({
-  age: z.number().positive(),
-  email: z.string().email(),
-}).strict();
+const Foo = z
+  .object({
+    age: z.number().positive(),
+    email: z.string().email(),
+  })
+  .strict();
 
 console.log(zodToJsonSchema(Foo));
 ```
@@ -378,10 +377,7 @@ console.log(zodToJsonSchema(Foo));
       "format": "email"
     }
   },
-  "required": [
-    "age",
-    "email"
-  ],
+  "required": ["age", "email"],
   "additionalProperties": false,
   "$schema": "http://json-schema.org/draft-07/schema#"
 }

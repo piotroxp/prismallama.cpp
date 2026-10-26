@@ -4,29 +4,29 @@
  */
 
 import {
-	CODE_BLOCK_CLASS,
-	CODE_ICON_SVG,
-	COPY_ICON_SVG,
-	DIAGRAM_SOURCE_CLASS,
-	PREVIEW_ICON_SVG,
-	TOGGLE_SOURCE_BTN_CLASS
-} from '$lib/constants';
-import type { Element, ElementContent } from 'hast';
+  CODE_BLOCK_CLASS,
+  CODE_ICON_SVG,
+  COPY_ICON_SVG,
+  DIAGRAM_SOURCE_CLASS,
+  PREVIEW_ICON_SVG,
+  TOGGLE_SOURCE_BTN_CLASS,
+} from "$lib/constants";
+import type { Element, ElementContent } from "hast";
 
 export interface BlockIdGenerator {
-	(id: number): string;
+  (id: number): string;
 }
 
 /**
  * Creates an icon element with the given SVG content.
  */
 export function createIconElement(svg: string): Element {
-	return {
-		children: [{ type: 'raw', value: svg } as unknown as ElementContent],
-		properties: {},
-		tagName: 'span',
-		type: 'element'
-	};
+  return {
+    children: [{ type: "raw", value: svg } as unknown as ElementContent],
+    properties: {},
+    tagName: "span",
+    type: "element",
+  };
 }
 
 /**
@@ -34,43 +34,43 @@ export function createIconElement(svg: string): Element {
  * which lets a stateful button carry attributes like aria-pressed.
  */
 export function createButton(
-	className: string,
-	title: string,
-	iconSvg: string,
-	id: string,
-	idAttribute: string,
-	extraProperties: Record<string, string> = {}
+  className: string,
+  title: string,
+  iconSvg: string,
+  id: string,
+  idAttribute: string,
+  extraProperties: Record<string, string> = {},
 ): Element {
-	return {
-		children: [createIconElement(iconSvg)],
-		properties: {
-			className: [className],
-			[idAttribute]: id,
-			title,
-			type: 'button',
-			...extraProperties
-		},
-		tagName: 'button',
-		type: 'element'
-	};
+  return {
+    children: [createIconElement(iconSvg)],
+    properties: {
+      className: [className],
+      [idAttribute]: id,
+      title,
+      type: "button",
+      ...extraProperties,
+    },
+    tagName: "button",
+    type: "element",
+  };
 }
 
 /**
  * Creates a copy button element.
  */
-export function createCopyButton(id: string, idAttribute: string, title: string = 'Copy'): Element {
-	return createButton(CODE_BLOCK_CLASS.COPY_BTN, title, COPY_ICON_SVG, id, idAttribute);
+export function createCopyButton(id: string, idAttribute: string, title: string = "Copy"): Element {
+  return createButton(CODE_BLOCK_CLASS.COPY_BTN, title, COPY_ICON_SVG, id, idAttribute);
 }
 
 /**
  * Creates a preview button element.
  */
 export function createPreviewButton(
-	id: string,
-	idAttribute: string,
-	title: string = 'Preview'
+  id: string,
+  idAttribute: string,
+  title: string = "Preview",
 ): Element {
-	return createButton(CODE_BLOCK_CLASS.PREVIEW_BTN, title, PREVIEW_ICON_SVG, id, idAttribute);
+  return createButton(CODE_BLOCK_CLASS.PREVIEW_BTN, title, PREVIEW_ICON_SVG, id, idAttribute);
 }
 
 /**
@@ -78,13 +78,13 @@ export function createPreviewButton(
  * its source view. aria-pressed starts false, the rendered view is the default.
  */
 export function createToggleSourceButton(
-	id: string,
-	idAttribute: string,
-	title: string = 'Toggle source'
+  id: string,
+  idAttribute: string,
+  title: string = "Toggle source",
 ): Element {
-	return createButton(TOGGLE_SOURCE_BTN_CLASS, title, CODE_ICON_SVG, id, idAttribute, {
-		'aria-pressed': 'false'
-	});
+  return createButton(TOGGLE_SOURCE_BTN_CLASS, title, CODE_ICON_SVG, id, idAttribute, {
+    "aria-pressed": "false",
+  });
 }
 
 /**
@@ -94,73 +94,73 @@ export function createToggleSourceButton(
  * plain code node built from the raw source.
  */
 export function createSourceView(
-	codeElement: Element | undefined,
-	source: string,
-	language: string
+  codeElement: Element | undefined,
+  source: string,
+  language: string,
 ): Element {
-	const code: Element = codeElement ?? {
-		children: [{ type: 'text', value: source }],
-		properties: { className: ['hljs', `language-${language}`] },
-		tagName: 'code',
-		type: 'element'
-	};
+  const code: Element = codeElement ?? {
+    children: [{ type: "text", value: source }],
+    properties: { className: ["hljs", `language-${language}`] },
+    tagName: "code",
+    type: "element",
+  };
 
-	return {
-		children: [
-			{
-				children: [code],
-				properties: {},
-				tagName: 'pre',
-				type: 'element'
-			}
-		],
-		properties: { className: [DIAGRAM_SOURCE_CLASS, CODE_BLOCK_CLASS.SCROLL_CONTAINER] },
-		tagName: 'div',
-		type: 'element'
-	};
+  return {
+    children: [
+      {
+        children: [code],
+        properties: {},
+        tagName: "pre",
+        type: "element",
+      },
+    ],
+    properties: { className: [DIAGRAM_SOURCE_CLASS, CODE_BLOCK_CLASS.SCROLL_CONTAINER] },
+    tagName: "div",
+    type: "element",
+  };
 }
 
 /**
  * Creates a block header with language label and action buttons.
  */
 export function createBlockHeader(
-	language: string,
-	id: string,
-	idAttribute: string,
-	actions: Element[],
-	languageClassName: string = CODE_BLOCK_CLASS.LANGUAGE
+  language: string,
+  id: string,
+  idAttribute: string,
+  actions: Element[],
+  languageClassName: string = CODE_BLOCK_CLASS.LANGUAGE,
 ): Element {
-	return {
-		children: [
-			{
-				children: [{ type: 'text', value: language }],
-				properties: { className: [languageClassName] },
-				tagName: 'span',
-				type: 'element'
-			},
-			{
-				children: actions,
-				properties: { className: [CODE_BLOCK_CLASS.ACTIONS] },
-				tagName: 'div',
-				type: 'element'
-			}
-		],
-		properties: { className: [CODE_BLOCK_CLASS.HEADER] },
-		tagName: 'div',
-		type: 'element'
-	};
+  return {
+    children: [
+      {
+        children: [{ type: "text", value: language }],
+        properties: { className: [languageClassName] },
+        tagName: "span",
+        type: "element",
+      },
+      {
+        children: actions,
+        properties: { className: [CODE_BLOCK_CLASS.ACTIONS] },
+        tagName: "div",
+        type: "element",
+      },
+    ],
+    properties: { className: [CODE_BLOCK_CLASS.HEADER] },
+    tagName: "div",
+    type: "element",
+  };
 }
 
 /**
  * Creates a scroll container element.
  */
 export function createScrollContainer(preElement: Element, scrollContainerClass: string): Element {
-	return {
-		children: [preElement],
-		properties: { className: [scrollContainerClass] },
-		tagName: 'div',
-		type: 'element'
-	};
+  return {
+    children: [preElement],
+    properties: { className: [scrollContainerClass] },
+    tagName: "div",
+    type: "element",
+  };
 }
 
 /**
@@ -169,37 +169,37 @@ export function createScrollContainer(preElement: Element, scrollContainerClass:
  * alongside its rendered output.
  */
 export function createWrapper(
-	header: Element,
-	preElement: Element,
-	wrapperClass: string,
-	scrollContainerClass: string,
-	additionalAttributes?: Record<string, string>,
-	extraChildren: Element[] = []
+  header: Element,
+  preElement: Element,
+  wrapperClass: string,
+  scrollContainerClass: string,
+  additionalAttributes?: Record<string, string>,
+  extraChildren: Element[] = [],
 ): Element {
-	return {
-		children: [header, createScrollContainer(preElement, scrollContainerClass), ...extraChildren],
-		properties: {
-			className: [wrapperClass, CODE_BLOCK_CLASS.RELATIVE],
-			...additionalAttributes
-		} as Element['properties'],
-		tagName: 'div',
-		type: 'element'
-	};
+  return {
+    children: [header, createScrollContainer(preElement, scrollContainerClass), ...extraChildren],
+    properties: {
+      className: [wrapperClass, CODE_BLOCK_CLASS.RELATIVE],
+      ...additionalAttributes,
+    } as Element["properties"],
+    tagName: "div",
+    type: "element",
+  };
 }
 
 /**
  * Generates a unique block ID using a global counter.
  */
 export function generateBlockId(prefix: string, windowKey: keyof Window): string {
-	if (typeof window !== 'undefined') {
-		const idx = window[windowKey] as number | undefined;
-		const next = (idx ?? 0) + 1;
+  if (typeof window !== "undefined") {
+    const idx = window[windowKey] as number | undefined;
+    const next = (idx ?? 0) + 1;
 
-		(window as unknown as Record<string, number>)[windowKey] = next;
+    (window as unknown as Record<string, number>)[windowKey] = next;
 
-		return `${prefix}-${next}`;
-	}
+    return `${prefix}-${next}`;
+  }
 
-	// Fallback for SSR - use timestamp + random
-	return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+  // Fallback for SSR - use timestamp + random
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 }

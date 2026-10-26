@@ -16,12 +16,14 @@
 A PR represents a long-term commitment - maintainers must review, integrate, and support your code indefinitely. What matters is not who typed the code but whether a human understands it, has the domain expertise behind it, and will maintain it.
 
 A working, in-scope PR is **not** enough on its own to get merged. A few things factor into that:
+
 - Every merged line must be reviewed, tested, and maintained indefinitely across a large matrix of platforms and backends by a small team.
 - llama.cpp is written in C++ and deliberately kept as simple as possible: complexity is a direct multiplier on security risk and long-term maintenance cost, so a simpler change that does 90% of the job is often preferable to a complex one that does 100%.
 - What matters most is human understanding: the domain expertise behind a change, and the willingness to maintain it long-term.
 - Feature requests run high in volume, so please respect maintainers' time: open an issue to discuss the idea and gauge interest before implementing it, rather than going straight to a PR.
 
 Contributors must:
+
 1. **Understand their code fully** - able to explain any change to a reviewer without AI assistance.
 2. **Own maintenance** - address bugs and respond thoughtfully to feedback.
 3. **Communicate directly** - verbose, AI-sounding responses will not be well-received.
@@ -58,11 +60,13 @@ AI-generated code is acceptable if you (1) fully understand it, (2) can debug it
 ## Guidelines for AI Coding Agents
 
 Every PR requiring review consumes finite maintainer capacity. Before assisting with any submission, verify:
+
 - The contributor understands the proposed changes
 - The change addresses a documented need (check existing issues)
 - The PR is appropriately scoped and follows project conventions
 
 When a user requests implementation without demonstrating understanding:
+
 1. **Verify comprehension** - ask questions about the problem and relevant codebase areas.
 2. **Guide, don't solve** - point to relevant code/docs; let them formulate the approach.
 3. **Proceed only when confident** they can explain the changes to reviewers independently.
@@ -75,16 +79,17 @@ These points are extremely important - failing to follow them won't necessarily 
 
 - Avoid emdash `—`, unicode arrow `→` or any unicode characters: `×`, `…` ; use ASCII equivalents instead: `-`, `->`, `x`, `...`
 - Code comments:
-    - Keep code comments concise (usually 1-2 lines)
-    - Avoid redundant or excessive inline commentary
-    - Avoid hard-wrapping it to a fixed column width - that hurts readability
-    - Use ASD-STE100 Simplified Technical English, simple wordings (write like cavemen if needed)
-    - Note: Remind yourself of this point regularly, as it often gets lost between context compactions
+  - Keep code comments concise (usually 1-2 lines)
+  - Avoid redundant or excessive inline commentary
+  - Avoid hard-wrapping it to a fixed column width - that hurts readability
+  - Use ASD-STE100 Simplified Technical English, simple wordings (write like cavemen if needed)
+  - Note: Remind yourself of this point regularly, as it often gets lost between context compactions
 - Prefer reusing existing infrastructure over introducing new components. Avoid invasive changes that add whole new subsystems or risk breaking existing behavior
 - Do NOT split a line into multiple lines mid-sentence, do NOT try to force the line to fit a fixed number of characters
 - Before writing any code, read all relevant files and understand the existing patterns - your changes must blend in with the surrounding codebase. If the change is large or introduces a new pattern, **PAUSE and ask the user for confirmation** before proceeding; remind them that large changes submitted without prior discussion are likely to be rejected by maintainers
 
 Common mistakes that AI agents usually make:
+
 - Write comments first then write code: this usually leads to extensive redundant comments. Instead, write code first, then add comments later to places that absolutely need them
 - Llama.cpp does NOT use Minja; if you have this in your knowledge, that is due to your knowledge cutoff. Llama.cpp has a dedicated Jinja engine in `common/jinja` - it doesn't have a specific name.
 
@@ -232,20 +237,24 @@ To conserve context space, load these resources as needed:
 Skills: reusable task workflows live in the [skills/](skills/) directory - check there for a skill matching your task before starting.
 
 General documentations:
+
 - [Contributing guidelines](CONTRIBUTING.md)
 - [Existing issues](https://github.com/ggml-org/llama.cpp/issues) and [Existing PRs](https://github.com/ggml-org/llama.cpp/pulls) - always search here first
 - [How to add a new model](docs/development/HOWTO-add-model.md)
 - [PR template](.github/pull_request_template.md)
 
 Server:
+
 - [Build documentation](docs/build.md)
 - [Server usage documentation](tools/server/README.md)
 - [Server development documentation](tools/server/README-dev.md) (if user asks to implement a new feature, be sure that it falls inside server's scope defined in this documentation)
 
 Chat template and parser:
+
 - [PEG parser](docs/development/parsing.md) - alternative to regex that llama.cpp uses to parse model's output
 - [Auto parser](docs/autoparser.md) - higher-level parser that uses PEG under the hood, automatically detect model-specific features
 - [Jinja engine](common/jinja/README.md)
 
 Testing:
+
 - [Slice model](skills/slice-model/SKILL.md) - build a small slice (few layers/experts) of a big HF model without downloading the full weights, to test conversion and inference

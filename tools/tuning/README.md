@@ -6,8 +6,8 @@ It sweeps a kernel's config grid on the machine it runs on and prints pasteable 
 This is not a test: it never reports pass/fail on performance.
 A non-zero exit code means bad arguments or a wrong environment (no Metal device, missing proc bridges), never a perf result.
 
-| tuner | tunes | table |
-|---|---|---|
+| tuner    | tunes                                                                    | table                |
+| -------- | ------------------------------------------------------------------------ | -------------------- |
 | `fa-vec` | flash-attn vec `(Q, NE)` per `(dtype, head size, KV depth, batch width)` | `fa_vec_tuned_table` |
 
 ## Adding a device to the FA-vec table

@@ -4,17 +4,17 @@
  */
 
 export const MIME_TYPE_PREFIXES = {
-	IMAGE: 'image/',
-	TEXT: 'text'
+  IMAGE: "image/",
+  TEXT: "text",
 } as const;
 
 export const MIME_TYPE_SUBSTRINGS = {
-	JAVASCRIPT: 'javascript',
-	JSON: 'json',
-	TYPESCRIPT: 'typescript'
+  JAVASCRIPT: "javascript",
+  JSON: "json",
+  TYPESCRIPT: "typescript",
 } as const;
 
 export const URI_PATTERNS = {
-	DATABASE_KEYWORD: 'database',
-	DATABASE_SCHEME: 'db://'
+  DATABASE_KEYWORD: "database",
+  DATABASE_SCHEME: "db://",
 } as const;

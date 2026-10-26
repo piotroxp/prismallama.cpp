@@ -11,7 +11,7 @@
  *  3. Paired thinking-content tag pairs    === models that output special tags
  */
 
-const THINKING_KWARG_VARS = ['enable_thinking', 'reasoning_effort', 'thinking_budget'];
+const THINKING_KWARG_VARS = ["enable_thinking", "reasoning_effort", "thinking_budget"];
 /**
  * Paired thinking-content tag patterns.
  *
@@ -23,20 +23,20 @@ const THINKING_KWARG_VARS = ['enable_thinking', 'reasoning_effort', 'thinking_bu
  * where both tags always appear adjacent with no content between.
  */
 const THINKING_TAG_PATTERNS: Array<[string, string | null]> = [
-	['<think>', '</think>'],
-	['<|channel>thought', '<|channel|>'],
-	['<|think|>', '</|think|>'],
-	['<seed:think|>', '</seed:think|>'],
-	['<think></think>', null]
+  ["<think>", "</think>"],
+  ["<|channel>thought", "<|channel|>"],
+  ["<|think|>", "</|think|>"],
+  ["<seed:think|>", "</seed:think|>"],
+  ["<think></think>", null],
 ];
 const JINJA_THINKING_CONDITIONALS: RegExp[] = [
-	// Matches: {% if enable thinking %}, {% if enable_thinking %}, {% if (enable_thinking is defined) %}
-	// Handles: underscore-separated (enable_thinking), space-separated (enable thinking),
-	// and optional parens/brackets before enable (if (enable_thinking )
-	/\{%-?\s*if\s+\(?\s*\w*enable[\s_]+\w*(thinking|think|reasoning)/i,
-	/\{%-?\s*if\s+\w*(thinking|reasoning)\s*(is not|==|!=)/i,
-	/\{%-?\s*if\s+not\s+\w*enable/i,
-	/\{%-?\s*if\s+ns\.enable_thinking/i
+  // Matches: {% if enable thinking %}, {% if enable_thinking %}, {% if (enable_thinking is defined) %}
+  // Handles: underscore-separated (enable_thinking), space-separated (enable thinking),
+  // and optional parens/brackets before enable (if (enable_thinking )
+  /\{%-?\s*if\s+\(?\s*\w*enable[\s_]+\w*(thinking|think|reasoning)/i,
+  /\{%-?\s*if\s+\w*(thinking|reasoning)\s*(is not|==|!=)/i,
+  /\{%-?\s*if\s+not\s+\w*enable/i,
+  /\{%-?\s*if\s+ns\.enable_thinking/i,
 ];
 
 /** Guards against false positives:
@@ -44,47 +44,47 @@ const JINJA_THINKING_CONDITIONALS: RegExp[] = [
  *  - Qwen vertical-bar token (used for ALL tool calls, not thinking)
  */
 export function detectThinkingSupport(t: string): boolean {
-	if (!t) return false;
+  if (!t) return false;
 
-	for (const kwarg of THINKING_KWARG_VARS) {
-		const regex = new RegExp(
-			`(\\{\\{[^{}]*\\b${kwarg}\\b[^{}]*\\}\\}|\\{%[^{}]*\\b${kwarg}\\b[^{}]*%\\})`,
-			'i'
-		);
+  for (const kwarg of THINKING_KWARG_VARS) {
+    const regex = new RegExp(
+      `(\\{\\{[^{}]*\\b${kwarg}\\b[^{}]*\\}\\}|\\{%[^{}]*\\b${kwarg}\\b[^{}]*%\\})`,
+      "i",
+    );
 
-		if (regex.test(t)) return true;
-	}
-	for (const p of JINJA_THINKING_CONDITIONALS) {
-		if (p.test(t)) return true;
-	}
-	for (const [s, e] of THINKING_TAG_PATTERNS) {
-		if (t.includes(s) && (!e || t.includes(e))) return true;
-	}
+    if (regex.test(t)) return true;
+  }
+  for (const p of JINJA_THINKING_CONDITIONALS) {
+    if (p.test(t)) return true;
+  }
+  for (const [s, e] of THINKING_TAG_PATTERNS) {
+    if (t.includes(s) && (!e || t.includes(e))) return true;
+  }
 
-	return false;
+  return false;
 }
 
 export function detectThinkingSupportWithReason(t: string): { supported: boolean; reason: string } {
-	if (!t) return { reason: 'No chat template available', supported: false };
+  if (!t) return { reason: "No chat template available", supported: false };
 
-	for (const kwarg of THINKING_KWARG_VARS) {
-		const regex = new RegExp(
-			`(\\{\\{[^{}]*\\b${kwarg}\\b[^{}]*\\}\\}|\\{%[^{}]*\\b${kwarg}\\b[^{}]*%\\})`,
-			'i'
-		);
+  for (const kwarg of THINKING_KWARG_VARS) {
+    const regex = new RegExp(
+      `(\\{\\{[^{}]*\\b${kwarg}\\b[^{}]*\\}\\}|\\{%[^{}]*\\b${kwarg}\\b[^{}]*%\\})`,
+      "i",
+    );
 
-		if (regex.test(t)) {
-			return { reason: 'Found: ' + kwarg, supported: true };
-		}
-	}
-	for (const p of JINJA_THINKING_CONDITIONALS) {
-		if (p.test(t)) return { reason: 'Found: thinking conditional', supported: true };
-	}
-	for (const [s, e] of THINKING_TAG_PATTERNS) {
-		if (t.includes(s) && (!e || t.includes(e))) {
-			return { reason: 'Found: ' + s + (e ? ' .. ' + e : ' (self)'), supported: true };
-		}
-	}
+    if (regex.test(t)) {
+      return { reason: "Found: " + kwarg, supported: true };
+    }
+  }
+  for (const p of JINJA_THINKING_CONDITIONALS) {
+    if (p.test(t)) return { reason: "Found: thinking conditional", supported: true };
+  }
+  for (const [s, e] of THINKING_TAG_PATTERNS) {
+    if (t.includes(s) && (!e || t.includes(e))) {
+      return { reason: "Found: " + s + (e ? " .. " + e : " (self)"), supported: true };
+    }
+  }
 
-	return { reason: 'No thinking patterns found', supported: false };
+  return { reason: "No thinking patterns found", supported: false };
 }

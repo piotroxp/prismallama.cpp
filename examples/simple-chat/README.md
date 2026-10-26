@@ -5,3 +5,4 @@ The purpose of this example is to demonstrate a minimal usage of llama.cpp to cr
 ```bash
 ./llama-simple-chat -m Meta-Llama-3.1-8B-Instruct.gguf -c 2048
 ...
+```

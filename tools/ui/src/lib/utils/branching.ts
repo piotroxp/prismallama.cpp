@@ -15,18 +15,18 @@
  *        └── message 5 (assistant)
  */
 
-import { MessageRole } from '$lib/enums';
+import { MessageRole } from "$lib/enums";
 
 /**
  * Finds a message by its ID in the given messages array.
  */
 export function findMessageById(
-	messages: readonly DatabaseMessage[],
-	id: string | null | undefined
+  messages: readonly DatabaseMessage[],
+  id: string | null | undefined,
 ): DatabaseMessage | undefined {
-	if (!id) return undefined;
+  if (!id) return undefined;
 
-	return messages.find((m) => m.id === id);
+  return messages.find((m) => m.id === id);
 }
 
 /**
@@ -39,60 +39,60 @@ export function findMessageById(
  * @returns Array of messages from root to leaf, sorted by timestamp
  */
 export function filterByLeafNodeId(
-	messages: readonly DatabaseMessage[],
-	leafNodeId: string,
-	includeRoot: boolean = false
+  messages: readonly DatabaseMessage[],
+  leafNodeId: string,
+  includeRoot: boolean = false,
 ): readonly DatabaseMessage[] {
-	const result: DatabaseMessage[] = [];
-	const nodeMap = new Map<string, DatabaseMessage>();
+  const result: DatabaseMessage[] = [];
+  const nodeMap = new Map<string, DatabaseMessage>();
 
-	// Build node map for quick lookups
-	for (const msg of messages) {
-		nodeMap.set(msg.id, msg);
-	}
+  // Build node map for quick lookups
+  for (const msg of messages) {
+    nodeMap.set(msg.id, msg);
+  }
 
-	// Find the starting node (leaf node or latest if not found)
-	let startNode: DatabaseMessage | undefined = nodeMap.get(leafNodeId);
+  // Find the starting node (leaf node or latest if not found)
+  let startNode: DatabaseMessage | undefined = nodeMap.get(leafNodeId);
 
-	if (!startNode) {
-		// If leaf node not found, use the message with latest timestamp
-		let latestTime = -1;
+  if (!startNode) {
+    // If leaf node not found, use the message with latest timestamp
+    let latestTime = -1;
 
-		for (const msg of messages) {
-			if (msg.timestamp > latestTime) {
-				startNode = msg;
-				latestTime = msg.timestamp;
-			}
-		}
-	}
+    for (const msg of messages) {
+      if (msg.timestamp > latestTime) {
+        startNode = msg;
+        latestTime = msg.timestamp;
+      }
+    }
+  }
 
-	// Traverse from leaf to root, collecting messages
-	let currentNode: DatabaseMessage | undefined = startNode;
+  // Traverse from leaf to root, collecting messages
+  let currentNode: DatabaseMessage | undefined = startNode;
 
-	while (currentNode) {
-		// Include message if it's not root, or if we want to include root
-		if (currentNode.type !== 'root' || includeRoot) {
-			result.push(currentNode);
-		}
+  while (currentNode) {
+    // Include message if it's not root, or if we want to include root
+    if (currentNode.type !== "root" || includeRoot) {
+      result.push(currentNode);
+    }
 
-		// Stop traversal if parent is null (reached root)
-		if (currentNode.parent === null) {
-			break;
-		}
+    // Stop traversal if parent is null (reached root)
+    if (currentNode.parent === null) {
+      break;
+    }
 
-		currentNode = nodeMap.get(currentNode.parent);
-	}
+    currentNode = nodeMap.get(currentNode.parent);
+  }
 
-	// Sort: system messages first, then by timestamp
-	result.sort((a, b) => {
-		if (a.role === MessageRole.SYSTEM && b.role !== MessageRole.SYSTEM) return -1;
+  // Sort: system messages first, then by timestamp
+  result.sort((a, b) => {
+    if (a.role === MessageRole.SYSTEM && b.role !== MessageRole.SYSTEM) return -1;
 
-		if (a.role !== MessageRole.SYSTEM && b.role === MessageRole.SYSTEM) return 1;
+    if (a.role !== MessageRole.SYSTEM && b.role === MessageRole.SYSTEM) return 1;
 
-		return a.timestamp - b.timestamp;
-	});
+    return a.timestamp - b.timestamp;
+  });
 
-	return result;
+  return result;
 }
 
 /**
@@ -104,44 +104,44 @@ export function filterByLeafNodeId(
  * @returns The leaf node ID, or the original messageId if no children
  */
 function findLeafNodeInMap(
-	nodeMap: ReadonlyMap<string, DatabaseMessage>,
-	messageId: string,
-	leafCache?: Map<string, string>
+  nodeMap: ReadonlyMap<string, DatabaseMessage>,
+  messageId: string,
+  leafCache?: Map<string, string>,
 ): string {
-	const path: string[] = [];
+  const path: string[] = [];
 
-	let currentNode: DatabaseMessage | undefined = nodeMap.get(messageId);
+  let currentNode: DatabaseMessage | undefined = nodeMap.get(messageId);
 
-	while (currentNode && currentNode.children.length > 0) {
-		// Follow the last child (most recent branch)
-		const cached = leafCache?.get(currentNode.id);
+  while (currentNode && currentNode.children.length > 0) {
+    // Follow the last child (most recent branch)
+    const cached = leafCache?.get(currentNode.id);
 
-		if (cached !== undefined) {
-			for (const id of path) leafCache?.set(id, cached);
+    if (cached !== undefined) {
+      for (const id of path) leafCache?.set(id, cached);
 
-			return cached;
-		}
+      return cached;
+    }
 
-		path.push(currentNode.id);
-		const lastChildId = currentNode.children[currentNode.children.length - 1];
+    path.push(currentNode.id);
+    const lastChildId = currentNode.children[currentNode.children.length - 1];
 
-		currentNode = nodeMap.get(lastChildId);
-	}
+    currentNode = nodeMap.get(lastChildId);
+  }
 
-	const leafId = currentNode?.id ?? messageId;
+  const leafId = currentNode?.id ?? messageId;
 
-	for (const id of path) leafCache?.set(id, leafId);
+  for (const id of path) leafCache?.set(id, leafId);
 
-	return leafId;
+  return leafId;
 }
 
 /**
  * Convenience wrapper around {@link findLeafNodeInMap} for callers that have a flat message array.
  */
 export function findLeafNode(messages: readonly DatabaseMessage[], messageId: string): string {
-	const nodeMap = new Map(messages.map((msg) => [msg.id, msg] as const));
+  const nodeMap = new Map(messages.map((msg) => [msg.id, msg] as const));
 
-	return findLeafNodeInMap(nodeMap, messageId);
+  return findLeafNodeInMap(nodeMap, messageId);
 }
 
 /**
@@ -153,33 +153,33 @@ export function findLeafNode(messages: readonly DatabaseMessage[], messageId: st
  * @returns Array of all descendant message IDs
  */
 export function findDescendantMessages(
-	messages: readonly DatabaseMessage[],
-	messageId: string
+  messages: readonly DatabaseMessage[],
+  messageId: string,
 ): string[] {
-	const nodeMap = new Map<string, DatabaseMessage>();
+  const nodeMap = new Map<string, DatabaseMessage>();
 
-	// Build node map for quick lookups
-	for (const msg of messages) {
-		nodeMap.set(msg.id, msg);
-	}
+  // Build node map for quick lookups
+  for (const msg of messages) {
+    nodeMap.set(msg.id, msg);
+  }
 
-	const descendants: string[] = [];
-	const queue: string[] = [messageId];
+  const descendants: string[] = [];
+  const queue: string[] = [messageId];
 
-	while (queue.length > 0) {
-		const currentId = queue.shift()!;
-		const currentNode = nodeMap.get(currentId);
+  while (queue.length > 0) {
+    const currentId = queue.shift()!;
+    const currentNode = nodeMap.get(currentId);
 
-		if (currentNode) {
-			// Add all children to the queue and descendants list
-			for (const childId of currentNode.children) {
-				descendants.push(childId);
-				queue.push(childId);
-			}
-		}
-	}
+    if (currentNode) {
+      // Add all children to the queue and descendants list
+      for (const childId of currentNode.children) {
+        descendants.push(childId);
+        queue.push(childId);
+      }
+    }
+  }
 
-	return descendants;
+  return descendants;
 }
 
 /**
@@ -191,55 +191,55 @@ export function findDescendantMessages(
  * @returns Sibling information including leaf node IDs for navigation
  */
 export function getMessageSiblings(
-	nodeMap: ReadonlyMap<string, DatabaseMessage>,
-	messageId: string,
-	leafCache?: Map<string, string>
+  nodeMap: ReadonlyMap<string, DatabaseMessage>,
+  messageId: string,
+  leafCache?: Map<string, string>,
 ): ChatMessageSiblingInfo | null {
-	const message = nodeMap.get(messageId);
+  const message = nodeMap.get(messageId);
 
-	if (!message) {
-		return null;
-	}
+  if (!message) {
+    return null;
+  }
 
-	// Handle null parent (root message) case
-	if (message.parent === null) {
-		// No parent means this is likely a root node with no siblings
-		return {
-			currentIndex: 0,
-			message,
-			siblingIds: [messageId],
-			totalSiblings: 1
-		};
-	}
+  // Handle null parent (root message) case
+  if (message.parent === null) {
+    // No parent means this is likely a root node with no siblings
+    return {
+      currentIndex: 0,
+      message,
+      siblingIds: [messageId],
+      totalSiblings: 1,
+    };
+  }
 
-	const parentNode = nodeMap.get(message.parent);
+  const parentNode = nodeMap.get(message.parent);
 
-	if (!parentNode) {
-		// Parent not found - treat as single message
-		return {
-			currentIndex: 0,
-			message,
-			siblingIds: [messageId],
-			totalSiblings: 1
-		};
-	}
+  if (!parentNode) {
+    // Parent not found - treat as single message
+    return {
+      currentIndex: 0,
+      message,
+      siblingIds: [messageId],
+      totalSiblings: 1,
+    };
+  }
 
-	// Get all sibling IDs (including self)
-	const siblingIds = parentNode.children;
-	// Convert sibling message IDs to their corresponding leaf node IDs
-	// This allows navigation between different conversation branches
-	const siblingLeafIds = siblingIds.map((siblingId: string) =>
-		findLeafNodeInMap(nodeMap, siblingId, leafCache)
-	);
-	// Find current message's position among siblings
-	const currentIndex = siblingIds.indexOf(messageId);
+  // Get all sibling IDs (including self)
+  const siblingIds = parentNode.children;
+  // Convert sibling message IDs to their corresponding leaf node IDs
+  // This allows navigation between different conversation branches
+  const siblingLeafIds = siblingIds.map((siblingId: string) =>
+    findLeafNodeInMap(nodeMap, siblingId, leafCache),
+  );
+  // Find current message's position among siblings
+  const currentIndex = siblingIds.indexOf(messageId);
 
-	return {
-		currentIndex,
-		message,
-		siblingIds: siblingLeafIds,
-		totalSiblings: siblingIds.length
-	};
+  return {
+    currentIndex,
+    message,
+    siblingIds: siblingLeafIds,
+    totalSiblings: siblingIds.length,
+  };
 }
 
 /**
@@ -249,21 +249,21 @@ export function getMessageSiblings(
  * @returns Map of message ID to its sibling information
  */
 export function buildSiblingInfoMap(
-	messages: readonly DatabaseMessage[]
+  messages: readonly DatabaseMessage[],
 ): Map<string, ChatMessageSiblingInfo> {
-	const nodeMap = new Map(messages.map((msg) => [msg.id, msg] as const));
-	const siblingMap = new Map<string, ChatMessageSiblingInfo>();
-	// Leaf walks repeat along the same child chains for every message; memoize
-	// them per build so each edge is walked once instead of O(messages^2)
-	const leafCache = new Map<string, string>();
+  const nodeMap = new Map(messages.map((msg) => [msg.id, msg] as const));
+  const siblingMap = new Map<string, ChatMessageSiblingInfo>();
+  // Leaf walks repeat along the same child chains for every message; memoize
+  // them per build so each edge is walked once instead of O(messages^2)
+  const leafCache = new Map<string, string>();
 
-	for (const msg of messages) {
-		const info = getMessageSiblings(nodeMap, msg.id, leafCache);
+  for (const msg of messages) {
+    const info = getMessageSiblings(nodeMap, msg.id, leafCache);
 
-		if (info) {
-			siblingMap.set(msg.id, info);
-		}
-	}
+    if (info) {
+      siblingMap.set(msg.id, info);
+    }
+  }
 
-	return siblingMap;
+  return siblingMap;
 }

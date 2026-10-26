@@ -1,27 +1,27 @@
 export const API_MODELS = {
-	/** Download a model from HuggingFace (ROUTER mode, POST) or cancel/remove it (DELETE) */
-	DELETE: '/models',
-	DOWNLOAD: '/models',
-	LIST: '/v1/models',
-	LOAD: '/models/load',
-	SSE: '/models/sse',
-	UNLOAD: '/models/unload'
+  /** Download a model from HuggingFace (ROUTER mode, POST) or cancel/remove it (DELETE) */
+  DELETE: "/models",
+  DOWNLOAD: "/models",
+  LIST: "/v1/models",
+  LOAD: "/models/load",
+  SSE: "/models/sse",
+  UNLOAD: "/models/unload",
 };
 
 // chat completion routes, the control route drives realtime inference (e.g. end reasoning)
 export const API_CHAT = {
-	COMPLETIONS: './v1/chat/completions',
-	CONTROL: './v1/chat/completions/control'
+  COMPLETIONS: "./v1/chat/completions",
+  CONTROL: "./v1/chat/completions/control",
 };
 
 // slot introspection, requires the --slots flag on the server
 export const API_SLOTS = {
-	LIST: './slots'
+  LIST: "./slots",
 };
 
 export const API_TOOLS = {
-	EXECUTE: '/tools',
-	LIST: '/tools'
+  EXECUTE: "/tools",
+  LIST: "/tools",
 };
 
 // resumable stream routes, the conv::model identity travels as the conv_id query param
@@ -30,15 +30,15 @@ export const API_TOOLS = {
 export const STREAM_RESUME_RETRY_MS = 2000;
 
 export const API_STREAM = {
-	BASE: './v1/stream',
-	LOOKUP: './v1/streams/lookup'
+  BASE: "./v1/stream",
+  LOOKUP: "./v1/streams/lookup",
 };
 
 // query params for the resumable stream routes
 export const STREAM_QUERY_PARAMS = {
-	CONV_ID: 'conv_id',
-	FROM: 'from'
+  CONV_ID: "conv_id",
+  FROM: "from",
 } as const;
 
 /** CORS proxy endpoint path */
-export const CORS_PROXY_ENDPOINT = '/cors-proxy';
+export const CORS_PROXY_ENDPOINT = "/cors-proxy";

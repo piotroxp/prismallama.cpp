@@ -6,7 +6,7 @@ Internally the code is calling `llama_params_fit` to adjust the `llama_model_par
 `llama-fit-params` is a simple utility that prints the CLI arguments corresponding to these adjustments to stdout.
 Example usage:
 
-``` bash
+```bash
 # First, run llama-fit-params and store the results in a file:
 > ./build/bin/llama-fit-params --model /opt/models/qwen_3-30b3a-f16.gguf | tee args.txt
 ggml_cuda_init: GGML_CUDA_FORCE_MMQ:    no

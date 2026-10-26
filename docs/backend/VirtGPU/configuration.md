@@ -5,6 +5,7 @@ This document describes the environment variables used by the ggml-virtgpu backe
 ## Environment Variables Overview
 
 The ggml-virtgpu backend uses environment variables for configuration across three main components:
+
 - **Frontend (Guest)**: GGML applications running in VMs
 - **Hypervisor**: Virglrenderer/APIR system
 - **Backend (Host)**: Host-side GGML backend integration
@@ -12,6 +13,7 @@ The ggml-virtgpu backend uses environment variables for configuration across thr
 ## Frontend (Guest-side) Configuration
 
 ### GGML_REMOTING_USE_APIR_CAPSET
+
 - **Location**: `ggml/src/ggml-virtgpu/virtgpu.cpp`
 - **Type**: Boolean flag (presence-based)
 - **Purpose**: Controls which virtio-gpu capability set to use for communication
@@ -34,6 +36,7 @@ the hypervisor will instead configure VirglRenderer with the APIR
 _Configuration Key_.
 
 ### VIRGL_APIR_BACKEND_LIBRARY
+
 - **Location**: `virglrenderer/src/apir/apir-context.c`
 - **Configuration Key**: `apir.load_library.path`
 - **Type**: File path string
@@ -45,6 +48,7 @@ _Configuration Key_.
   ```
 
 ### VIRGL_ROUTE_VENUS_TO_APIR
+
 - **Location**: `virglrenderer/src/apir/apir-renderer.h`
 - **Type**: Boolean flag (presence-based)
 - **Purpose**: Temporary workaround to route Venus capset calls to APIR during hypervisor transition period
@@ -56,6 +60,7 @@ _Configuration Key_.
   ```
 
 ### VIRGL_APIR_LOG_TO_FILE
+
 - **Location**: `virglrenderer/src/apir/apir-renderer.c`
 - **Environment Variable**: `VIRGL_APIR_LOG_TO_FILE`
 - **Type**: File path string
@@ -76,6 +81,7 @@ the hypervisor will instead configure VirglRenderer with the APIR
 _Configuration Key_.
 
 ### APIR_LLAMA_CPP_GGML_LIBRARY_PATH
+
 - **Location**: `ggml/src/ggml-virtgpu/backend/backend.cpp`
 - **Environment Variable**: `APIR_LLAMA_CPP_GGML_LIBRARY_PATH`
 - **Configuration Key**: `ggml.library.path`
@@ -95,6 +101,7 @@ _Configuration Key_.
   ```
 
 ### APIR_LLAMA_CPP_GGML_LIBRARY_REG
+
 - **Location**: `ggml/src/ggml-virtgpu/backend/backend.cpp`
 - **Environment Variable**: `APIR_LLAMA_CPP_GGML_LIBRARY_REG`
 - **Configuration Key**: `ggml.library.reg`
@@ -118,6 +125,7 @@ _Configuration Key_.
   ```
 
 ### APIR_LLAMA_CPP_LOG_TO_FILE
+
 - **Location**: `ggml/src/ggml-virtgpu/backend/backend.cpp:62`
 - **Environment Variable**: `APIR_LLAMA_CPP_LOG_TO_FILE`
 - **Type**: File path string

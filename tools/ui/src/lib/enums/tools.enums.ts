@@ -1,20 +1,20 @@
 export enum ToolSource {
-	BROWSER = 'browser',
-	CUSTOM = 'custom',
-	MCP = 'mcp',
-	SERVER = 'server'
+  BROWSER = "browser",
+  CUSTOM = "custom",
+  MCP = "mcp",
+  SERVER = "server",
 }
 
 export enum ToolPermissionDecision {
-	ALWAYS = 'always',
-	ALWAYS_SERVER = 'always_server',
-	DENY = 'deny',
-	ONCE = 'once'
+  ALWAYS = "always",
+  ALWAYS_SERVER = "always_server",
+  DENY = "deny",
+  ONCE = "once",
 }
 
 export enum ToolResponseField {
-	ERROR = 'error',
-	PLAIN_TEXT = 'plain_text_response'
+  ERROR = "error",
+  PLAIN_TEXT = "plain_text_response",
 }
 
 /**
@@ -22,9 +22,9 @@ export enum ToolResponseField {
  * Mirrors the server-side validation in server-tools.cpp.
  */
 export enum GlobSearchType {
-	ALL = 'all',
-	DIR = 'dir',
-	FILE = 'file'
+  ALL = "all",
+  DIR = "dir",
+  FILE = "file",
 }
 
 /**
@@ -42,14 +42,14 @@ export enum GlobSearchType {
  * the UI while keeping a single wire name.
  */
 export enum BuiltInTool {
-	BROWSER_GET_DATETIME = 'get_datetime',
-	BROWSER_READ_MEDIA = 'read_media',
-	BROWSER_RUN_JAVASCRIPT = 'run_javascript',
-	SERVER_EDIT_FILE = 'edit_file',
-	SERVER_EXEC_SHELL_COMMAND = 'exec_shell_command',
-	SERVER_FILE_GLOB_SEARCH = 'file_glob_search',
-	SERVER_GET_INFO = 'get_info',
-	SERVER_GREP_SEARCH = 'grep_search',
-	SERVER_READ_FILE = 'read_file',
-	SERVER_WRITE_FILE = 'write_file'
+  BROWSER_GET_DATETIME = "get_datetime",
+  BROWSER_READ_MEDIA = "read_media",
+  BROWSER_RUN_JAVASCRIPT = "run_javascript",
+  SERVER_EDIT_FILE = "edit_file",
+  SERVER_EXEC_SHELL_COMMAND = "exec_shell_command",
+  SERVER_FILE_GLOB_SEARCH = "file_glob_search",
+  SERVER_GET_INFO = "get_info",
+  SERVER_GREP_SEARCH = "grep_search",
+  SERVER_READ_FILE = "read_file",
+  SERVER_WRITE_FILE = "write_file",
 }

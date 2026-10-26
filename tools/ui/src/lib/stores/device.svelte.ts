@@ -9,9 +9,9 @@
  * track live media query changes.
  */
 
-import { browser } from '$app/environment';
-import { DEFAULT_MOBILE_BREAKPOINT, MEDIA_QUERIES } from '$lib/constants';
-import { MediaQuery } from 'svelte/reactivity';
+import { browser } from "$app/environment";
+import { DEFAULT_MOBILE_BREAKPOINT, MEDIA_QUERIES } from "$lib/constants";
+import { MediaQuery } from "svelte/reactivity";
 
 /**
  * iOS UA token detection.
@@ -23,66 +23,66 @@ import { MediaQuery } from 'svelte/reactivity';
  * of the trailing 'Safari/' the Safari app keeps.
  */
 const UA_PATTERNS = {
-	IOS_PHONE: /iPhone|iPod/,
-	MACINTOSH: /Macintosh/,
-	SAFARI: /Safari/,
-	WEBVIEW_IOS: /CriOS|FxiOS|EdgiOS|GSA/
+  IOS_PHONE: /iPhone|iPod/,
+  MACINTOSH: /Macintosh/,
+  SAFARI: /Safari/,
+  WEBVIEW_IOS: /CriOS|FxiOS|EdgiOS|GSA/,
 } as const;
 
 class DeviceStore {
-	/** Any iOS/iPadOS device, regardless of which app or browser embeds the page. */
-	readonly isIOSDevice: boolean = false;
-	/** The Safari browser app on iOS, excluding other iOS browsers and WKWebViews. */
-	readonly isIOSSafari: boolean = false;
-	/** PWA standalone mode: the page was launched from the home screen icon. */
-	isStandalone = $state(false);
-	/** Any WKWebView context on iOS: in-app browsers, embedded web views, and the
-	 *  third-party iOS browsers (all of which share the WKWebView engine). */
-	readonly isWKWebView: boolean = false;
-	/** OS color scheme preference; the user override lives in settingsStore. */
-	readonly systemTheme = $state({ isDark: false });
+  /** Any iOS/iPadOS device, regardless of which app or browser embeds the page. */
+  readonly isIOSDevice: boolean = false;
+  /** The Safari browser app on iOS, excluding other iOS browsers and WKWebViews. */
+  readonly isIOSSafari: boolean = false;
+  /** PWA standalone mode: the page was launched from the home screen icon. */
+  isStandalone = $state(false);
+  /** Any WKWebView context on iOS: in-app browsers, embedded web views, and the
+   *  third-party iOS browsers (all of which share the WKWebView engine). */
+  readonly isWKWebView: boolean = false;
+  /** OS color scheme preference; the user override lives in settingsStore. */
+  readonly systemTheme = $state({ isDark: false });
 
-	private mobile = new MediaQuery(`max-width: ${DEFAULT_MOBILE_BREAKPOINT - 1}px`);
+  private mobile = new MediaQuery(`max-width: ${DEFAULT_MOBILE_BREAKPOINT - 1}px`);
 
-	get isMobile(): boolean {
-		return this.mobile.current;
-	}
+  get isMobile(): boolean {
+    return this.mobile.current;
+  }
 
-	constructor() {
-		if (!browser) return;
+  constructor() {
+    if (!browser) return;
 
-		const ua = navigator.userAgent;
-		const isTouch = navigator.maxTouchPoints > 0;
+    const ua = navigator.userAgent;
+    const isTouch = navigator.maxTouchPoints > 0;
 
-		this.isIOSDevice =
-			UA_PATTERNS.IOS_PHONE.test(ua) || (UA_PATTERNS.MACINTOSH.test(ua) && isTouch);
-		// Safari keeps 'Safari/' in the UA; non-Safari iOS browsers emit their own
-		// token instead. WKWebView typically omits 'Safari/' entirely.
-		const hasSafariToken = UA_PATTERNS.SAFARI.test(ua) && !UA_PATTERNS.WEBVIEW_IOS.test(ua);
+    this.isIOSDevice =
+      UA_PATTERNS.IOS_PHONE.test(ua) || (UA_PATTERNS.MACINTOSH.test(ua) && isTouch);
+    // Safari keeps 'Safari/' in the UA; non-Safari iOS browsers emit their own
+    // token instead. WKWebView typically omits 'Safari/' entirely.
+    const hasSafariToken = UA_PATTERNS.SAFARI.test(ua) && !UA_PATTERNS.WEBVIEW_IOS.test(ua);
 
-		this.isIOSSafari = this.isIOSDevice && hasSafariToken;
-		this.isWKWebView = this.isIOSDevice && !hasSafariToken;
-		// navigator.standalone is the legacy iOS-only flag (deprecated but still
-		// present); display-mode: standalone is the modern standard (Safari 16.4+).
-		this.isStandalone =
-			window.matchMedia(MEDIA_QUERIES.DISPLAY_MODE_STANDALONE).matches ||
-			(navigator as Navigator & { standalone?: boolean }).standalone === true;
-		this.systemTheme.isDark = window.matchMedia(MEDIA_QUERIES.PREFERS_DARK).matches;
+    this.isIOSSafari = this.isIOSDevice && hasSafariToken;
+    this.isWKWebView = this.isIOSDevice && !hasSafariToken;
+    // navigator.standalone is the legacy iOS-only flag (deprecated but still
+    // present); display-mode: standalone is the modern standard (Safari 16.4+).
+    this.isStandalone =
+      window.matchMedia(MEDIA_QUERIES.DISPLAY_MODE_STANDALONE).matches ||
+      (navigator as Navigator & { standalone?: boolean }).standalone === true;
+    this.systemTheme.isDark = window.matchMedia(MEDIA_QUERIES.PREFERS_DARK).matches;
 
-		// isStandalone and systemTheme can change at runtime (e.g. user installs the
-		// PWA while the tab is open); the UA-derived flags are static for the session
-		const standaloneMql = window.matchMedia(MEDIA_QUERIES.DISPLAY_MODE_STANDALONE);
+    // isStandalone and systemTheme can change at runtime (e.g. user installs the
+    // PWA while the tab is open); the UA-derived flags are static for the session
+    const standaloneMql = window.matchMedia(MEDIA_QUERIES.DISPLAY_MODE_STANDALONE);
 
-		standaloneMql.addEventListener('change', (e) => {
-			this.isStandalone = e.matches;
-		});
+    standaloneMql.addEventListener("change", (e) => {
+      this.isStandalone = e.matches;
+    });
 
-		const darkMql = window.matchMedia(MEDIA_QUERIES.PREFERS_DARK);
+    const darkMql = window.matchMedia(MEDIA_QUERIES.PREFERS_DARK);
 
-		darkMql.addEventListener('change', (e) => {
-			this.systemTheme.isDark = e.matches;
-		});
-	}
+    darkMql.addEventListener("change", (e) => {
+      this.systemTheme.isDark = e.matches;
+    });
+  }
 }
 
 export const deviceStore = new DeviceStore();

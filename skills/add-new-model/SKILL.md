@@ -21,6 +21,7 @@ Before starting, read `CONTRIBUTING.md`, `AGENTS.md` and `docs/development/HOWTO
 ## Step 0 - Scope and dedup check
 
 Ask the contributor:
+
 1. Which model (HF repo id or name)? Is it text-only or does it have a multimodal (vision/audio) encoder?
 2. Do they already have the HF `config.json`/weights available locally?
 3. Have they checked for an existing PR/issue on this model? Suggest `gh search issues "<model name>"` and `gh search prs "<model name>"` in the `ggml-org/llama.cpp` repo. If an existing PR covers it, the contributor should comment there and collaborate rather than open a duplicate (per CONTRIBUTING.md's AI Usage Policy).
@@ -83,7 +84,7 @@ These recur often enough in review comments on past add-model PRs that they're w
 Reference: `examples/model-conversion/README.md`.
 
 1. Convert to GGUF, then inspect/run both the original and converted tensors.
-2. Run logits verification (original vs converted). If this model is a new version of an already-supported family, verify the *previous* version still passes logits verification first - numerical differences may be pre-existing, not caused by the new work. The tools to perform full logits validation are available in `examples/model-conversion`.
+2. Run logits verification (original vs converted). If this model is a new version of an already-supported family, verify the _previous_ version still passes logits verification first - numerical differences may be pre-existing, not caused by the new work. The tools to perform full logits validation are available in `examples/model-conversion`.
 3. Quantize (including QAT variants if relevant) and re-verify.
 4. Run perplexity evaluation (simple and full).
 5. Sanity-check across `tools/cli`, `tools/completion`, `tools/imatrix`, `tools/quantize`, and `tools/server`.

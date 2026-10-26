@@ -39,18 +39,18 @@ python tools/server/bench/speed-bench/speed_bench.py \
 
 ## Options
 
-| Option | Default | Description |
-| --- | --- | --- |
-| `--url` | `localhost:9931` | Server URL. The scheme and `/v1` are optional and a trailing slash is fine, so `localhost:9931` and `http://localhost:9931/v1/` both work. |
-| `--model` | none | Optional `model` field sent in each request. |
-| `--bench` | `qualitative` | SPEED-Bench config, e.g. `qualitative`, `throughput_1k`. See [available dataset variants](https://github.com/ai-dynamo/aiperf/blob/main/docs/tutorials/speed-bench.md#available-dataset-variants). |
-| `--category` | `all` | Category filter within the bench; comma-separated list or `all`. For `qualitative` the categories are `coding`, `humanities`, `math`, `multilingual`, `qa`, `rag`, `reasoning`, `roleplay`, `stem`, `summarization`, `writing`. For the `throughput_{ISL}` splits they are `high_entropy`, `low_entropy`, `mixed`. |
-| `--osl` | `1024` | Output sequence length, mapped to `max_tokens`. |
-| `--extra-inputs` | `{"temperature":0}` | Extra request fields as a JSON object. |
-| `--concurrency` | `1` | Concurrent client requests; usually match `--np`. |
-| `--limit` | none | Max samples per category (handy for smoke tests). |
-| `--timeout` | `600` | Per-request timeout in seconds. |
-| `--output` | none | Save raw per-request results and the summary to JSON. |
+| Option           | Default             | Description                                                                                                                                                                                                                                                                                                        |
+| ---------------- | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `--url`          | `localhost:9931`    | Server URL. The scheme and `/v1` are optional and a trailing slash is fine, so `localhost:9931` and `http://localhost:9931/v1/` both work.                                                                                                                                                                         |
+| `--model`        | none                | Optional `model` field sent in each request.                                                                                                                                                                                                                                                                       |
+| `--bench`        | `qualitative`       | SPEED-Bench config, e.g. `qualitative`, `throughput_1k`. See [available dataset variants](https://github.com/ai-dynamo/aiperf/blob/main/docs/tutorials/speed-bench.md#available-dataset-variants).                                                                                                                 |
+| `--category`     | `all`               | Category filter within the bench; comma-separated list or `all`. For `qualitative` the categories are `coding`, `humanities`, `math`, `multilingual`, `qa`, `rag`, `reasoning`, `roleplay`, `stem`, `summarization`, `writing`. For the `throughput_{ISL}` splits they are `high_entropy`, `low_entropy`, `mixed`. |
+| `--osl`          | `1024`              | Output sequence length, mapped to `max_tokens`.                                                                                                                                                                                                                                                                    |
+| `--extra-inputs` | `{"temperature":0}` | Extra request fields as a JSON object.                                                                                                                                                                                                                                                                             |
+| `--concurrency`  | `1`                 | Concurrent client requests; usually match `--np`.                                                                                                                                                                                                                                                                  |
+| `--limit`        | none                | Max samples per category (handy for smoke tests).                                                                                                                                                                                                                                                                  |
+| `--timeout`      | `600`               | Per-request timeout in seconds.                                                                                                                                                                                                                                                                                    |
+| `--output`       | none                | Save raw per-request results and the summary to JSON.                                                                                                                                                                                                                                                              |
 
 A few common ones:
 

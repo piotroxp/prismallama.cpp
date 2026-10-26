@@ -1,40 +1,40 @@
-import { LOCAL_BACKEND_ID, type ModalityKey } from '$lib/constants';
-import { ModelCapability, ModelGroupKind, ModelsTableGroupKind } from '$lib/enums';
-import { HuggingFaceService, ModelsService } from '$lib/services';
-import { modelsStore } from '$lib/stores';
+import { LOCAL_BACKEND_ID, type ModalityKey } from "$lib/constants";
+import { ModelCapability, ModelGroupKind, ModelsTableGroupKind } from "$lib/enums";
+import { HuggingFaceService, ModelsService } from "$lib/services";
+import { modelsStore } from "$lib/stores";
 import type {
-	ModelDownloadEntry,
-	ModelDownloadProgress,
-	ModelOption,
-	ModelSidecarBadge
-} from '$lib/types/models';
-import { detectThinkingSupport, detectToolUseSupport, repoOf } from '$lib/utils';
+  ModelDownloadEntry,
+  ModelDownloadProgress,
+  ModelOption,
+  ModelSidecarBadge,
+} from "$lib/types/models";
+import { detectThinkingSupport, detectToolUseSupport, repoOf } from "$lib/utils";
 
 /** One repo of the table, with the rows it ships as. */
 export interface ModelQuantGroup {
-	base: ModelOption;
-	key: string;
-	kind: ModelGroupKind;
-	quants: ModelOption[];
-	/** Draft sidecars already on disk, shown as checked sub-lines. */
-	sidecarBadges?: ModelSidecarBadge[];
+  base: ModelOption;
+  key: string;
+  kind: ModelGroupKind;
+  quants: ModelOption[];
+  /** Draft sidecars already on disk, shown as checked sub-lines. */
+  sidecarBadges?: ModelSidecarBadge[];
 }
 
 /** True when any of the manager's filters narrows the table. */
 export function hasActiveFilters(
-	contextLimit: number,
-	modalities: ModalityKey[],
-	capabilities: ModelCapability[]
+  contextLimit: number,
+  modalities: ModalityKey[],
+  capabilities: ModelCapability[],
 ): boolean {
-	return contextLimit > 0 || modalities.length > 0 || capabilities.length > 0;
+  return contextLimit > 0 || modalities.length > 0 || capabilities.length > 0;
 }
 
 /** Byte counts of a tracked download: live while it runs, frozen while paused. */
 export function downloadProgressFor(repoWithTag: string): ModelDownloadProgress | null {
-	return (
-		modelsStore.status.getDownloadProgress(repoWithTag) ??
-		modelsStore.status.getPausedDownloadProgress(repoWithTag)
-	);
+  return (
+    modelsStore.status.getDownloadProgress(repoWithTag) ??
+    modelsStore.status.getPausedDownloadProgress(repoWithTag)
+  );
 }
 
 /**
@@ -43,42 +43,42 @@ export function downloadProgressFor(repoWithTag: string): ModelDownloadProgress 
  * synthesized for its tag alone.
  */
 export function downloadGroups(
-	entries: ModelDownloadEntry[],
-	models: ModelOption[],
-	sidecarsFor: (repo: string) => ModelSidecarBadge[]
+  entries: ModelDownloadEntry[],
+  models: ModelOption[],
+  sidecarsFor: (repo: string) => ModelSidecarBadge[],
 ): ModelQuantGroup[] {
-	return entries.map((entry) => {
-		const listed = models.find((candidate) => candidate.model === entry.repoWithTag);
-		// the synthesized option carries backendId, which ModelOption drops on
-		// assignment, so the callers spread it instead of typing this as one
-		const option = listed ?? {
-			backendId: LOCAL_BACKEND_ID,
-			capabilities: [],
-			id: entry.repoWithTag,
-			model: entry.repoWithTag,
-			name: entry.repoWithTag
-		};
-		// a draft still coming down badges the id, an on-disk one keeps its sub-line
-		const sidecars = sidecarsFor(repoOf(entry.repoWithTag));
-		const pending = sidecars.filter((badge) => badge.pending);
+  return entries.map((entry) => {
+    const listed = models.find((candidate) => candidate.model === entry.repoWithTag);
+    // the synthesized option carries backendId, which ModelOption drops on
+    // assignment, so the callers spread it instead of typing this as one
+    const option = listed ?? {
+      backendId: LOCAL_BACKEND_ID,
+      capabilities: [],
+      id: entry.repoWithTag,
+      model: entry.repoWithTag,
+      name: entry.repoWithTag,
+    };
+    // a draft still coming down badges the id, an on-disk one keeps its sub-line
+    const sidecars = sidecarsFor(repoOf(entry.repoWithTag));
+    const pending = sidecars.filter((badge) => badge.pending);
 
-		return {
-			base: { ...option, draftSidecars: pending },
-			key: `download::${entry.repoWithTag}`,
-			kind: ModelGroupKind.QUANTS,
-			quants: [{ ...option, draftSidecars: pending }],
-			sidecarBadges: sidecars.filter((badge) => !badge.pending)
-		};
-	});
+    return {
+      base: { ...option, draftSidecars: pending },
+      key: `download::${entry.repoWithTag}`,
+      kind: ModelGroupKind.QUANTS,
+      quants: [{ ...option, draftSidecars: pending }],
+      sidecarBadges: sidecars.filter((badge) => !badge.pending),
+    };
+  });
 }
 
 /** One collapsible block of the manager's table. */
 export interface ModelsTableGroup {
-	/** One entry per repo, its quants hanging off it. */
-	items: ModelQuantGroup[];
-	key: string;
-	kind: ModelsTableGroupKind;
-	label: string;
+  /** One entry per repo, its quants hanging off it. */
+  items: ModelQuantGroup[];
+  key: string;
+  kind: ModelsTableGroupKind;
+  label: string;
 }
 
 /** Controls in a model row that act on their own, so a row click passes them by. */
@@ -86,14 +86,14 @@ const ROW_CONTROL_SELECTOR = 'button, a, input, [role="menuitem"]';
 
 /** Whether a click on a model row landed on one of its own controls. */
 export function isRowControlClick(event: MouseEvent): boolean {
-	return event.target instanceof Element && event.target.closest(ROW_CONTROL_SELECTOR) !== null;
+  return event.target instanceof Element && event.target.closest(ROW_CONTROL_SELECTOR) !== null;
 }
 
 /** Context the model runs with: what a loaded model reports. */
 export function configuredContext(option: ModelOption): number | null {
-	return modelsStore.isModelRunning(option.model)
-		? modelsStore.props.getModelContextSize(option.model)
-		: null;
+  return modelsStore.isModelRunning(option.model)
+    ? modelsStore.props.getModelContextSize(option.model)
+    : null;
 }
 
 /**
@@ -101,18 +101,18 @@ export function configuredContext(option: ModelOption): number | null {
  * answers, null while the Hub record that carries the template is not read yet.
  */
 export function modelCapability(option: ModelOption, capability: ModelCapability): boolean | null {
-	if (option.capabilities.includes(capability)) return true;
+  if (option.capabilities.includes(capability)) return true;
 
-	const details = HuggingFaceService.cachedDetails(option.model);
+  const details = HuggingFaceService.cachedDetails(option.model);
 
-	// only the chat template answers this, and it arrives with the Hub record
-	if (details === undefined) return null;
+  // only the chat template answers this, and it arrives with the Hub record
+  if (details === undefined) return null;
 
-	const template = details?.gguf?.chat_template ?? '';
+  const template = details?.gguf?.chat_template ?? "";
 
-	return capability === ModelCapability.TOOL_USE
-		? detectToolUseSupport(template)
-		: detectThinkingSupport(template);
+  return capability === ModelCapability.TOOL_USE
+    ? detectToolUseSupport(template)
+    : detectThinkingSupport(template);
 }
 
 /**
@@ -120,56 +120,56 @@ export function modelCapability(option: ModelOption, capability: ModelCapability
  * Null while neither of them has answered.
  */
 export function modelContextLength(option: ModelOption): number | null {
-	return (
-		option.contextLength ??
-		HuggingFaceService.cachedDetails(option.model)?.gguf?.context_length ??
-		null
-	);
+  return (
+    option.contextLength ??
+    HuggingFaceService.cachedDetails(option.model)?.gguf?.context_length ??
+    null
+  );
 }
 
 /** Fold the quants of one repo into a single entry, so the table shows one row per model. */
 export function groupModelQuants(models: ModelOption[]): ModelQuantGroup[] {
-	const groups = new Map<string, ModelQuantGroup>();
+  const groups = new Map<string, ModelQuantGroup>();
 
-	for (const option of models) {
-		const key = repoOf(option.model);
-		const group = groups.get(key);
+  for (const option of models) {
+    const key = repoOf(option.model);
+    const group = groups.get(key);
 
-		if (group) {
-			group.quants.push(option);
+    if (group) {
+      group.quants.push(option);
 
-			continue;
-		}
+      continue;
+    }
 
-		groups.set(key, { base: option, key, kind: ModelGroupKind.QUANTS, quants: [option] });
-	}
+    groups.set(key, { base: option, key, kind: ModelGroupKind.QUANTS, quants: [option] });
+  }
 
-	return Array.from(groups.values()).flatMap((group) => {
-		const kind = groupKind(group.quants);
-		const modelIds = group.quants.map((option) => option.model);
+  return Array.from(groups.values()).flatMap((group) => {
+    const kind = groupKind(group.quants);
+    const modelIds = group.quants.map((option) => option.model);
 
-		// the very same id twice is not a quant set; keep those rows apart
-		if (modelIds.length > 1 && modelIds.every((model) => model === modelIds[0])) {
-			return group.quants.map((option) => ({
-				...group,
-				base: option,
-				key: `${group.key}::${option.id}`,
-				kind: ModelGroupKind.VARIANTS,
-				quants: [option]
-			}));
-		}
+    // the very same id twice is not a quant set; keep those rows apart
+    if (modelIds.length > 1 && modelIds.every((model) => model === modelIds[0])) {
+      return group.quants.map((option) => ({
+        ...group,
+        base: option,
+        key: `${group.key}::${option.id}`,
+        kind: ModelGroupKind.VARIANTS,
+        quants: [option],
+      }));
+    }
 
-		return [{ ...group, kind }];
-	});
+    return [{ ...group, kind }];
+  });
 }
 
 /** What a group folds: quants or variants of one repo. */
 function groupKind(quants: ModelOption[]): ModelGroupKind {
-	const isQuant = quants.every(
-		(option) => (option.parsedId ?? ModelsService.parseModelId(option.model)).quantization
-	);
+  const isQuant = quants.every(
+    (option) => (option.parsedId ?? ModelsService.parseModelId(option.model)).quantization,
+  );
 
-	return isQuant ? ModelGroupKind.QUANTS : ModelGroupKind.VARIANTS;
+  return isQuant ? ModelGroupKind.QUANTS : ModelGroupKind.VARIANTS;
 }
 
 /**
@@ -178,29 +178,29 @@ function groupKind(quants: ModelOption[]): ModelGroupKind {
  * visible quants into the hidden one.
  */
 export function splitHiddenQuants(
-	entries: ModelQuantGroup[],
-	isHidden: (option: ModelOption) => boolean
+  entries: ModelQuantGroup[],
+  isHidden: (option: ModelOption) => boolean,
 ): { hidden: ModelQuantGroup[]; local: ModelQuantGroup[] } {
-	const hidden: ModelQuantGroup[] = [];
-	const local: ModelQuantGroup[] = [];
+  const hidden: ModelQuantGroup[] = [];
+  const local: ModelQuantGroup[] = [];
 
-	for (const entry of entries) {
-		const hiddenQuants = entry.quants.filter((quant) => isHidden(quant));
-		const localQuants = entry.quants.filter((quant) => !isHidden(quant));
+  for (const entry of entries) {
+    const hiddenQuants = entry.quants.filter((quant) => isHidden(quant));
+    const localQuants = entry.quants.filter((quant) => !isHidden(quant));
 
-		if (hiddenQuants.length > 0) {
-			hidden.push({
-				...entry,
-				base: hiddenQuants[0],
-				key: `${entry.key}::hidden`,
-				quants: hiddenQuants
-			});
-		}
+    if (hiddenQuants.length > 0) {
+      hidden.push({
+        ...entry,
+        base: hiddenQuants[0],
+        key: `${entry.key}::hidden`,
+        quants: hiddenQuants,
+      });
+    }
 
-		if (localQuants.length > 0) {
-			local.push({ ...entry, base: localQuants[0], quants: localQuants });
-		}
-	}
+    if (localQuants.length > 0) {
+      local.push({ ...entry, base: localQuants[0], quants: localQuants });
+    }
+  }
 
-	return { hidden, local };
+  return { hidden, local };
 }

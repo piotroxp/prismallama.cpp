@@ -57,7 +57,7 @@
  * @see agenticStore in stores/agentic/index.svelte.ts — uses ChatService for agentic loop streaming
  * @see conversationsStore in stores/conversations/index.svelte.ts — provides message context
  */
-export { ChatService } from './chat.service';
+export { ChatService } from "./chat.service";
 
 /**
  * **DatabaseService** - IndexedDB persistence layer via Dexie ORM
@@ -101,7 +101,7 @@ export { ChatService } from './chat.service';
  * @see conversationsStore in stores/conversations/index.svelte.ts — reactive layer on top of DatabaseService
  * @see chatStore in stores/chat/index.svelte.ts — uses DatabaseService directly for message CRUD during streaming
  */
-export { DatabaseService } from './database.service';
+export { DatabaseService } from "./database.service";
 
 /**
  * **ConversationTransferService** - Conversation import/export format layer
@@ -110,7 +110,7 @@ export { DatabaseService } from './database.service';
  * archiving and browser downloads. Stateless; DB access and store refreshes
  * stay in conversationsStore.
  */
-export { ConversationTransferService } from './conversation-transfer.service';
+export { ConversationTransferService } from "./conversation-transfer.service";
 
 /**
  * **ModelsService** - Model management API communication
@@ -145,7 +145,7 @@ export { ConversationTransferService } from './conversation-transfer.service';
  *
  * @see modelsStore in stores/models/index.svelte.ts — primary consumer for reactive model state
  */
-export { ModelsService } from './models.service';
+export { ModelsService } from "./models.service";
 
 /**
  * **HuggingFaceService** - Hugging Face Hub browsing and searching
@@ -155,7 +155,7 @@ export { ModelsService } from './models.service';
  * (quant metadata, shard collapsing, size formatting) used by the models
  * discover UI.
  */
-export { HuggingFaceService } from './huggingface.service';
+export { HuggingFaceService } from "./huggingface.service";
 
 /**
  * **PropsService** - Server properties and capabilities retrieval
@@ -187,7 +187,7 @@ export { HuggingFaceService } from './huggingface.service';
  * @see modelsStore in stores/models/index.svelte.ts — consumes per-model props for modalities
  * @see settingsStore in stores/settings/index.svelte.ts — syncs default generation params from props
  */
-export { PropsService } from './props.service';
+export { PropsService } from "./props.service";
 
 /**
  * **ParameterSyncService** - Server defaults and user settings synchronization
@@ -230,7 +230,7 @@ export { PropsService } from './props.service';
  * @see settingsStore in stores/settings/index.svelte.ts — primary consumer for settings sync
  * @see SettingsChatParameterSourceIndicator — displays parameter source badges in UI
  */
-export { ParameterSyncService } from './parameter-sync.service';
+export { ParameterSyncService } from "./parameter-sync.service";
 
 /**
  * **MCPService** - Low-level MCP protocol communication layer
@@ -278,7 +278,7 @@ export { ParameterSyncService } from './parameter-sync.service';
  * @see agenticStore in stores/agentic/index.svelte.ts — uses MCPService (via mcpStore) for tool execution
  * @see MCP Protocol Specification: https://modelcontextprotocol.io/specification/2025-06-18
  */
-export { MCPService } from './mcp.service';
+export { MCPService } from "./mcp.service";
 
 /**
  * **SandboxService** - Browser JavaScript execution in a browser sandbox
@@ -298,7 +298,7 @@ export { MCPService } from './mcp.service';
  * @see buildSandboxToolDefinition in utils/sandbox-tool - tool schema sent to the LLM
  * @see agenticStore in stores/agentic/index.svelte.ts - tool dispatch
  */
-export { SandboxService } from './sandbox.service';
+export { SandboxService } from "./sandbox.service";
 
 /**
  * **RouterService** — Dynamic route URL construction utility
@@ -320,7 +320,7 @@ export { SandboxService } from './sandbox.service';
  *
  * @see ROUTES in constants/routes.ts — static route base paths
  */
-export { RouterService } from './router.service';
+export { RouterService } from "./router.service";
 
 /**
  * **MigrationService** — Unified data migration hook
@@ -348,7 +348,7 @@ export { RouterService } from './router.service';
  *
  * @see migration.service.ts — full implementation (non-destructive)
  */
-export { MigrationService } from './migration.service';
+export { MigrationService } from "./migration.service";
 
 /**
  * **SettingsService** - localStorage persistence layer for settings
@@ -358,4 +358,4 @@ export { MigrationService } from './migration.service';
  *
  * @see settingsStore in stores/settings/index.svelte.ts - reactive state + business logic
  */
-export { SettingsService } from './settings.service';
+export { SettingsService } from "./settings.service";

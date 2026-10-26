@@ -1,11 +1,11 @@
-import { NEWLINE } from '$lib/constants';
+import { NEWLINE } from "$lib/constants";
 
 /**
  * Returns a shortened preview of the provided content capped at the given length.
  * Appends an ellipsis when the content exceeds the maximum.
  */
 export function getPreviewText(content: string, max = 150): string {
-	return content.length > max ? content.slice(0, max) + '...' : content;
+  return content.length > max ? content.slice(0, max) + "..." : content;
 }
 
 /**
@@ -13,11 +13,11 @@ export function getPreviewText(content: string, max = 150): string {
  * Uses the first non-empty line if `useFirstLine` is true.
  */
 export function generateConversationTitle(content: string, useFirstLine: boolean = false): string {
-	if (useFirstLine) {
-		const firstLine = content.split(NEWLINE).find((line) => line.trim().length > 0);
+  if (useFirstLine) {
+    const firstLine = content.split(NEWLINE).find((line) => line.trim().length > 0);
 
-		return firstLine ? firstLine.trim() : content.trim();
-	}
+    return firstLine ? firstLine.trim() : content.trim();
+  }
 
-	return content.trim();
+  return content.trim();
 }

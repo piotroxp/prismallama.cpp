@@ -5,8 +5,8 @@
  * opaque origin. Consumed by sandbox.service.
  */
 
-import WORKER_SHIM from './sandbox-worker.js?raw';
-import { NEWLINE } from '$lib/constants';
+import { NEWLINE } from "$lib/constants";
+import WORKER_SHIM from "./sandbox-worker.js?raw";
 
 /**
  * CSP for the harness document, inherited by the blob worker. connect-src
@@ -25,7 +25,7 @@ const HARNESS_CSP = `default-src 'none'; script-src 'unsafe-inline' 'unsafe-eval
  * exposing globals such as `nerdamer` to model code.
  */
 export function buildSandboxHarness(preludeJs: string): string {
-	return `<!doctype html><meta http-equiv="Content-Security-Policy" content="${HARNESS_CSP}"><script>
+  return `<!doctype html><meta http-equiv="Content-Security-Policy" content="${HARNESS_CSP}"><script>
 const SHIM = ${JSON.stringify(preludeJs + NEWLINE + WORKER_SHIM)};
 addEventListener('message', (event) => {
 	const respond = (payload) => parent.postMessage(payload, '*');

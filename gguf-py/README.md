@@ -7,11 +7,13 @@ See [convert_hf_to_gguf.py](https://github.com/ggml-org/llama.cpp/blob/master/co
 as an example for its usage.
 
 ## Installation
+
 ```sh
 pip install gguf
 ```
 
 Optionally, you can install gguf with the extra 'gui' to enable the visual GGUF editor.
+
 ```sh
 pip install gguf[gui]
 ```
@@ -33,6 +35,7 @@ pip install gguf[gui]
 [gguf/scripts/gguf_editor_gui.py](https://github.com/ggml-org/llama.cpp/blob/master/gguf-py/gguf/scripts/gguf_editor_gui.py) — Allows for viewing, editing, adding, or removing metadata values within a GGUF file as well as viewing its tensors with a Qt interface.
 
 ## Development
+
 Maintainers who participate in development of this package are advised to install it in editable mode:
 
 ```sh
@@ -66,6 +69,7 @@ git push origin --tags
 ```
 
 ## Manual publishing
+
 If you want to publish the package manually for any reason, you need to have `twine` and `build` installed:
 
 ```sh
@@ -96,4 +100,5 @@ python -m unittest discover ./gguf-py -v
 ```
 
 ## TODO
+
 - [ ] Include conversion scripts as command line entry points in this package.

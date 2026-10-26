@@ -1,5 +1,5 @@
-import { extractSearchQuery, extractSearchResults } from '$lib/utils/search-results';
-import { describe, expect, it } from 'vitest';
+import { extractSearchQuery, extractSearchResults } from "$lib/utils/search-results";
+import { describe, expect, it } from "vitest";
 
 const SAMPLE = `Title: World Cup 2026 | Match schedule, fixtures, results & stadiums
 URL: https://www.fifa.com/en/tournaments/mens/worldcup/canadamexicousa2026/articles/match-schedule-fixtures-results-teams-stadiums
@@ -25,20 +25,20 @@ Something
 ...`;
 const QUERY_ARGS = '{"query":"FIFA World Cup 2026 schedule"}';
 
-describe('real-world Exa fixture', () => {
-	it('extracts every search result and preserves rich highlights', () => {
-		const results = extractSearchResults(SAMPLE);
+describe("real-world Exa fixture", () => {
+  it("extracts every search result and preserves rich highlights", () => {
+    const results = extractSearchResults(SAMPLE);
 
-		expect(results.length).toBe(3);
-		expect(results[0].title).toContain('World Cup 2026 | Match schedule');
-		expect(results[0].url).toContain('fifa.com');
-		expect(results[1].title).toContain('2026 FIFA World Cup match schedule');
-		expect(results[1].author).toBe('ESPN');
-		expect(results[1].highlights).toContain('Round of 32');
-		expect(results[2].title).toBe('BBC');
-	});
+    expect(results.length).toBe(3);
+    expect(results[0].title).toContain("World Cup 2026 | Match schedule");
+    expect(results[0].url).toContain("fifa.com");
+    expect(results[1].title).toContain("2026 FIFA World Cup match schedule");
+    expect(results[1].author).toBe("ESPN");
+    expect(results[1].highlights).toContain("Round of 32");
+    expect(results[2].title).toBe("BBC");
+  });
 
-	it('parses the query out of the tool-args JSON', () => {
-		expect(extractSearchQuery(QUERY_ARGS)).toBe('FIFA World Cup 2026 schedule');
-	});
+  it("parses the query out of the tool-args JSON", () => {
+    expect(extractSearchQuery(QUERY_ARGS)).toBe("FIFA World Cup 2026 schedule");
+  });
 });

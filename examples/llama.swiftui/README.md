@@ -5,13 +5,15 @@ point for more advanced projects.
 
 For usage instructions and performance stats, check the following discussion: https://github.com/ggml-org/llama.cpp/discussions/4508
 
-
 ### Building
+
 First llama.cpp need to be built and a XCFramework needs to be created. This can be done by running
 the following script from the llama.cpp project root:
+
 ```console
 $ ./build-xcframework.sh
 ```
+
 Open `llama.swiftui.xcodeproj` project in Xcode and you should be able to build and run the app on
 a simulator or a real device.
 

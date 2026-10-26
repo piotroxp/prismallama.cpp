@@ -8,10 +8,10 @@
  */
 
 export interface ExecShellExitStatus {
-	code: number;
-	timedOut: boolean;
-	/** Length-prefix slice for matching against the rendered lines list. */
-	rawText: string;
+  code: number;
+  timedOut: boolean;
+  /** Length-prefix slice for matching against the rendered lines list. */
+  rawText: string;
 }
 
 // Anchor to the absolute end so intermediate "[exit code: N]" string content
@@ -22,19 +22,19 @@ const EXIT_CODE_TAIL_REGEX = /\[exit code: (-?\d+)\](?: \[exit due to timed out\
 const EXIT_CODE_TAIL_SCAN = 128;
 
 export function parseExecShellCommandExitStatus(
-	toolResultString: string | undefined
+  toolResultString: string | undefined,
 ): ExecShellExitStatus | undefined {
-	if (!toolResultString) return undefined;
+  if (!toolResultString) return undefined;
 
-	const match = toolResultString.slice(-EXIT_CODE_TAIL_SCAN).match(EXIT_CODE_TAIL_REGEX);
+  const match = toolResultString.slice(-EXIT_CODE_TAIL_SCAN).match(EXIT_CODE_TAIL_REGEX);
 
-	if (!match) return undefined;
+  if (!match) return undefined;
 
-	return {
-		code: Number.parseInt(match[1], 10),
-		rawText: match[0],
-		timedOut: match[0].includes('exit due to timed out')
-	};
+  return {
+    code: Number.parseInt(match[1], 10),
+    rawText: match[0],
+    timedOut: match[0].includes("exit due to timed out"),
+  };
 }
 
 /**
@@ -43,10 +43,10 @@ export function parseExecShellCommandExitStatus(
  * representation (since the trailing line is replaced by a status badge).
  */
 export function isExitCodeSummaryLine(
-	lineText: string,
-	status: ExecShellExitStatus | undefined
+  lineText: string,
+  status: ExecShellExitStatus | undefined,
 ): boolean {
-	if (!status) return false;
+  if (!status) return false;
 
-	return lineText.trim() === status.rawText.trim();
+  return lineText.trim() === status.rawText.trim();
 }

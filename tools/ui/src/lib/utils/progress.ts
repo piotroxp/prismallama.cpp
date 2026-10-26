@@ -3,13 +3,13 @@
  * (selector row and chat message).
  */
 
-import { MODEL_LOAD_STAGE_LABELS, MODEL_LOAD_TAIL_SHARE } from '$lib/constants';
+import { MODEL_LOAD_STAGE_LABELS, MODEL_LOAD_TAIL_SHARE } from "$lib/constants";
 
 /**
  * Human label for a model load stage.
  */
 export function modelLoadStageLabel(stage: ApiModelLoadStage): string {
-	return MODEL_LOAD_STAGE_LABELS[stage];
+  return MODEL_LOAD_STAGE_LABELS[stage];
 }
 
 /**
@@ -17,20 +17,20 @@ export function modelLoadStageLabel(stage: ApiModelLoadStage): string {
  * text_model fills [0, 1 - tail], each later phase owns one tail slice.
  */
 export function modelLoadFraction(progress: ModelLoadProgress | null): number {
-	if (!progress) return 0;
+  if (!progress) return 0;
 
-	// The server may emit a progress event before the stage plan is known, so
-	// `stages` can be absent. Fall back to the raw value in that case.
-	const { current, stages = [], value } = progress;
-	const tailCount = Math.max(stages.length - 1, 0);
-	const textCeiling = 1 - tailCount * MODEL_LOAD_TAIL_SHARE;
-	const idx = stages.indexOf(current);
+  // The server may emit a progress event before the stage plan is known, so
+  // `stages` can be absent. Fall back to the raw value in that case.
+  const { current, stages = [], value } = progress;
+  const tailCount = Math.max(stages.length - 1, 0);
+  const textCeiling = 1 - tailCount * MODEL_LOAD_TAIL_SHARE;
+  const idx = stages.indexOf(current);
 
-	if (idx <= 0) {
-		return value * textCeiling;
-	}
+  if (idx <= 0) {
+    return value * textCeiling;
+  }
 
-	return textCeiling + (idx - 1 + value) * MODEL_LOAD_TAIL_SHARE;
+  return textCeiling + (idx - 1 + value) * MODEL_LOAD_TAIL_SHARE;
 }
 
 /**
@@ -38,11 +38,11 @@ export function modelLoadFraction(progress: ModelLoadProgress | null): number {
  * Returns null when there is no progress to show.
  */
 export function modelLoadProgressText(progress: ModelLoadProgress | null): string | null {
-	if (!progress) return null;
+  if (!progress) return null;
 
-	const label = modelLoadStageLabel(progress.current);
+  const label = modelLoadStageLabel(progress.current);
 
-	if (!label) return null;
+  if (!label) return null;
 
-	return `${label} ${Math.round(modelLoadFraction(progress) * 100)}%`;
+  return `${label} ${Math.round(modelLoadFraction(progress) * 100)}%`;
 }

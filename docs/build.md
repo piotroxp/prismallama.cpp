@@ -13,22 +13,22 @@ cd llama.cpp
 
 The following sections describe how to build with different backends and options.
 
-* [CPU Build](#cpu-build)
-* [BLAS Build](#blas-build)
-* [Metal Build](#metal-build)
-* [SYCL](#sycl)
-* [CUDA](#cuda)
-* [MUSA](#musa)
-* [HIP](#hip)
-* [Vulkan](#vulkan)
-* [CANN](#cann)
-* [ZenDNN](#zendnn)
-* [Arm® KleidiAI™](#arm-kleidiai)
-* [OpenCL](#opencl)
-* [Android](#android-1)
-* [OpenVINO](#openvino)
-* [Hexagon](#hexagon)
-* [Notes about GPU-accelerated backends](#notes-about-gpu-accelerated-backends)
+- [CPU Build](#cpu-build)
+- [BLAS Build](#blas-build)
+- [Metal Build](#metal-build)
+- [SYCL](#sycl)
+- [CUDA](#cuda)
+- [MUSA](#musa)
+- [HIP](#hip)
+- [Vulkan](#vulkan)
+- [CANN](#cann)
+- [ZenDNN](#zendnn)
+- [Arm® KleidiAI™](#arm-kleidiai)
+- [OpenCL](#opencl)
+- [Android](#android-1)
+- [OpenVINO](#openvino)
+- [Hexagon](#hexagon)
+- [Notes about GPU-accelerated backends](#notes-about-gpu-accelerated-backends)
 
 ## CPU Build
 
@@ -45,49 +45,51 @@ cmake --build build --config Release
 - For faster repeated compilation, install [ccache](https://ccache.dev/)
 - For debug builds, there are two cases:
 
-    1. Single-config generators (e.g. default = `Unix Makefiles`; note that they just ignore the `--config` flag):
+  1. Single-config generators (e.g. default = `Unix Makefiles`; note that they just ignore the `--config` flag):
 
-       ```bash
-       cmake -B build -DCMAKE_BUILD_TYPE=Debug
-       cmake --build build
-       ```
+     ```bash
+     cmake -B build -DCMAKE_BUILD_TYPE=Debug
+     cmake --build build
+     ```
 
-    2. Multi-config generators (`-G` param set to Visual Studio, XCode...):
+  2. Multi-config generators (`-G` param set to Visual Studio, XCode...):
 
-       ```bash
-       cmake -B build -G "Xcode"
-       cmake --build build --config Debug
-       ```
+     ```bash
+     cmake -B build -G "Xcode"
+     cmake --build build --config Debug
+     ```
 
-    For more details and a list of supported generators, see the [CMake documentation](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html).
+  For more details and a list of supported generators, see the [CMake documentation](https://cmake.org/cmake/help/latest/manual/cmake-generators.7.html).
+
 - For static builds, add `-DBUILD_SHARED_LIBS=OFF`:
+
   ```
   cmake -B build -DBUILD_SHARED_LIBS=OFF
   cmake --build build --config Release
   ```
 
 - Building for Windows (x86, x64 and arm64) with MSVC or clang as compilers:
-    - Install Visual Studio 2022, e.g. via the [Community Edition](https://visualstudio.microsoft.com/vs/community/). In the installer, select at least the following options (this also automatically installs the required additional tools like CMake,...):
-    - Tab Workload: Desktop-development with C++
-    - Tab Components (select quickly via search): C++-_CMake_ Tools for Windows, _Git_ for Windows, C++-_Clang_ Compiler for Windows, MS-Build Support for LLVM-Toolset (clang)
-    - Please remember to always use a Developer Command Prompt / PowerShell for VS2022 for git, build, test
-    - For Windows on ARM (arm64, WoA), build with:
-      ```bash
-      cmake --preset arm64-windows-llvm-release -D GGML_OPENMP_FETCH=ON
-      cmake --build build-arm64-windows-llvm-release
+  - Install Visual Studio 2022, e.g. via the [Community Edition](https://visualstudio.microsoft.com/vs/community/). In the installer, select at least the following options (this also automatically installs the required additional tools like CMake,...):
+  - Tab Workload: Desktop-development with C++
+  - Tab Components (select quickly via search): C++-_CMake_ Tools for Windows, _Git_ for Windows, C++-_Clang_ Compiler for Windows, MS-Build Support for LLVM-Toolset (clang)
+  - Please remember to always use a Developer Command Prompt / PowerShell for VS2022 for git, build, test
+  - For Windows on ARM (arm64, WoA), build with:
+    ```bash
+    cmake --preset arm64-windows-llvm-release -D GGML_OPENMP_FETCH=ON
+    cmake --build build-arm64-windows-llvm-release
+    ```
+    - Use `ARM64 Native Tools Command Prompt for VS 2022` if you are building on an ARM64 machine.
+    - `GGML_OPENMP_FETCH` downloads the official LLVM OpenMP runtime and requires Clang, 7-Zip and network access during configuration. CMake selects the runtime from the target architecture, so this also works when cross-compiling for WoA from x64. The extracted header, import library, DLL and OpenMP license are placed under `build/_deps`. The build copies `libomp.dll` and `LICENSE-LLVM-OpenMP` to the runtime output directory and installs them together. Omit the option to use CMake's normal OpenMP detection, or pass `-D GGML_OPENMP=OFF` to disable OpenMP.
+  - For building with ninja generator and clang compiler as default:
+    - Set path:
       ```
-      - Use `ARM64 Native Tools Command Prompt for VS 2022` if you are building on an ARM64 machine.
-      - `GGML_OPENMP_FETCH` downloads the official LLVM OpenMP runtime and requires Clang, 7-Zip and network access during configuration. CMake selects the runtime from the target architecture, so this also works when cross-compiling for WoA from x64. The extracted header, import library, DLL and OpenMP license are placed under `build/_deps`. The build copies `libomp.dll` and `LICENSE-LLVM-OpenMP` to the runtime output directory and installs them together. Omit the option to use CMake's normal OpenMP detection, or pass `-D GGML_OPENMP=OFF` to disable OpenMP.
-    - For building with ninja generator and clang compiler as default:
-      - Set path:
-        ```
-        set LIB=C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\lib\x64\uwp;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\ucrt\x64
-        ```
-      - Run:
-        ```bash
-        cmake --preset x64-windows-llvm-release
-        cmake --build build-x64-windows-llvm-release
-        ```
+      set LIB=C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\um\x64;C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.41.34120\lib\x64\uwp;C:\Program Files (x86)\Windows Kits\10\Lib\10.0.22621.0\ucrt\x64
+      ```
+    - Run:
+      ```bash
+      cmake --preset x64-windows-llvm-release
+      cmake --build build-x64-windows-llvm-release
+      ```
 - If you want HTTPS/TLS features, you may install OpenSSL development libraries. If not installed, the project will build and run without SSL support.
   - **Debian / Ubuntu:** `sudo apt-get install libssl-dev`
   - **Fedora / RHEL / Rocky / Alma:** `sudo dnf install openssl-devel`
@@ -107,10 +109,10 @@ This provides BLAS acceleration using only the CPU. Make sure to have OpenBLAS i
 
 - Using `CMake` on Linux:
 
-    ```bash
-    cmake -B build -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS
-    cmake --build build --config Release
-    ```
+  ```bash
+  cmake -B build -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=OpenBLAS
+  cmake --build build --config Release
+  ```
 
 ### BLIS
 
@@ -136,11 +138,12 @@ Building through oneAPI compilers will make avx_vnni instruction set available f
 
 - Using manual oneAPI installation:
   By default, `GGML_BLAS_VENDOR` is set to `Generic`, so if you already sourced intel environment script and assign `-DGGML_BLAS=ON` in cmake, the mkl version of Blas will automatically been selected. Otherwise please install oneAPI and follow the below steps:
-    ```bash
-    source /opt/intel/oneapi/setvars.sh # You can skip this step if  in oneapi-basekit docker image, only required for manual installation
-    cmake -B build -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=Intel10_64lp -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DGGML_NATIVE=ON
-    cmake --build build --config Release
-    ```
+
+  ```bash
+  source /opt/intel/oneapi/setvars.sh # You can skip this step if  in oneapi-basekit docker image, only required for manual installation
+  cmake -B build -DGGML_BLAS=ON -DGGML_BLAS_VENDOR=Intel10_64lp -DCMAKE_C_COMPILER=icx -DCMAKE_CXX_COMPILER=icpx -DGGML_NATIVE=ON
+  cmake --build build --config Release
+  ```
 
 - Using oneAPI docker image:
   If you do not want to source the environment vars and install oneAPI manually, you can also build the code using intel docker container: [oneAPI-basekit](https://hub.docker.com/r/intel/oneapi-basekit). Then, you can use the commands given above.
@@ -171,20 +174,21 @@ For detailed info, please refer to [llama.cpp for SYCL](./backend/SYCL.md).
 This provides GPU acceleration using an NVIDIA GPU. Make sure to have the [CUDA toolkit](https://developer.nvidia.com/cuda-toolkit) installed.
 
 #### Download directly from NVIDIA
+
 You may find the official downloads here: [NVIDIA developer site](https://developer.nvidia.com/cuda-downloads).
 
-
 #### Compile and run inside a Fedora Toolbox Container
+
 We also have a [guide](./backend/CUDA-FEDORA.md) for setting up CUDA toolkit in a Fedora [toolbox container](https://containertoolbx.org/).
 
 **Recommended for:**
-- ***Necessary*** for users of [Atomic Desktops for Fedora](https://fedoraproject.org/atomic-desktops/); such as: [Silverblue](https://fedoraproject.org/atomic-desktops/silverblue/) and [Kinoite](https://fedoraproject.org/atomic-desktops/kinoite/).
-  - (there are no supported CUDA packages for these systems)
-- ***Necessary*** for users that have a host that is not a: [Supported Nvidia CUDA Release Platform](https://developer.nvidia.com/cuda-downloads).
-  - (for example, you may have [Fedora 42 Beta](https://fedoramagazine.org/announcing-fedora-linux-42-beta/) as your host operating system)
-- ***Convenient*** For those running [Fedora Workstation](https://fedoraproject.org/workstation/) or [Fedora KDE Plasma Desktop](https://fedoraproject.org/spins/kde), and want to keep their host system clean.
-- *Optionally* toolbox packages are available: [Arch Linux](https://archlinux.org/), [Red Hat Enterprise Linux >= 8.5](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux), or [Ubuntu](https://ubuntu.com/download)
 
+- _**Necessary**_ for users of [Atomic Desktops for Fedora](https://fedoraproject.org/atomic-desktops/); such as: [Silverblue](https://fedoraproject.org/atomic-desktops/silverblue/) and [Kinoite](https://fedoraproject.org/atomic-desktops/kinoite/).
+  - (there are no supported CUDA packages for these systems)
+- _**Necessary**_ for users that have a host that is not a: [Supported Nvidia CUDA Release Platform](https://developer.nvidia.com/cuda-downloads).
+  - (for example, you may have [Fedora 42 Beta](https://fedoramagazine.org/announcing-fedora-linux-42-beta/) as your host operating system)
+- _**Convenient**_ For those running [Fedora Workstation](https://fedoraproject.org/workstation/) or [Fedora KDE Plasma Desktop](https://fedoraproject.org/spins/kde), and want to keep their host system clean.
+- _Optionally_ toolbox packages are available: [Arch Linux](https://archlinux.org/), [Red Hat Enterprise Linux >= 8.5](https://www.redhat.com/en/technologies/linux-platforms/enterprise-linux), or [Ubuntu](https://ubuntu.com/download)
 
 ### Compilation
 
@@ -219,7 +223,8 @@ The resulting binary should run on all CUDA GPUs with optimal performance, thoug
 ### Override Compute Capability Specifications
 
 If `nvcc` cannot detect your gpu, you may get compile warnings such as:
- ```text
+
+```text
 nvcc warning : Cannot find valid GPU for '-arch=native', default arch is used
 ```
 
@@ -327,12 +332,12 @@ May cause crashes or corrupted outputs for some motherboards and BIOS settings (
 
 The following compilation options are also available to tweak performance:
 
-| Option                        | Legal values           | Default | Description                                                                                                                                                                                                                                                                                                                                                                      |
-|-------------------------------|------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| GGML_CUDA_FORCE_MMQ           | Boolean                | false   | Force the use of custom matrix multiplication kernels for quantized models instead of FP16 cuBLAS even if there is no int8 tensor core implementation available (affects V100, CDNA and RDNA3+). MMQ kernels are enabled by default on GPUs with int8 tensor core support. With MMQ force enabled, speed for large batch sizes will be worse but VRAM consumption will be lower. |
-| GGML_CUDA_FORCE_CUBLAS        | Boolean                | false   | Force the use of FP16 cuBLAS instead of custom matrix multiplication kernels for quantized models. There may be issues with numerical overflows (except for V100, CDNA and RDNA4 which use FP32 compute type by default) and memory use will be higher. Prompt processing may become faster on recent datacenter GPUs (the custom kernels were tuned primarily for RTX 3000/4000).   |
-| GGML_CUDA_FA_QUANTS           | `all` or `type_K-type_V` list | q4_0-q4_0;q8_0-q8_0;f16-f16;bf16-bf16 | Select which K/V type combinations to compile the FlashAttention CUDA kernels for. `all` compiles every combination, but compilation takes much longer. Otherwise a `;`-separated list of `type_K-type_V` pairs; f16-f16 is always compiled. Combinations that were not compiled fall back to f16-f16 kernel with a warning. Legal types: f16, bf16, q4_0, q4_1, q5_0, q5_1, q8_0. |
-| GGML_CUDA_FA_ALL_QUANTS       | Boolean                | false   | Deprecated alias for `GGML_CUDA_FA_QUANTS=all`.                                                                                                                                                                                                                                                                                                                               |
+| Option                  | Legal values                  | Default                               | Description                                                                                                                                                                                                                                                                                                                                                                        |
+| ----------------------- | ----------------------------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| GGML_CUDA_FORCE_MMQ     | Boolean                       | false                                 | Force the use of custom matrix multiplication kernels for quantized models instead of FP16 cuBLAS even if there is no int8 tensor core implementation available (affects V100, CDNA and RDNA3+). MMQ kernels are enabled by default on GPUs with int8 tensor core support. With MMQ force enabled, speed for large batch sizes will be worse but VRAM consumption will be lower.   |
+| GGML_CUDA_FORCE_CUBLAS  | Boolean                       | false                                 | Force the use of FP16 cuBLAS instead of custom matrix multiplication kernels for quantized models. There may be issues with numerical overflows (except for V100, CDNA and RDNA4 which use FP32 compute type by default) and memory use will be higher. Prompt processing may become faster on recent datacenter GPUs (the custom kernels were tuned primarily for RTX 3000/4000). |
+| GGML_CUDA_FA_QUANTS     | `all` or `type_K-type_V` list | q4_0-q4_0;q8_0-q8_0;f16-f16;bf16-bf16 | Select which K/V type combinations to compile the FlashAttention CUDA kernels for. `all` compiles every combination, but compilation takes much longer. Otherwise a `;`-separated list of `type_K-type_V` pairs; f16-f16 is always compiled. Combinations that were not compiled fall back to f16-f16 kernel with a warning. Legal types: f16, bf16, q4_0, q4_1, q5_0, q5_1, q8_0. |
+| GGML_CUDA_FA_ALL_QUANTS | Boolean                       | false                                 | Deprecated alias for `GGML_CUDA_FA_QUANTS=all`.                                                                                                                                                                                                                                                                                                                                    |
 
 ## MUSA
 
@@ -391,6 +396,7 @@ Make sure to have ROCm installed.
 You can download it from your Linux distro's package manager or from here: [ROCm Quick Start (Linux)](https://rocm.docs.amd.com/projects/install-on-linux/en/latest/tutorial/quick-start.html#rocm-install-quick).
 
 - Using `CMake` for Linux (assuming a gfx1030-compatible AMD GPU):
+
   ```bash
   HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -R)" \
       cmake -S . -B build -DGGML_HIP=ON -DGPU_TARGETS=gfx1030 -DCMAKE_BUILD_TYPE=Release \
@@ -400,13 +406,16 @@ You can download it from your Linux distro's package manager or from here: [ROCm
   Note: `GPU_TARGETS` is optional, omitting it will build the code for all GPUs in the current system.
 
   Note that if you get the following error:
+
   ```
   clang: error: cannot find ROCm device library; provide its path via '--rocm-path' or '--rocm-device-lib-path', or pass '-nogpulib' to build without ROCm device library
   ```
+
   Try searching for a directory under `HIP_PATH` that contains the file
   `oclc_abi_version_400.bc`. Then, add the following to the start of the
   command: `HIP_DEVICE_LIB_PATH=<directory-you-just-found>`, so something
   like:
+
   ```bash
   HIPCXX="$(hipconfig -l)/clang" HIP_PATH="$(hipconfig -p)" \
   HIP_DEVICE_LIB_PATH=<directory-you-just-found> \
@@ -423,7 +432,6 @@ You can download it from your Linux distro's package manager or from here: [ROCm
   If necessary, adapt `GPU_TARGETS` to the GPU arch you want to compile for. The above example uses `gfx1100` that corresponds to Radeon RX 7900XTX/XT/GRE. You can find a list of targets [here](https://llvm.org/docs/AMDGPUUsage.html#processors)
   Find your gpu version string by matching the most significant version information from `rocminfo | grep gfx | head -1 | awk '{print $2}'` with the list of processors, e.g. `gfx1035` maps to `gfx1030`.
 
-
 The environment variable [`HIP_VISIBLE_DEVICES`](https://rocm.docs.amd.com/en/latest/understand/gpu_isolation.html#hip-visible-devices) can be used to specify which GPU(s) will be used.
 If your GPU is not officially supported you can use the environment variable [`HSA_OVERRIDE_GFX_VERSION`] set to a similar GPU, for example 10.3.0 on RDNA2 (e.g. gfx1030, gfx1031, or gfx1035) or 11.0.0 on RDNA3. Note that [`HSA_OVERRIDE_GFX_VERSION`] is [not supported on Windows](https://github.com/ROCm/ROCm/issues/2654)
 
@@ -434,6 +442,7 @@ On Linux it is possible to use unified memory architecture (UMA) to share main m
 ## Vulkan
 
 ### For Windows Users:
+
 **w64devkit**
 
 Download and extract [`w64devkit`](https://github.com/skeeto/w64devkit/releases).
@@ -441,6 +450,7 @@ Download and extract [`w64devkit`](https://github.com/skeeto/w64devkit/releases)
 Download and install the [`Vulkan SDK`](https://vulkan.lunarg.com/sdk/home#windows) with the default settings.
 
 Launch `w64devkit.exe` and run the following commands to copy Vulkan dependencies:
+
 ```sh
 SDK_VERSION=1.3.283.0
 cp /VulkanSDK/$SDK_VERSION/Bin/glslc.exe $W64DEVKIT_HOME/bin/
@@ -456,6 +466,7 @@ EOF
 ```
 
 Switch into the `llama.cpp` directory and build using CMake.
+
 ```sh
 cmake -B build -DGGML_VULKAN=ON
 cmake --build build --config Release
@@ -487,6 +498,7 @@ build/bin/Release/llama-cli -m "[PATH TO MODEL]" -ngl 100 -c 16384 -t 10 -n -2 -
 **MSYS2**
 
 Install [MSYS2](https://www.msys2.org/) and then run the following commands in a UCRT terminal to install dependencies.
+
 ```sh
 pacman -S git \
     mingw-w64-ucrt-x86_64-gcc \
@@ -497,6 +509,7 @@ pacman -S git \
 ```
 
 Switch into the `llama.cpp` directory and build using CMake.
+
 ```sh
 cmake -B build -DGGML_VULKAN=ON
 cmake --build build --config Release
@@ -526,6 +539,7 @@ First, follow the official LunarG instructions for the installation and setup of
 #### Using system packages
 
 On Debian / Ubuntu, you can install the required dependencies using:
+
 ```sh
 sudo apt-get install libvulkan-dev glslc spirv-headers
 ```
@@ -535,17 +549,20 @@ SPIRV-Headers (`spirv/unified1/spirv.hpp`) are required for the Vulkan backend a
 #### Common steps
 
 Second, after verifying that you have followed all of the SDK installation/setup steps, use this command to make sure before proceeding:
+
 ```bash
 vulkaninfo
 ```
 
 Then, assuming you have `cd` into your llama.cpp folder and there are no errors with running `vulkaninfo`, you can proceed to build llama.cpp using the CMake commands below:
+
 ```bash
 cmake -B build -DGGML_VULKAN=1
 cmake --build build --config Release
 ```
 
 Finally, after finishing your build, you should be able to do something like this:
+
 ```bash
 # Test the output binary
 # "-ngl 99" should offload all of the layers to GPU for most (if not all) models.
@@ -562,6 +579,7 @@ Generally, follow LunarG's [Getting Started with the MacOS Vulkan SDK](https://v
 Check the box for "KosmicKrisp" during the LunarG Vulkan SDK installation.
 
 Set environment variable for the LunarG Vulkan SDK after installation (and optionally add to your shell profile for persistence):
+
 ```bash
 source /path/to/vulkan-sdk/setup-env.sh
 ```
@@ -573,6 +591,7 @@ MoltenVK is the default Vulkan driver installed with the LunarG Vulkan SDK on ma
 #### Using KosmicKrisp
 
 Override the environment variable for KosmicKrisp:
+
 ```bash
 export VK_ICD_FILENAMES=$VULKAN_SDK/share/vulkan/icd.d/libkosmickrisp_icd.json
 export VK_DRIVER_FILES=$VULKAN_SDK/share/vulkan/icd.d/libkosmickrisp_icd.json
@@ -581,12 +600,14 @@ export VK_DRIVER_FILES=$VULKAN_SDK/share/vulkan/icd.d/libkosmickrisp_icd.json
 #### Build
 
 This is the only step different from [above](#common-steps) instructions.
+
 ```bash
 cmake -B build -DGGML_VULKAN=1 -DGGML_METAL=OFF
 cmake --build build --config Release
 ```
 
 ## CANN
+
 This provides NPU acceleration using the AI cores of your Ascend NPU. And [CANN](https://www.hiascend.com/en/software/cann) is a hierarchical APIs to help you to quickly build AI applications and service based on Ascend NPU.
 
 For more information about Ascend NPU in [Ascend Community](https://www.hiascend.com/en/).
@@ -594,6 +615,7 @@ For more information about Ascend NPU in [Ascend Community](https://www.hiascend
 Make sure to have the CANN toolkit installed. You can download it from here: [CANN Toolkit](https://www.hiascend.com/developer/download/community/result?module=cann)
 
 Go to `llama.cpp` directory and build using CMake.
+
 ```bash
 cmake -B build -DGGML_CANN=on -DCMAKE_BUILD_TYPE=release
 cmake --build build --config release
@@ -606,6 +628,7 @@ You can test with:
 ```
 
 If the following info is output on screen, you are using `llama.cpp` with the CANN backend:
+
 ```bash
 llm_load_tensors:       CANN model buffer size = 13313.00 MiB
 llama_new_context_with_model:       CANN compute buffer size =  1260.81 MiB
@@ -621,19 +644,19 @@ ZenDNN provides optimized deep learning primitives for AMD EPYC™ CPUs. It acce
 
 - Using `CMake` on Linux (automatic build):
 
-    ```bash
-    cmake -B build -DGGML_ZENDNN=ON
-    cmake --build build --config Release
-    ```
+  ```bash
+  cmake -B build -DGGML_ZENDNN=ON
+  cmake --build build --config Release
+  ```
 
-    The first build will automatically download and build ZenDNN, which may take 5-10 minutes. Subsequent builds will be much faster.
+  The first build will automatically download and build ZenDNN, which may take 5-10 minutes. Subsequent builds will be much faster.
 
 - Using `CMake` with custom ZenDNN installation:
 
-    ```bash
-    cmake -B build -DGGML_ZENDNN=ON -DZENDNN_ROOT=/path/to/zendnn/install
-    cmake --build build --config Release
-    ```
+  ```bash
+  cmake -B build -DGGML_ZENDNN=ON -DZENDNN_ROOT=/path/to/zendnn/install
+  cmake --build build --config Release
+  ```
 
 ### Testing
 
@@ -646,16 +669,17 @@ You can test with:
 For detailed information about hardware support, setup instructions, and performance optimization, refer to [llama.cpp for ZenDNN](./backend/ZenDNN.md).
 
 ## Arm® KleidiAI™
+
 KleidiAI provides optimized Arm CPU microkernels used by the ggml CPU backend. Enabling it at build time makes those kernels available; it does not force every operation to use KleidiAI. At runtime, llama.cpp selects the best compatible CPU kernel from the detected CPU features, tensor type, operation shape, and active backend priority.
 
 Supported targets:
 
-| Platform | Supported ABI / architecture | Notes |
-| --- | --- | --- |
-| Linux | AArch64 / arm64 | Runtime CPU feature detection is automatic. |
-| Android | `arm64-v8a` | Use the Android NDK command below for a portable build. |
-| Apple | arm64 | Runtime CPU feature detection is automatic. Non-streaming SVE vector length is treated as unavailable. |
-| Windows | arm64 | Runtime CPU feature detection is automatic. SMCU count is treated as unknown until a detection path is verified. |
+| Platform | Supported ABI / architecture | Notes                                                                                                            |
+| -------- | ---------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Linux    | AArch64 / arm64              | Runtime CPU feature detection is automatic.                                                                      |
+| Android  | `arm64-v8a`                  | Use the Android NDK command below for a portable build.                                                          |
+| Apple    | arm64                        | Runtime CPU feature detection is automatic. Non-streaming SVE vector length is treated as unavailable.           |
+| Windows  | arm64                        | Runtime CPU feature detection is automatic. SMCU count is treated as unknown until a detection path is verified. |
 
 `GGML_CPU_KLEIDIAI=ON` is valid only for AArch64/arm64 builds. Do not enable it for x86, 32-bit Arm, or Android ABIs other than `arm64-v8a`.
 
@@ -897,6 +921,7 @@ For build instructions and usage examples, refer to [OPENVINO.md](backend/OPENVI
 Check [README.md](./backend/snapdragon/README.md) for target specific build and run info.
 
 ---
+
 ## Notes about GPU-accelerated backends
 
 The GPU may still be used to accelerate some parts of the computation even when using the `-ngl 0` option. You can fully disable GPU acceleration by using `--device none`.

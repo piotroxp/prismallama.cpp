@@ -44,15 +44,15 @@ All structs are defined in [common/chat-auto-parser.h](common/chat-auto-parser.h
 
 **`reasoning_mode`**: How the template handles reasoning/thinking blocks.
 
-| Value           | Description                                                                       |
-|-----------------|-----------------------------------------------------------------------------------|
-| `NONE`          | No reasoning markers detected                                                     |
-| `TAG_BASED`     | Tag-based: `<think>...</think>` (start can be empty for delimiter-style formats)  |
-| `TOOLS_ONLY`    | Reasoning only appears in tool call responses, not plain content                  |
+| Value        | Description                                                                      |
+| ------------ | -------------------------------------------------------------------------------- |
+| `NONE`       | No reasoning markers detected                                                    |
+| `TAG_BASED`  | Tag-based: `<think>...</think>` (start can be empty for delimiter-style formats) |
+| `TOOLS_ONLY` | Reasoning only appears in tool call responses, not plain content                 |
 
 **Generation Prompt & Reasoning Prefill**: Computed in `common_chat_templates_apply_jinja` before invoking either the specialized handlers or the auto-parser, by rendering the template twice — once with `add_generation_prompt=false` and once with `add_generation_prompt=true` — and storing the diff suffix as `generation_params::generation_prompt`. This string is propagated into `common_chat_params::generation_prompt` and `common_chat_parser_params::generation_prompt`.
 
-The generation prompt is prepended to model output before PEG parsing via `wrap_for_generation_prompt()`. The portion *before* the reasoning start marker (if any) is prepended as a literal to ensure any boilerplate added by the template is consumed. The full string is also fed to the grammar sampler via `llama_sampler_accept` (stored in `common_params_sampling::grammar_prefill`), advancing the grammar past tokens already in the prompt. It is used to determine the reasoning budget sampler's initial state — COUNTING if the prefill tokens begin with the reasoning start sequence (but don't also contain the end sequence), IDLE otherwise.
+The generation prompt is prepended to model output before PEG parsing via `wrap_for_generation_prompt()`. The portion _before_ the reasoning start marker (if any) is prepended as a literal to ensure any boilerplate added by the template is consumed. The full string is also fed to the grammar sampler via `llama_sampler_accept` (stored in `common_params_sampling::grammar_prefill`), advancing the grammar past tokens already in the prompt. It is used to determine the reasoning budget sampler's initial state — COUNTING if the prefill tokens begin with the reasoning start sequence (but don't also contain the end sequence), IDLE otherwise.
 
 **`grammar_prefill`** (`common_params_sampling`): The generation prompt string tokenized and accepted by the grammar sampler at init time. Only applied when `grammar_external` is false (i.e., the grammar was not set explicitly by the user).
 
@@ -64,29 +64,29 @@ Three outcomes for reasoning-prefill handling (in `generate_parser()`):
 
 **`content_mode`**: How the template wraps assistant content.
 
-| Value                    | Description                                                    |
-|--------------------------|----------------------------------------------------------------|
-| `PLAIN`                  | No content markers                                             |
-| `ALWAYS_WRAPPED`         | Content always wrapped: `<response>...</response>`             |
-| `WRAPPED_WITH_REASONING` | Content wrapped only when reasoning is present                 |
+| Value                    | Description                                        |
+| ------------------------ | -------------------------------------------------- |
+| `PLAIN`                  | No content markers                                 |
+| `ALWAYS_WRAPPED`         | Content always wrapped: `<response>...</response>` |
+| `WRAPPED_WITH_REASONING` | Content wrapped only when reasoning is present     |
 
 **`tool_format`**: Classification of tool call structure.
 
-| Value            | Description                                                      |
-|------------------|------------------------------------------------------------------|
-| `NONE`           | No tool support detected                                         |
-| `JSON_NATIVE`    | Pure JSON: `{"name": "X", "arguments": {...}}`                   |
-| `TAG_WITH_JSON`  | Tag-based with JSON args: `<function=X>{...}</function>`         |
-| `TAG_WITH_TAGGED`| Tag-based with tagged args: `<param=key>value</param>`           |
+| Value             | Description                                              |
+| ----------------- | -------------------------------------------------------- |
+| `NONE`            | No tool support detected                                 |
+| `JSON_NATIVE`     | Pure JSON: `{"name": "X", "arguments": {...}}`           |
+| `TAG_WITH_JSON`   | Tag-based with JSON args: `<function=X>{...}</function>` |
+| `TAG_WITH_TAGGED` | Tag-based with tagged args: `<param=key>value</param>`   |
 
 **`call_id_position`**: Where call IDs appear in tag-based formats.
 
-| Value                    | Description                                  |
-|--------------------------|----------------------------------------------|
-| `NONE`                   | No call ID support detected                  |
-| `PRE_FUNC_NAME`          | Before function name                         |
-| `BETWEEN_FUNC_AND_ARGS`  | Between function name and arguments          |
-| `POST_ARGS`              | After arguments                              |
+| Value                   | Description                         |
+| ----------------------- | ----------------------------------- |
+| `NONE`                  | No call ID support detected         |
+| `PRE_FUNC_NAME`         | Before function name                |
+| `BETWEEN_FUNC_AND_ARGS` | Between function name and arguments |
+| `POST_ARGS`             | After arguments                     |
 
 ## Tool Calling Formats
 
@@ -116,7 +116,7 @@ Mistral Nemo with array wrapper:
 Function name as JSON key (Apertus style):
 
 ```json
-{"get_weather": {"location": "Paris"}}
+{ "get_weather": { "location": "Paris" } }
 ```
 
 ---
@@ -364,23 +364,23 @@ Each analyzer struct (`analyze_reasoning`, `analyze_content`, `analyze_tools`) i
 
 #### Reasoning Parser (`analyze_reasoning::build_parser`)
 
-| Mode                                          | Parser                                                                    |
-|-----------------------------------------------|---------------------------------------------------------------------------|
-| Not extracting reasoning                      | `eps()`                                                                   |
-| `TAG_BASED` or `TOOLS_ONLY` (non-empty start) | `optional(start + reasoning(until(end)) + end + space())`                 |
-| `TAG_BASED` or `TOOLS_ONLY` (empty start)     | `optional(reasoning(until(end)) + end + space())` — delimiter-style       |
+| Mode                                          | Parser                                                              |
+| --------------------------------------------- | ------------------------------------------------------------------- |
+| Not extracting reasoning                      | `eps()`                                                             |
+| `TAG_BASED` or `TOOLS_ONLY` (non-empty start) | `optional(start + reasoning(until(end)) + end + space())`           |
+| `TAG_BASED` or `TOOLS_ONLY` (empty start)     | `optional(reasoning(until(end)) + end + space())` — delimiter-style |
 
 Note: The start marker may be empty either because the analyzer detected delimiter-style reasoning, or because `generate_parser()` cleared a template artifact start marker (see Generation Prompt & Reasoning Prefill above). Whitespace-only reasoning content (e.g. from a `<think></think>` prefill) is discarded by the mapper.
 
 #### Content Parser (`analyze_content::build_parser`)
 
-| Condition                              | Parser                                                                          |
-|----------------------------------------|---------------------------------------------------------------------------------|
-| `json_schema` present                  | `reasoning + space() + content(schema(json(), "response-format", ...)) + end()` |
-| Tools present                          | Dispatches to `analyze_tools::build_parser()`                                   |
-| `ALWAYS_WRAPPED` with reasoning        | `reasoning + start + content(until(end)) + end + end()`                         |
-| `ALWAYS_WRAPPED` without reasoning     | `content(until(start)) + start + content(until(end)) + end + end()`             |
-| Default (PLAIN)                        | `reasoning + content(rest()) + end()`                                           |
+| Condition                          | Parser                                                                          |
+| ---------------------------------- | ------------------------------------------------------------------------------- |
+| `json_schema` present              | `reasoning + space() + content(schema(json(), "response-format", ...)) + end()` |
+| Tools present                      | Dispatches to `analyze_tools::build_parser()`                                   |
+| `ALWAYS_WRAPPED` with reasoning    | `reasoning + start + content(until(end)) + end + end()`                         |
+| `ALWAYS_WRAPPED` without reasoning | `content(until(start)) + start + content(until(end)) + end + end()`             |
+| Default (PLAIN)                    | `reasoning + content(rest()) + end()`                                           |
 
 #### Tool Parsers (`analyze_tools::build_parser`)
 
@@ -434,17 +434,17 @@ Each returned parser is wrapped by `wrap_for_generation_prompt()`, which prepend
 
 ## Files
 
-| File                                      | Purpose                                                                         |
-|-------------------------------------------|---------------------------------------------------------------------------------|
-| `common/chat-auto-parser.h`               | All analysis structs, enums, `autoparser`, `peg_generator`, `generation_params` |
-| `common/chat-auto-parser-generator.cpp`   | Parser generator: `generate_parser()` and `build_parser()` methods              |
-| `common/chat-diff-analyzer.cpp`           | Differential analysis implementation and workarounds                            |
-| `common/chat-auto-parser-helpers.h/cpp`   | `calculate_diff_split()`, `segmentize_markers()`, `compare_variants()`,         |
-|                                           | `wrap_for_generation_prompt()`, string helpers                                  |
-| `common/chat-peg-parser.h/cpp`            | `common_chat_peg_builder`, `common_chat_peg_mapper`, and helpers                |
-| `common/chat.cpp`                         | Entry point: `common_chat_templates_apply_jinja()`                              |
-| `tests/test-chat-auto-parser.cpp`         | Auto-parser unit tests; also a debug tool when given a template path            |
-| `tests/test-chat-analysis.cpp`            | Template differential analysis debug tool                                       |
+| File                                    | Purpose                                                                         |
+| --------------------------------------- | ------------------------------------------------------------------------------- |
+| `common/chat-auto-parser.h`             | All analysis structs, enums, `autoparser`, `peg_generator`, `generation_params` |
+| `common/chat-auto-parser-generator.cpp` | Parser generator: `generate_parser()` and `build_parser()` methods              |
+| `common/chat-diff-analyzer.cpp`         | Differential analysis implementation and workarounds                            |
+| `common/chat-auto-parser-helpers.h/cpp` | `calculate_diff_split()`, `segmentize_markers()`, `compare_variants()`,         |
+|                                         | `wrap_for_generation_prompt()`, string helpers                                  |
+| `common/chat-peg-parser.h/cpp`          | `common_chat_peg_builder`, `common_chat_peg_mapper`, and helpers                |
+| `common/chat.cpp`                       | Entry point: `common_chat_templates_apply_jinja()`                              |
+| `tests/test-chat-auto-parser.cpp`       | Auto-parser unit tests; also a debug tool when given a template path            |
+| `tests/test-chat-analysis.cpp`          | Template differential analysis debug tool                                       |
 
 ## Testing & Debugging
 
@@ -480,42 +480,42 @@ tst.test("input text")
 
 The following templates have active tests in `tests/test-chat.cpp`:
 
-| Template | Format | Notes |
-| -------- | ------ | ----- |
-| Ministral-3-14B-Reasoning | Reasoning | `[THINK]...[/THINK]` tags (specialized handler) |
-| NVIDIA-Nemotron-3-Nano-30B | TAG_WITH_TAGGED | Reasoning + tools |
-| CohereForAI Command-R7B | JSON_NATIVE | `<\|START_THINKING\|>`/`<\|START_RESPONSE\|>` markers |
-| Google Gemma 2 2B | Content only | No tool support |
-| Qwen-QwQ-32B | Reasoning | Forced-open thinking |
-| NousResearch Hermes 2 Pro | JSON_NATIVE | `<tool_call>` wrapper |
-| IBM Granite 3.3 | JSON_NATIVE | `<think></think>` + `<response></response>` |
-| IBM Granite 4.0 | JSON_NATIVE | `<tool_call>` wrapper (same template used by 4.1) |
-| ByteDance Seed-OSS | TAG_WITH_TAGGED | Custom `<seed:think>` and `<seed:tool_call>` tags |
-| Qwen3-Coder | TAG_WITH_TAGGED | XML-style tool format |
-| DeepSeek V3.1 | JSON_NATIVE | Forced thinking mode |
-| GLM-4.6 | TAG_WITH_TAGGED | `<tool_call>name\n<arg_key>...<arg_value>...` format |
-| GLM-4.7-Flash | TAG_WITH_TAGGED | Updated GLM format |
-| Kimi-K2-Thinking | JSON_NATIVE | Reasoning + JSON tools |
-| Apertus-8B-Instruct | JSON_NATIVE | Function name as JSON key |
-| MiniMax-M2 | TAG_WITH_JSON | XML invoke with JSON args |
-| NVIDIA-Nemotron-Nano-v2 | JSON_NATIVE | `<TOOLCALL>` wrapper (nested) |
-| CohereForAI Command-R Plus | JSON_NATIVE | Markdown code block format |
-| Mistral-Nemo-Instruct-2407 | JSON_NATIVE | `[TOOL_CALLS]` wrapper with ID field |
-| Functionary v3.1 | TAG_WITH_JSON | `<function=X>` format |
-| Functionary v3.2 | Specialized | `>>>` recipient delimiter (dedicated handler) |
-| Fireworks Firefunction v2 | TAG_WITH_JSON | Fireworks tool format |
-| DeepSeek R1 Distill (Llama/Qwen) | Reasoning | Forced-open thinking |
-| llama-cpp-deepseek-r1 | Reasoning | Forced-open thinking |
-| Kimi-K2 / Kimi-K2-Instruct | JSON_NATIVE | JSON tools with special markers |
-| Llama 3.1/3.2/3.3 | JSON_NATIVE | Standard Llama tool format |
-| OpenAI GPT-OSS | Specialized | Channel-based (dedicated handler) |
-| LLM-jp-4.1 | Specialized | GPT-OSS dialect (dedicated handler) |
-| Apriel 1.5 | JSON_NATIVE | `<tool_calls>` wrapper with JSON array |
-| Apriel 1.6 Thinker | Reasoning | Implicit reasoning start |
-| Mistral Small 3.2 | JSON_NATIVE | `[TOOL_CALLS]func[ARGS]{...}` with call ID |
-| Devstral | JSON_NATIVE | `[TOOL_CALLS]func[ARGS]{...}` without call ID |
-| StepFun 3.5 Flash | TAG_WITH_TAGGED | `<function=X><parameter=Y>` format |
-| Spark2.5 | TAG_WITH_TAGGED | `<tool_call>name<arg_key>...<arg_value>...` format |
+| Template                         | Format          | Notes                                                 |
+| -------------------------------- | --------------- | ----------------------------------------------------- |
+| Ministral-3-14B-Reasoning        | Reasoning       | `[THINK]...[/THINK]` tags (specialized handler)       |
+| NVIDIA-Nemotron-3-Nano-30B       | TAG_WITH_TAGGED | Reasoning + tools                                     |
+| CohereForAI Command-R7B          | JSON_NATIVE     | `<\|START_THINKING\|>`/`<\|START_RESPONSE\|>` markers |
+| Google Gemma 2 2B                | Content only    | No tool support                                       |
+| Qwen-QwQ-32B                     | Reasoning       | Forced-open thinking                                  |
+| NousResearch Hermes 2 Pro        | JSON_NATIVE     | `<tool_call>` wrapper                                 |
+| IBM Granite 3.3                  | JSON_NATIVE     | `<think></think>` + `<response></response>`           |
+| IBM Granite 4.0                  | JSON_NATIVE     | `<tool_call>` wrapper (same template used by 4.1)     |
+| ByteDance Seed-OSS               | TAG_WITH_TAGGED | Custom `<seed:think>` and `<seed:tool_call>` tags     |
+| Qwen3-Coder                      | TAG_WITH_TAGGED | XML-style tool format                                 |
+| DeepSeek V3.1                    | JSON_NATIVE     | Forced thinking mode                                  |
+| GLM-4.6                          | TAG_WITH_TAGGED | `<tool_call>name\n<arg_key>...<arg_value>...` format  |
+| GLM-4.7-Flash                    | TAG_WITH_TAGGED | Updated GLM format                                    |
+| Kimi-K2-Thinking                 | JSON_NATIVE     | Reasoning + JSON tools                                |
+| Apertus-8B-Instruct              | JSON_NATIVE     | Function name as JSON key                             |
+| MiniMax-M2                       | TAG_WITH_JSON   | XML invoke with JSON args                             |
+| NVIDIA-Nemotron-Nano-v2          | JSON_NATIVE     | `<TOOLCALL>` wrapper (nested)                         |
+| CohereForAI Command-R Plus       | JSON_NATIVE     | Markdown code block format                            |
+| Mistral-Nemo-Instruct-2407       | JSON_NATIVE     | `[TOOL_CALLS]` wrapper with ID field                  |
+| Functionary v3.1                 | TAG_WITH_JSON   | `<function=X>` format                                 |
+| Functionary v3.2                 | Specialized     | `>>>` recipient delimiter (dedicated handler)         |
+| Fireworks Firefunction v2        | TAG_WITH_JSON   | Fireworks tool format                                 |
+| DeepSeek R1 Distill (Llama/Qwen) | Reasoning       | Forced-open thinking                                  |
+| llama-cpp-deepseek-r1            | Reasoning       | Forced-open thinking                                  |
+| Kimi-K2 / Kimi-K2-Instruct       | JSON_NATIVE     | JSON tools with special markers                       |
+| Llama 3.1/3.2/3.3                | JSON_NATIVE     | Standard Llama tool format                            |
+| OpenAI GPT-OSS                   | Specialized     | Channel-based (dedicated handler)                     |
+| LLM-jp-4.1                       | Specialized     | GPT-OSS dialect (dedicated handler)                   |
+| Apriel 1.5                       | JSON_NATIVE     | `<tool_calls>` wrapper with JSON array                |
+| Apriel 1.6 Thinker               | Reasoning       | Implicit reasoning start                              |
+| Mistral Small 3.2                | JSON_NATIVE     | `[TOOL_CALLS]func[ARGS]{...}` with call ID            |
+| Devstral                         | JSON_NATIVE     | `[TOOL_CALLS]func[ARGS]{...}` without call ID         |
+| StepFun 3.5 Flash                | TAG_WITH_TAGGED | `<function=X><parameter=Y>` format                    |
+| Spark2.5                         | TAG_WITH_TAGGED | `<tool_call>name<arg_key>...<arg_value>...` format    |
 
 ## Adding Support for New Templates
 
