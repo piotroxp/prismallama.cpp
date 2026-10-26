@@ -1461,7 +1461,8 @@ void ggml_backend_sched_split_graph(ggml_backend_sched_t sched, struct ggml_cgra
             struct ggml_backend_sched_split * s = &sched->splits[src];
             if (dst > 0) {
                 struct ggml_backend_sched_split * prev = &sched->splits[dst - 1];
-                if (prev->backend_id == s->backend_id) {
+                // Do not merge splits that copy host weights (MoE cache slot_map); that breaks copy() ordering.
+                if (prev->backend_id == s->backend_id && prev->n_inputs == 0 && s->n_inputs == 0) {
                     prev->i_end = s->i_end;
                     for (int j = 0; j < s->n_inputs; ++j) {
                         bool dup = false;
