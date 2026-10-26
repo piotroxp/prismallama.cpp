@@ -571,12 +571,30 @@ struct llama_moe_cache::impl {
         // the selected experts must be computed in an earlier split
         // the scheduler starts a new split at the lookup because it reads a host weight, but only if the split already has inputs
         const ggml_tensor * sel = lookup->src[1];
+        int idx_lookup = -1;
+        int idx_sel    = -1;
         for (int i = 0; i < n_nodes; ++i) {
             const ggml_tensor * node = ggml_graph_node(graph, i);
-            if (node == sel || node == sel->view_src) {
-                GGML_ABORT("the experts of layer %d are selected in the same split as their MoE cache lookup", il);
+            if (node == lookup) {
+                idx_lookup = i;
+            }
+            if (node == sel || (sel->view_src != nullptr && node == sel->view_src)) {
+                idx_sel = i;
             }
         }
+        if (idx_sel >= 0 && idx_lookup >= 0 && idx_sel >= idx_lookup) {
+            GGML_ABORT("the experts of layer %d are selected after their MoE cache lookup in the graph", il);
+        }
+#if defined(GGML_USE_HIP)
+        // gfx1100 sched may keep routing and cache lookup in one split; ids are an input to GET_ROWS.
+        if (idx_sel >= 0 && idx_lookup >= 0) {
+            ggml_backend_synchronize(backend);
+        }
+#else
+        if (idx_sel >= 0) {
+            GGML_ABORT("the experts of layer %d are selected in the same split as their MoE cache lookup", il);
+        }
+#endif
         GGML_ASSERT(ggml_is_contiguous(sel));
 
         ids.resize(ggml_nelements(sel));

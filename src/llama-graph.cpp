@@ -2314,6 +2314,14 @@ ggml_tensor * llm_graph_context::build_moe_ffn(
     }
     cb(selected_experts, "ffn_moe_topk", il);
 
+    // MoE cache GET_ROWS reads host slot_map and needs expert ids from a prior sched split (HIP/CUDA).
+    if (moe_cache != nullptr) {
+        if (!ggml_is_contiguous(selected_experts)) {
+            selected_experts = ggml_cont(ctx0, selected_experts);
+        }
+        ggml_build_forward_expand(gf, selected_experts);
+    }
+
     if (arch == LLM_ARCH_GROVEMOE && n_expert != hparams.n_expert) {
         // TODO: Use scalar div instead when/if implemented
         ggml_tensor * f_sel = ggml_cast(ctx0, selected_experts, GGML_TYPE_F32);
@@ -2604,6 +2612,9 @@ ggml_tensor * llm_graph_context::build_moe_cache_slots(
     ggml_tensor * slot_map = moe_cache->get_slot_map(il, selected_experts->ne[1], selected_experts->ne[0]);
     if (slot_map == nullptr) {
         return nullptr;
+    }
+    if (backend_cpu != nullptr) {
+        ggml_backend_sched_set_tensor_backend(sched, slot_map, backend_cpu);
     }
     for (ggml_tensor * w : { up_exps, gate_exps, down_exps, gate_up_exps }) {
         if (w != nullptr && moe_cache->get_experts(w) == nullptr) {
